@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infrastructure Diagram — Universal Template</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+@page :first { margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  font-size: 10.5pt; line-height: 1.55; color: #1F2937; background: #fff; }
+
+h1 { font-size: 22pt; font-weight: 700; color: #1A56DB;
+  margin: 24px 0 14px 0; padding-bottom: 8px; border-bottom: 3px solid #1A56DB;
+  page-break-after: avoid; page-break-before: always; }
+h1:first-of-type { page-break-before: auto; }
+h2 { font-size: 15pt; font-weight: 700; color: #0E3A99;
+  margin: 22px 0 10px 0; page-break-after: avoid; }
+h3 { font-size: 12pt; font-weight: 700; color: #1F2937;
+  margin: 16px 0 8px 0; page-break-after: avoid; }
+
+p { margin: 6px 0; }
+p.note { font-style: italic; color: #6B7280; font-size: 10pt; margin: 6px 0 12px 0; }
+p.lbl { font-weight: 700; color: #0E3A99; font-size: 10.5pt;
+  margin: 12px 0 4px 0; text-transform: uppercase; letter-spacing: 0.4px; }
+
+ul, ol { margin: 6px 0 12px 0; padding-left: 22px; }
+li { margin: 3px 0; }
+
+ol.toc { list-style: none; padding: 0; margin: 16px 0; counter-reset: toc; }
+ol.toc li { counter-increment: toc; padding: 10px 14px; margin: 8px 0;
+  background: #F9FAFB; border-left: 4px solid #1A56DB;
+  font-size: 11.5pt; font-weight: 500; }
+ol.toc li::before { content: counter(toc) ". "; font-weight: 700; color: #1A56DB; }
+
+strong { font-weight: 700; color: #1F2937; }
+code { font-family: 'Courier New', Consolas, monospace; font-size: 9.5pt;
+  background: #F3F4F6; padding: 1px 5px; border-radius: 3px; color: #0E3A99; }
+
+.ph { display: inline-block; padding: 1px 6px; background: #F59E0B22;
+  border: 1px dashed #F59E0B; color: #0E3A99; font-weight: 600;
+  font-size: 9.5pt; border-radius: 3px; font-family: 'Courier New', monospace; }
+
+table { width: 100%; border-collapse: collapse; margin: 8px 0 14px 0;
+  font-size: 9.5pt; page-break-inside: auto; }
+thead { display: table-header-group; }
+tbody tr { page-break-inside: avoid; }
+th { background: #1A56DB; color: #fff; font-weight: 700;
+  text-align: left; padding: 8px 10px; border: 1px solid #1A56DB; font-size: 9.5pt; }
+td { padding: 7px 10px; border: 1px solid #D1D5DB; vertical-align: top; }
+tbody tr:nth-child(even) td { background: #F9FAFB; }
+
+.diagram-box { border: 2px dashed #F59E0B; background: #F59E0B11;
+  padding: 24px; margin: 14px 0; border-radius: 4px; min-height: 200px;
+  text-align: center; color: #6B7280; font-style: italic; }
+
+.callout { background: #F9FAFB; border-left: 4px solid #1A56DB;
+  padding: 14px 18px; margin: 12px 0 18px 0; border-radius: 0 4px 4px 0;
+  page-break-inside: avoid; }
+.callout-title { font-weight: 700; color: #0E3A99;
+  font-size: 11pt; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+
+.mermaid-host { border: 1px solid #1A56DB33; background: #fff;
+  padding: 18px; margin: 14px 0; border-radius: 6px;
+  page-break-inside: avoid; overflow-x: auto; text-align: center; }
+.mermaid-host .mermaid { display: inline-block; min-width: 100%; }
+.mermaid-host svg { max-width: 100%; height: auto; }
+@media print {
+  .mermaid-host { border-color: #D1D5DB; }
+  .mermaid-host svg { max-width: 100% !important; }
+}
+
+section.cover { height: 100vh; width: 100%;
+  background: linear-gradient(135deg, #1A56DB 0%, #0E3A99 100%);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  page-break-after: always; }
+.cover-inner { text-align: center; padding: 60px; }
+.cover-brand { font-size: 56pt; font-weight: 800; letter-spacing: -1.5px;
+  margin-bottom: 8px; color: #fff; }
+.cover-sub { font-size: 22pt; font-weight: 300; margin-bottom: 18px; color: #F59E0B; }
+
+.toolbar { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100; }
+.toolbar button { background: #1A56DB; color: #fff; border: none;
+  padding: 12px 28px; border-radius: 999px; font-weight: 600; cursor: pointer;
+  font-family: inherit; font-size: 11pt;
+  box-shadow: 0 8px 20px rgba(26,86,219,0.35); transition: background 0.2s; }
+.toolbar button:hover { background: #0E3A99; }
+@media print { .toolbar { display: none !important; } }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">Print / Save as PDF</button>
+</div>
+
+<section class="cover">
+  <div class="cover-inner">
+    <div class="cover-brand">INFRASTRUCTURE DIAGRAM</div>
+    <div class="cover-sub"><span class="ph">{{PROJECT_NAME}}</span></div>
+  </div>
+</section>
+
+<h1>Table of Contents</h1>
+<ol class="toc">
+  <li>Environments</li>
+  <li>Hosting &amp; Compute</li>
+  <li>Database, Storage &amp; Cache</li>
+  <li>Network &amp; Domains</li>
+  <li>External Services &amp; Integrations</li>
+  <li>Security &amp; Secrets</li>
+  <li>Backup &amp; Disaster Recovery</li>
+  <li>CI / CD Pipeline</li>
+  <li>Topology — Visual Diagram</li>
+</ol>
+
+<h1>1. Environments</h1>
+<p class="note">Where the application runs at each lifecycle stage.</p>
+
+<table>
+  <colgroup><col style="width:18%"><col style="width:24%"><col style="width:24%"><col style="width:34%"></colgroup>
+  <thead><tr><th>Environment</th><th>URL</th><th>Database</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>Local</td><td><code>localhost:3000</code></td><td>Local Postgres</td><td>Developer machine</td></tr>
+    <tr><td>Development</td><td><code>dev.<span class="ph">{{DOMAIN}}</span></code></td><td>Dev DB</td><td>Internal dev testing</td></tr>
+    <tr><td>Staging</td><td><code>staging.<span class="ph">{{DOMAIN}}</span></code></td><td>Staging DB</td><td>QA + client preview</td></tr>
+    <tr><td>Production</td><td><code><span class="ph">{{DOMAIN}}</span></code></td><td>Prod DB (HA)</td><td>Live customer-facing</td></tr>
+  </tbody>
+</table>
+
+<h1>2. Hosting &amp; Compute</h1>
+<p class="note">Where each service runs.</p>
+
+<table>
+  <colgroup><col style="width:24%"><col style="width:22%"><col style="width:18%"><col style="width:36%"></colgroup>
+  <thead><tr><th>Service</th><th>Provider</th><th>Region</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Web Frontend</td><td><span class="ph">{{Vercel | Netlify | Cloudflare Pages | self-hosted}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{notes}}</span></td></tr>
+    <tr><td>Backend API</td><td><span class="ph">{{Railway | Render | AWS ECS | Fly.io | self-hosted VPS}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{auto-scale rules, instance type}}</span></td></tr>
+    <tr><td>Mobile (build distribution)</td><td><span class="ph">{{App Store | Play Store | Expo EAS}}</span></td><td>—</td><td><span class="ph">{{TestFlight, internal track}}</span></td></tr>
+    <tr><td>Background Workers</td><td><span class="ph">{{provider}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{queue / cron jobs}}</span></td></tr>
+  </tbody>
+</table>
+
+<h1>3. Database, Storage &amp; Cache</h1>
+
+<table>
+  <colgroup><col style="width:24%"><col style="width:24%"><col style="width:18%"><col style="width:34%"></colgroup>
+  <thead><tr><th>Layer</th><th>Provider / Engine</th><th>Region</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Primary database</td><td><span class="ph">{{Postgres on Supabase | Neon | RDS | self-hosted}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{HA, read replicas, connection pooling (PgBouncer)}}</span></td></tr>
+    <tr><td>Object storage</td><td><span class="ph">{{S3 | Cloudflare R2 | Supabase Storage}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{user uploads, design assets, signed URLs}}</span></td></tr>
+    <tr><td>Cache / Queue</td><td><span class="ph">{{Redis on Upstash | ElastiCache | self-hosted}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{session cache, BullMQ queue, rate-limit counters}}</span></td></tr>
+    <tr><td>Search index</td><td><span class="ph">{{Postgres FTS (Phase 1) | Elasticsearch | Meilisearch (Phase 2)}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{multilingual indexing, analytics-friendly}}</span></td></tr>
+  </tbody>
+</table>
+
+<h1>4. Network &amp; Domains</h1>
+
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>Apex domain</strong></td><td><code><span class="ph">{{DOMAIN}}</span></code></td></tr>
+    <tr><td><strong>Subdomains</strong></td><td><code>app.<span class="ph">{{DOMAIN}}</span></code>, <code>api.<span class="ph">{{DOMAIN}}</span></code>, <code>admin.<span class="ph">{{DOMAIN}}</span></code></td></tr>
+    <tr><td><strong>DNS provider</strong></td><td><span class="ph">{{Cloudflare | Route53 | provider}}</span></td></tr>
+    <tr><td><strong>CDN</strong></td><td><span class="ph">{{Cloudflare | Bunny | provider}}</span></td></tr>
+    <tr><td><strong>SSL certificates</strong></td><td><span class="ph">{{Let's Encrypt auto / managed}}</span></td></tr>
+    <tr><td><strong>VPC / private network</strong></td><td><span class="ph">{{yes (services + DB on private subnet) | no | TBD}}</span></td></tr>
+    <tr><td><strong>Public-facing services</strong></td><td><span class="ph">{{web, api}}</span></td></tr>
+    <tr><td><strong>CORS allow-list</strong></td><td><span class="ph">{{origins explicitly allowlisted in API}}</span></td></tr>
+  </tbody>
+</table>
+
+<h1>5. External Services &amp; Integrations</h1>
+<p class="note">Every third-party the system depends on.</p>
+
+<table>
+  <colgroup><col style="width:24%"><col style="width:24%"><col style="width:18%"><col style="width:34%"></colgroup>
+  <thead><tr><th>Capability</th><th>Provider</th><th>Env vars</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Payments</td><td><span class="ph">{{Stripe | Payme | Click | Uzum}}</span></td><td><code><span class="ph">{{STRIPE_SECRET_KEY}}</span></code></td><td><span class="ph">{{webhooks, refunds}}</span></td></tr>
+    <tr><td>Email</td><td><span class="ph">{{SendGrid | Postmark | Resend}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{transactional templates}}</span></td></tr>
+    <tr><td>SMS</td><td><span class="ph">{{Twilio | Eskiz.uz | Vonage}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{OTP, alerts}}</span></td></tr>
+    <tr><td>Push notifications</td><td><span class="ph">{{Firebase Cloud Messaging | OneSignal | Expo Notifications}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{iOS + Android}}</span></td></tr>
+    <tr><td>Maps</td><td><span class="ph">{{Yandex Maps | Mapbox | Google Maps}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{geocoding, distance}}</span></td></tr>
+    <tr><td>Error tracking</td><td><span class="ph">{{Sentry | Bugsnag}}</span></td><td><code><span class="ph">{{DSN}}</span></code></td><td><span class="ph">{{frontend + backend}}</span></td></tr>
+    <tr><td>Analytics</td><td><span class="ph">{{PostHog | Mixpanel | Plausible}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{event tracking, funnels}}</span></td></tr>
+    <tr><td>Monitoring / uptime</td><td><span class="ph">{{Better Stack | Datadog | Grafana Cloud}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{logs, metrics, alerts}}</span></td></tr>
+  </tbody>
+</table>
+
+<h1>6. Security &amp; Secrets</h1>
+
+<div class="callout">
+  <div class="callout-title">Secret management policy</div>
+  <p>Never commit secrets to the repo. Use the host's secret store (Vercel env, Railway secrets, AWS Secrets Manager, GitHub Actions secrets) and document the variable names below.</p>
+</div>
+
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>Auth method</strong></td><td><span class="ph">{{JWT in HttpOnly cookie | Auth.js sessions | Clerk | Supabase Auth}}</span></td></tr>
+    <tr><td><strong>Token storage (frontend)</strong></td><td><span class="ph">{{HttpOnly cookie (preferred) | localStorage (warn)}}</span></td></tr>
+    <tr><td><strong>Password hashing</strong></td><td><span class="ph">{{bcrypt cost 12 | argon2id}}</span></td></tr>
+    <tr><td><strong>Rate limiting</strong></td><td><span class="ph">{{e.g. 60 req/min per IP on /auth/*}}</span></td></tr>
+    <tr><td><strong>WAF / DDoS</strong></td><td><span class="ph">{{Cloudflare | provider built-in}}</span></td></tr>
+    <tr><td><strong>Required env vars</strong></td><td><span class="ph">{{DATABASE_URL, JWT_SECRET, STRIPE_SECRET_KEY, ...}}</span></td></tr>
+    <tr><td><strong>Vulnerability scanning</strong></td><td><span class="ph">{{Dependabot, Snyk, npm audit in CI}}</span></td></tr>
+  </tbody>
+</table>
+
+<h1>7. Backup &amp; Disaster Recovery</h1>
+
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>Database backup frequency</strong></td><td><span class="ph">{{daily snapshots | continuous WAL | provider default}}</span></td></tr>
+    <tr><td><strong>Backup retention</strong></td><td><span class="ph">{{7d | 30d | 90d}}</span></td></tr>
+    <tr><td><strong>Backup location</strong></td><td><span class="ph">{{cross-region S3 | provider managed}}</span></td></tr>
+    <tr><td><strong>Storage backup</strong></td><td><span class="ph">{{S3 versioning + cross-region replication | TBD}}</span></td></tr>
+    <tr><td><strong>RPO (recovery point objective)</strong></td><td><span class="ph">{{e.g. 1 hour}}</span></td></tr>
+    <tr><td><strong>RTO (recovery time objective)</strong></td><td><span class="ph">{{e.g. 4 hours}}</span></td></tr>
+    <tr><td><strong>Restore drill cadence</strong></td><td><span class="ph">{{quarterly | annual | TBD}}</span></td></tr>
+  </tbody>
+</table>
+
+<h1>8. CI / CD Pipeline</h1>
+
+<p class="lbl">Pipeline stages</p>
+<ol>
+  <li><strong>Lint &amp; typecheck</strong> — runs on every push.</li>
+  <li><strong>Unit tests</strong> — runs on every push.</li>
+  <li><strong>Integration / E2E tests</strong> — runs on PR + main.</li>
+  <li><strong>Build artifacts</strong> — frontend bundle, backend container.</li>
+  <li><strong>Deploy to dev</strong> — auto on merge to <code>main</code>.</li>
+  <li><strong>Deploy to staging</strong> — manual approval after dev passes smoke tests.</li>
+  <li><strong>Deploy to production</strong> — manual approval after staging is green for 24h.</li>
+</ol>
+
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>CI provider</strong></td><td><span class="ph">{{GitHub Actions | GitLab CI | Vercel | provider}}</span></td></tr>
+    <tr><td><strong>Required GitHub secrets</strong></td><td><span class="ph">{{DATABASE_URL, DEPLOY_TOKEN, ...}}</span></td></tr>
+    <tr><td><strong>Branch protection</strong></td><td><span class="ph">{{require 1 review + green CI on main}}</span></td></tr>
+    <tr><td><strong>Rollback strategy</strong></td><td><span class="ph">{{revert merge + redeploy | provider one-click rollback}}</span></td></tr>
+  </tbody>
+</table>
+
+<h1>9. Topology — Visual Diagram</h1>
+<p class="note">
+  Edit the Mermaid <code>flowchart</code> below to match the services listed in <strong>Sections 2-5</strong>.
+  The diagram auto-renders in the browser using <a href="https://mermaid.js.org/" target="_blank" rel="noopener">Mermaid.js</a>.
+</p>
+
+<p class="lbl">Authoring rules</p>
+<ul>
+  <li>Group nodes by environment / boundary with <code>subgraph</code> blocks (Client, CDN, API, Data, External).</li>
+  <li>Use the same provider names from Sections 2-5 (Vercel, Railway, Postgres, Redis, Stripe, etc.).</li>
+  <li>Solid arrows for synchronous calls, dashed (<code>-.-&gt;</code>) for events / async / webhooks.</li>
+  <li>Label every external integration edge with the protocol (REST, webhook, SMTP, SMS).</li>
+</ul>
+
+<div class="mermaid-host">
+  <div class="mermaid">
+flowchart TB
+  subgraph Client["Client"]
+    user["&nbsp;User&nbsp;"]
+    web["&nbsp;Web App&nbsp;"]
+    mobile["&nbsp;Mobile App&nbsp;"]
+  end
+
+  subgraph Edge["Edge / CDN"]
+    cdn["&nbsp;Cloudflare CDN&nbsp;"]
+  end
+
+  subgraph Compute["Compute"]
+    api["&nbsp;API / Railway&nbsp;"]
+    worker["&nbsp;Background Worker&nbsp;"]
+  end
+
+  subgraph Data["Data Layer"]
+    db[("&nbsp;Postgres / Neon&nbsp;")]
+    cache[("&nbsp;Redis / Upstash&nbsp;")]
+    storage[("&nbsp;S3 / R2&nbsp;")]
+  end
+
+  subgraph External["External Services"]
+    stripe["&nbsp;Stripe&nbsp;"]
+    sms["&nbsp;Eskiz SMS&nbsp;"]
+    email["&nbsp;SendGrid&nbsp;"]
+    sentry["&nbsp;Sentry&nbsp;"]
+  end
+
+  user --> cdn
+  cdn --> web
+  web --> api
+  mobile --> api
+  api --> db
+  api --> cache
+  api --> storage
+  api -->|REST| stripe
+  api -->|REST| sms
+  api -->|SMTP| email
+  api -.->|webhook| stripe
+  api --> sentry
+  worker --> db
+  worker --> cache
+
+  classDef client fill:#EFF4FE,stroke:#1A56DB,stroke-width:1.5px,color:#0E3A99;
+  classDef edge fill:#FEF3C7,stroke:#F59E0B,stroke-width:1.5px,color:#92400E;
+  classDef compute fill:#E0E7FF,stroke:#4F46E5,stroke-width:1.5px,color:#312E81;
+  classDef data fill:#DCFCE7,stroke:#16A34A,stroke-width:1.5px,color:#14532D;
+  classDef external fill:#FCE7F3,stroke:#DB2777,stroke-width:1.5px,color:#831843;
+
+  class user,web,mobile client;
+  class cdn edge;
+  class api,worker compute;
+  class db,cache,storage data;
+  class stripe,sms,email,sentry external;
+
+  linkStyle 11 stroke:#F59E0B,stroke-width:2px,stroke-dasharray:6 4;
+  </div>
+</div>
+
+<h2>Mermaid source (editable)</h2>
+<p class="note">The block below is the same source rendered above — kept as a copy-paste reference for editing.</p>
+<pre style="background:#F3F4F6; padding:12px; border-left:3px solid #1A56DB; font-size:9pt; white-space:pre-wrap;"><code>flowchart LR
+  subgraph Client
+    user[User]
+    web[Web App]
+    mobile[Mobile App]
+  end
+
+  subgraph Compute
+    api[API / Railway]
+    worker[Background Worker]
+  end
+
+  subgraph Data
+    db[(Postgres)]
+    cache[(Redis)]
+  end
+
+  user --> web
+  web --> api
+  mobile --> api
+  api --> db
+  api --> cache
+  worker --> db
+</code></pre>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#EFF4FE',
+      primaryTextColor: '#0E3A99',
+      primaryBorderColor: '#1A56DB',
+      lineColor: '#1A56DB',
+      secondaryColor: '#F59E0B22',
+      tertiaryColor: '#F9FAFB',
+      fontFamily: 'Inter, -apple-system, Segoe UI, Arial, sans-serif',
+      fontSize: '13px'
+    },
+    flowchart: {
+      useMaxWidth: true,
+      htmlLabels: true,
+      curve: 'basis',
+      defaultRenderer: 'elk',
+      padding: 20,
+      nodeSpacing: 60,
+      rankSpacing: 70
+    },
+    layout: 'elk',
+    elk: {
+      'elk.algorithm': 'layered',
+      'elk.direction': 'DOWN',
+      'elk.alignment': 'CENTER',
+      'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+      'elk.layered.spacing.nodeNodeBetweenLayers': 60,
+      'elk.spacing.nodeNode': 40,
+      'elk.spacing.edgeNode': 25
+    }
+  });
+</script>
+
+</body>
+</html>

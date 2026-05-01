@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scope of Work — Universal Template</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+@page :first { margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  font-size: 10.5pt; line-height: 1.55; color: #1F2937; background: #fff; }
+
+h1 { font-size: 22pt; font-weight: 700; color: #1A56DB;
+  margin: 24px 0 14px 0; padding-bottom: 8px; border-bottom: 3px solid #1A56DB;
+  page-break-after: avoid; page-break-before: always; }
+h1:first-of-type { page-break-before: auto; }
+h2 { font-size: 15pt; font-weight: 700; color: #0E3A99;
+  margin: 22px 0 10px 0; page-break-after: avoid; }
+h3 { font-size: 12pt; font-weight: 700; color: #1F2937;
+  margin: 16px 0 8px 0; page-break-after: avoid; }
+h4 { font-size: 11pt; font-weight: 600; color: #1F2937; margin: 12px 0 6px 0; }
+
+p { margin: 6px 0; }
+p.note { font-style: italic; color: #6B7280; font-size: 10pt; margin: 6px 0 12px 0; }
+p.lbl { font-weight: 700; color: #0E3A99; font-size: 10.5pt;
+  margin: 12px 0 4px 0; text-transform: uppercase; letter-spacing: 0.4px; }
+ul { margin: 6px 0 12px 0; padding-left: 22px; }
+li { margin: 3px 0; }
+
+ol.toc { list-style: none; padding: 0; margin: 16px 0; counter-reset: toc; }
+ol.toc li { counter-increment: toc; padding: 10px 14px; margin: 8px 0;
+  background: #F9FAFB; border-left: 4px solid #1A56DB;
+  font-size: 11.5pt; font-weight: 500; }
+ol.toc li::before { content: counter(toc) ". "; font-weight: 700; color: #1A56DB; }
+
+strong { font-weight: 700; color: #1F2937; }
+code { font-family: 'Courier New', Consolas, monospace; font-size: 9.5pt;
+  background: #F3F4F6; padding: 1px 5px; border-radius: 3px; color: #0E3A99; }
+
+.ph { display: inline-block; padding: 1px 6px; background: #F59E0B22;
+  border: 1px dashed #F59E0B; color: #0E3A99; font-weight: 600;
+  font-size: 9.5pt; border-radius: 3px; font-family: 'Courier New', monospace; }
+
+pre.code { font-family: 'Courier New', Consolas, monospace; font-size: 9pt;
+  background: #F3F4F6; color: #1F2937; padding: 8px 12px; margin: 6px 0;
+  border-left: 3px solid #1A56DB; border-radius: 2px;
+  white-space: pre-wrap; word-wrap: break-word; page-break-inside: avoid; }
+
+table { width: 100%; border-collapse: collapse; margin: 8px 0 14px 0;
+  font-size: 9.5pt; page-break-inside: auto; }
+thead { display: table-header-group; }
+tbody tr { page-break-inside: avoid; }
+th { background: #1A56DB; color: #fff; font-weight: 700;
+  text-align: left; padding: 8px 10px; border: 1px solid #1A56DB; font-size: 9.5pt; }
+td { padding: 7px 10px; border: 1px solid #D1D5DB; vertical-align: top; }
+tbody tr:nth-child(even) td { background: #F9FAFB; }
+
+.entity { margin: 14px 0; border: 1px solid #1A56DB; border-radius: 4px;
+  page-break-inside: avoid; overflow: hidden; }
+.entity-header { background: #1A56DB; color: #fff; padding: 8px 14px;
+  font-weight: 700; font-size: 11pt; font-family: 'Courier New', monospace; }
+.entity-table { margin: 0; border: none; }
+.entity-table th { background: #0E3A99; font-size: 9pt; padding: 6px 10px; }
+.entity-table td { font-size: 9pt; padding: 5px 10px; }
+.entity-table code { background: transparent; color: #0E3A99;
+  font-weight: 600; padding: 0; }
+
+section.cover { height: 100vh; width: 100%;
+  background: linear-gradient(135deg, #1A56DB 0%, #0E3A99 100%);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  page-break-after: always; }
+.cover-inner { text-align: center; padding: 60px; }
+.cover-brand { font-size: 56pt; font-weight: 800; letter-spacing: -1.5px;
+  margin-bottom: 8px; color: #fff; }
+.cover-sub { font-size: 22pt; font-weight: 300; margin-bottom: 18px; color: #F59E0B; }
+
+.toolbar { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100; }
+.toolbar button { background: #1A56DB; color: #fff; border: none;
+  padding: 12px 28px; border-radius: 999px; font-weight: 600; cursor: pointer;
+  font-family: inherit; font-size: 11pt;
+  box-shadow: 0 8px 20px rgba(26,86,219,0.35); transition: background 0.2s; }
+.toolbar button:hover { background: #0E3A99; }
+@media print { .toolbar { display: none !important; } }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">Print / Save as PDF</button>
+</div>
+
+<section class="cover">
+  <div class="cover-inner">
+    <div class="cover-brand">SCOPE OF WORK</div>
+    <div class="cover-sub"><span class="ph">{{PROJECT_NAME}}</span></div>
+  </div>
+</section>
+
+<h1>Table of Contents</h1>
+<ol class="toc">
+  <li>How to Use This Template (AI Adjustment Guide)</li>
+  <li>Glossary &amp; ID Conventions</li>
+  <li>Phase 1 — Project Overview</li>
+  <li>Phase 2 — Project Modules</li>
+  <li>Phase 3 — Database Schemas (Entities + Indexes)</li>
+  <li>Phase 4 — API Endpoints &amp; Standards</li>
+  <li>Phase 5 — Event-Driven Architecture</li>
+  <li>Phase 6 — Technology Stack</li>
+  <li>Phase 7 — UI / UX Foundation + Page Inventory</li>
+  <li>Phase 8 — Development Approach &amp; Steps</li>
+  <li>Phase 9 — Folder Structures (Backend, Frontend, Infrastructure, CI/CD)</li>
+  <li>Phase 10 — Extended Modules &amp; Operational Specs</li>
+</ol>
+
+<h1>How to Use This Template — AI Adjustment Guide</h1>
+<p class="note">This template is the universal foundation of any AO Ecosystem SoW. AI agents and humans should follow these rules when adjusting it for a specific project.</p>
+
+<h2>1. What is Universal vs. Project-Specific</h2>
+<table><colgroup><col style="width:40%"><col style="width:30%"><col style="width:30%"></colgroup><thead><tr><th>Section</th><th>Universal</th><th>Adjust Per Project</th></tr></thead><tbody><tr><td>Phase 1 Problem/Solution</td><td>Section structure</td><td>Wording and placeholders</td></tr><tr><td>Phase 2 Services S1-S6</td><td>Always included</td><td>Add S7+ for project domain</td></tr><tr><td>Phase 2 Modules</td><td>Universal modules retained</td><td>Add new modules for project</td></tr><tr><td>Phase 3 Universal schemas</td><td>Always included</td><td>Add new tables for project</td></tr><tr><td>Phase 4 API Standards</td><td>Always included</td><td>Add endpoints per new module</td></tr><tr><td>Phase 5 Event Catalog</td><td>Universal events retained</td><td>Add events for project domain</td></tr><tr><td>Phase 6 Tech Stack</td><td>Foundation always</td><td>Add domain libs (maps, video, AI)</td></tr><tr><td>Phase 7 UI/UX</td><td>Principles always</td><td>Adjust roles + branding</td></tr><tr><td>Phase 7 Page Inventory</td><td>5-column table format</td><td>List actual pages last (after Phases 1-6)</td></tr><tr><td>Phase 8 Dev Steps</td><td>Steps 1-3 always</td><td>Adjust module order in Step 4</td></tr><tr><td>Phase 9 Folders</td><td>Always included</td><td>Add domain modules to folders</td></tr><tr><td>Phase 10 Operational</td><td>Always included</td><td>Adjust per project context</td></tr></tbody></table>
+
+<h2>2. Adjustment Workflow</h2>
+<ul><li>Read the project brief from the client</li><li>Replace cover placeholders: {{PROJECT_NAME}}, {{VERSION}}, etc.</li><li>Adjust Phase 1 — fill problem, solution, application type, commercialization model</li><li>Define custom roles in addition to default 3 (USER, ADMIN, SUPER_ADMIN)</li><li>Add new services S7+ for project domain — keep S1-S6 universal</li><li>For each new service: define modules, features, system behaviors with new IDs</li><li>Add corresponding schemas to Phase 3 with indexes</li><li>Add API endpoints to Phase 4</li><li>Add events to Phase 5 catalog</li><li>Add domain-specific libraries to Phase 6 (e.g. Yandex Maps for booking, Mux for video)</li><li>Adjust Phase 7 role-platform matrix and branding tokens</li><li>Adjust Phase 8 module implementation order based on new dependencies</li><li>Adjust Phase 9 folder structures — add new modules to backend and frontend</li><li>Customize Phase 10 risks, assumptions, and out-of-scope to project context</li></ul>
+
+<h2>3. Naming Conventions to Follow</h2>
+<ul><li>Service IDs: S1, S2, ..., S11 — assign sequentially, do not skip numbers</li><li>Service codes: short uppercase, e.g. IDENT, NOTIF, MSG, AUDIT, ANL, PAY, then domain codes</li><li>Module IDs format: &lt;code&gt;[Px.Sy.MOD]&lt;/code&gt; where x = phase, y = service number, MOD = module short code</li><li>Feature IDs format: &lt;code&gt;SERVICE-MODULE-NN&lt;/code&gt; where NN is two-digit number, e.g. &lt;code&gt;IDENT-REG-01&lt;/code&gt;</li><li>System Behavior IDs: &lt;code&gt;SERVICE-MODULE-S0N&lt;/code&gt;, e.g. &lt;code&gt;IDENT-REG-S03&lt;/code&gt;</li><li>Event names: &lt;code&gt;{service}.{entity}.{action}&lt;/code&gt;, e.g. &lt;code&gt;identity.user.registered&lt;/code&gt;</li><li>Database tables: snake_case plural, e.g. &lt;code&gt;users&lt;/code&gt;, &lt;code&gt;booking_holds&lt;/code&gt;</li><li>API paths: kebab-case, e.g. &lt;code&gt;/users/me/saved-searches&lt;/code&gt;</li></ul>
+
+<h2>4. AI Agent Instructions</h2>
+<ul><li>When adjusting: read entire template first, then modify</li><li>Never delete universal sections — extend them</li><li>Always preserve ID conventions when adding new modules</li><li>Cross-reference: every Feature ID must map to an API endpoint and one or more System Behaviors</li><li>Cross-reference: every System Behavior must align with database schema and event catalog</li><li>Generate placeholder values like &lt;code&gt;{{PROJECT_NAME}}&lt;/code&gt; for any field that varies per project</li><li>Output the adjusted SoW as a new HTML file (do not modify this template)</li></ul>
+
+
+<h1>Glossary &amp;amp; ID Conventions</h1>
+
+<h2>Phase ID Format</h2>
+<pre class="code">[Px.Sy.MOD]
+ │   │   └── Module short code (e.g. REG, LOG, PROF)
+ │   └────── Service number (1, 2, 3, ...)
+ └────────── Phase number (1-10)
+
+Example: [P2.S1.REG] = Phase 2, Service 1 (Identity), Module REG (Registration)</pre>
+
+<h2>Feature ID Format</h2>
+<pre class="code">SERVICE-MODULE-NN
+
+  SERVICE = Service short code uppercase (IDENT, PAY, BOOK, etc.)
+  MODULE  = Module short code uppercase (REG, LOG, PROF, etc.)
+  NN      = Two-digit feature number, sequential
+
+Examples:
+  IDENT-REG-01    First user feature in Identity → Registration
+  PAY-TXN-04      Fourth user feature in Payment → Transactions</pre>
+
+<h2>System Behavior ID Format</h2>
+<pre class="code">SERVICE-MODULE-SNN
+
+  S = Letter prefix indicating "System behavior"
+  NN = Two-digit number
+
+Examples:
+  IDENT-REG-S03   Third system behavior in Identity → Registration
+  PAY-TXN-S08     Eighth system behavior in Payment → Transactions</pre>
+
+<h2>Event Name Format</h2>
+<pre class="code">{service}.{entity}.{action}
+
+  service = lowercase service domain
+  entity  = primary noun
+  action  = past-tense verb
+
+Examples:
+  identity.user.registered
+  payment.transaction.completed
+  booking.confirmed</pre>
+
+<h2>Standard Roles (Universal)</h2>
+<table><colgroup><col style="width:25%"><col style="width:40%"><col style="width:35%"></colgroup><thead><tr><th>Code</th><th>Name</th><th>Scope</th></tr></thead><tbody><tr><td>SUPER_ADMIN</td><td>Platform Super Administrator</td><td>Full control</td></tr><tr><td>ADMIN</td><td>Administrator</td><td>Operational management</td></tr><tr><td>USER</td><td>End User</td><td>Default registered user</td></tr></tbody></table>
+
+<h2>Service Domain Codes</h2>
+<table><colgroup><col style="width:15%"><col style="width:35%"><col style="width:50%"></colgroup><thead><tr><th>Code</th><th>Service</th><th>Universal/Domain</th></tr></thead><tbody><tr><td>IDENT</td><td>Identity</td><td>Universal (S1)</td></tr><tr><td>NOTIF</td><td>Notification</td><td>Universal (S2)</td></tr><tr><td>MSG</td><td>Messages</td><td>Universal (S3)</td></tr><tr><td>AUDIT</td><td>Audit</td><td>Universal (S4)</td></tr><tr><td>ANL</td><td>Analytics</td><td>Universal (S5)</td></tr><tr><td>PAY</td><td>Payment</td><td>Universal (S6)</td></tr><tr><td>...</td><td>Project-specific</td><td>S7+</td></tr></tbody></table>
+
+
+<h1>Phase 1: Project Overview</h1>
+
+<h2>1. Problem and Solution [P1.S1]</h2>
+<p><strong>1.1 Problem Statement</strong></p>
+<p><span class="ph">{{PROBLEM_STATEMENT}}</span></p>
+
+<p><strong>1.2 Solution Statement</strong></p>
+<p><span class="ph">{{SOLUTION_STATEMENT}}</span></p>
+
+<h2>2. Application Type [P1.S2]</h2>
+<table><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>2.1 Platform Mobile</td><td><span class="ph">{{iOS / Android / Both / None}}</span></td></tr><tr><td>2.2 Platform Web Public</td><td><span class="ph">{{yes/no}}</span></td></tr><tr><td>2.3 Platform Web Admin</td><td><span class="ph">{{yes/no}}</span></td></tr><tr><td>2.4 Platform API</td><td><span class="ph">{{yes/no/Phase 2}}</span></td></tr><tr><td>2.5 Region</td><td><span class="ph">{{REGION}}</span></td></tr><tr><td>2.6 Primary Language</td><td><span class="ph">{{PRIMARY_LANG}}</span></td></tr><tr><td>2.7 Additional Languages</td><td><span class="ph">{{LANGUAGES}}</span></td></tr><tr><td>2.8 Target Market</td><td><span class="ph">{{B2C / B2B / B2B2C}}</span></td></tr><tr><td>2.9 Primary Constraint</td><td><span class="ph">{{CONSTRAINTS}}</span></td></tr></tbody></table>
+
+<h2>3. Commercialization Model [P1.S3]</h2>
+<table><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>3.1 Business Model</td><td><span class="ph">{{SaaS / Marketplace / Transactional / Other}}</span></td></tr><tr><td>3.2 Revenue Stream 1</td><td><span class="ph">{{REVENUE_1}}</span></td></tr><tr><td>3.3 Revenue Stream 2</td><td><span class="ph">{{REVENUE_2}}</span></td></tr><tr><td>3.4 Tier 1 Free</td><td><span class="ph">{{FREE_TIER_INCLUDES}}</span></td></tr><tr><td>3.5 Tier 2 Name</td><td><span class="ph">{{TIER_2_NAME}}</span></td></tr><tr><td>3.6 Tier 2 Price</td><td><span class="ph">{{TIER_2_PRICE}}</span></td></tr><tr><td>3.7 Tier 2 Includes</td><td><span class="ph">{{TIER_2_FEATURES}}</span></td></tr><tr><td>3.8 Billing Method</td><td><span class="ph">{{PAYMENT_GATEWAYS}}</span></td></tr><tr><td>3.9 Currency</td><td><span class="ph">{{CURRENCY}}</span></td></tr><tr><td>3.10 Transaction Fees</td><td><span class="ph">{{TX_FEE_RULES}}</span></td></tr></tbody></table>
+
+<h2>4. Roles Approach [P1.S4]</h2>
+<p>Default universal roles. Replace or extend per project.</p>
+<table><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>Role</th><th>Description</th></tr></thead><tbody><tr><td>SUPER_ADMIN</td><td><span class="ph">{{SUPER_ADMIN_DESC — default: Full platform control}}</span></td></tr><tr><td>ADMIN</td><td><span class="ph">{{ADMIN_DESC — default: Operational administration}}</span></td></tr><tr><td>USER</td><td><span class="ph">{{USER_DESC — default: End-user / customer}}</span></td></tr><tr><td><span class="ph">{{CUSTOM_ROLE_1}}</span></td><td><span class="ph">{{Add project-specific roles here}}</span></td></tr><tr><td><span class="ph">{{CUSTOM_ROLE_2}}</span></td><td><span class="ph">{{Add project-specific roles here}}</span></td></tr></tbody></table>
+
+<h2>5. Service Architecture Overview [P1.S5]</h2>
+<p>Six universal services + project-specific services as needed.</p>
+<table><colgroup><col style="width:6%"><col style="width:28%"><col style="width:14%"><col style="width:52%"></colgroup><thead><tr><th>#</th><th>Service</th><th>Type</th><th>Purpose</th></tr></thead><tbody><tr><td>S1</td><td>IDENTITY-SERVICE</td><td>Universal</td><td>Auth, sessions, profiles, RBAC</td></tr><tr><td>S2</td><td>NOTIFICATION-SERVICE</td><td>Universal</td><td>In-app notifications, feed, preferences</td></tr><tr><td>S3</td><td>MESSAGES-SERVICE</td><td>Universal</td><td>Email, SMS, push delivery</td></tr><tr><td>S4</td><td>AUDIT-SERVICE</td><td>Universal</td><td>Activity logs, security alerts, compliance</td></tr><tr><td>S5</td><td>ANALYTICS-SERVICE</td><td>Universal</td><td>Event tracking, metrics, reports</td></tr><tr><td>S6</td><td>PAYMENT-SERVICE</td><td>Universal</td><td>Transactions, subscriptions, gateways, refunds</td></tr><tr><td>S7</td><td><span class="ph">{{CUSTOM_SERVICE_1}}</span></td><td>Project</td><td><span class="ph">{{PURPOSE}}</span></td></tr><tr><td>S8</td><td><span class="ph">{{CUSTOM_SERVICE_2}}</span></td><td>Project</td><td><span class="ph">{{PURPOSE}}</span></td></tr></tbody></table>
+
+
+<h1>Phase 2: Project Modules</h1>
+<p class="note">Defines all services and modules with their rules, user features, and system behaviors. This template lists only universal services (S1-S6) — extend with project-specific services as needed.</p>
+
+<h2>S1  IDENTITY-SERVICE [P2.S1]</h2>
+<ul><li>Module 1.1 REGISTRATION [P2.S1.REG]</li><li>Module 1.2 LOGIN [P2.S1.LOG]</li><li>Module 1.3 VERIFICATION [P2.S1.VER]</li><li>Module 1.4 PASSWORD [P2.S1.PWD]</li><li>Module 1.5 PROFILE MANAGEMENT [P2.S1.PRF]</li><li>Module 1.6 OAUTH [P2.S1.OAU]</li><li>Module 1.7 TWO-FACTOR AUTH [P2.S1.2FA]</li><li>Module 1.8 SESSION MANAGEMENT [P2.S1.SES]</li><li>Module 1.9 DEVICE MANAGEMENT [P2.S1.DEV]</li><li>Module 1.10 SECURITY SETTINGS [P2.S1.SEC]</li><li>Module 1.11 TOKEN MANAGEMENT [P2.S1.TOK]</li><li>Module 1.12 RBAC [P2.S1.RBAC]</li></ul>
+
+<h3>1.1&nbsp;&nbsp;MODULE: REGISTRATION [P2.S1.REG]</h3><p class="lbl">Rules</p><ul><li>User can register with email or phone</li><li>Email format validated; password minimum 8 chars</li><li>Phone numbers stored in E.164 format</li><li>Registration creates user record with status pending until verification</li><li>OAuth registration auto-verifies user</li></ul><p class="lbl">User Features</p><table><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>Feature ID</th><th>Description</th></tr></thead><tbody><tr><td>IDENT-REG-01</td><td>User can register with email and password</td></tr><tr><td>IDENT-REG-02</td><td>User can register with phone and OTP</td></tr><tr><td>IDENT-REG-03</td><td>User can register via OAuth (Google, Apple)</td></tr><tr><td>IDENT-REG-04</td><td>User accepts Terms of Service and Privacy Policy at registration</td></tr><tr><td>IDENT-REG-05</td><td>User receives welcome message after registration</td></tr></tbody></table><p class="lbl">System Behaviors</p><table><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>Behavior ID</th><th>Description</th></tr></thead><tbody><tr><td>IDENT-REG-S01</td><td>System will validate email format and uniqueness</td></tr><tr><td>IDENT-REG-S02</td><td>System will hash password with bcrypt cost 12</td></tr><tr><td>IDENT-REG-S03</td><td>System will create user with status pending_verification</td></tr><tr><td>IDENT-REG-S04</td><td>System will emit identity.user.registered event</td></tr></tbody></table>
+
+<h3>1.2 - 1.12  Other Identity Modules</h3>
+<p>Each follows the same Rules + User Features + System Behaviors structure as Module 1.1. Refer to AO Ecosystem master template for full content.</p>
+
+<h2>S2  NOTIFICATION-SERVICE [P2.S2]</h2>
+<ul><li>Module 2.1 NOTIFICATION FEED</li><li>Module 2.2 NOTIFICATION PREFERENCES</li></ul>
+
+<h2>S3  MESSAGES-SERVICE [P2.S3]</h2>
+<ul><li>Module 3.1 TEMPLATES</li><li>Module 3.2 DELIVERY</li><li>Module 3.3 HISTORY</li></ul>
+
+<h2>S4  AUDIT-SERVICE [P2.S4]</h2>
+<ul><li>Module 4.1 EVENT LOGGING</li><li>Module 4.2 SECURITY ALERTS</li><li>Module 4.3 EXPORT</li></ul>
+
+<h2>S5  ANALYTICS-SERVICE [P2.S5]</h2>
+<ul><li>Module 5.1 EVENT TRACKING</li><li>Module 5.2 METRICS</li><li>Module 5.3 REPORTING</li></ul>
+
+<h2>S6  PAYMENT-SERVICE [P2.S6]</h2>
+<ul><li>Module 6.1 GATEWAYS</li><li>Module 6.2 TRANSACTIONS</li><li>Module 6.3 SUBSCRIPTIONS</li><li>Module 6.4 PAYMENT METHODS</li><li>Module 6.5 INVOICES</li><li>Module 6.6 REFUNDS</li></ul>
+
+<h2>S7+  <span class="ph">{{PROJECT_SERVICES}}</span></h2>
+<p>Add project-specific services here. Each service must follow the same module → rules → features → behaviors structure as universal services above.</p>
+
+
+<h1>Phase 3: Database Schemas</h1>
+<p class="note">Schemas use PostgreSQL 16+ with Prisma ORM. Each entity is shown with column-level detail and recommended indexes. Project-specific tables are added after universal tables.</p>
+
+<h2>S1 IDENTITY-SERVICE Schemas [P3.S1]</h2>
+
+
+<div class="entity">
+  <div class="entity-header">users</div>
+  <table class="entity-table">
+    <thead><tr><th style="width:30%">Column</th><th style="width:25%">Type</th><th style="width:20%">Constraint</th><th style="width:25%">Notes</th></tr></thead>
+    <tbody><tr><td><code>id</code></td><td>UUID</td><td>PK</td><td>Primary identifier</td></tr><tr><td><code>email</code></td><td>VARCHAR(255)</td><td>UNIQUE, NULLABLE</td><td>Email address</td></tr><tr><td><code>phone</code></td><td>VARCHAR(20)</td><td>UNIQUE, NULLABLE</td><td>E.164 format</td></tr><tr><td><code>password</code></td><td>VARCHAR(255)</td><td>NULLABLE</td><td>bcrypt hash</td></tr><tr><td><code>password_changed_at</code></td><td>TIMESTAMP</td><td>NULLABLE</td><td>For password rotation</td></tr><tr><td><code>role_id</code></td><td>UUID</td><td>FK roles.id</td><td>Assigned role</td></tr><tr><td><code>status</code></td><td>ENUM</td><td>NOT NULL</td><td>active, pending, suspended, deleted</td></tr><tr><td><code>email_verified</code></td><td>BOOLEAN</td><td>DEFAULT false</td><td>Email verification flag</td></tr><tr><td><code>phone_verified</code></td><td>BOOLEAN</td><td>DEFAULT false</td><td>Phone verification flag</td></tr><tr><td><code>login_attempts</code></td><td>INTEGER</td><td>DEFAULT 0</td><td>Failed login counter</td></tr><tr><td><code>last_login_at</code></td><td>TIMESTAMP</td><td>NULLABLE</td><td>Last successful login</td></tr><tr><td><code>locked_until</code></td><td>TIMESTAMP</td><td>NULLABLE</td><td>Account lock expiry</td></tr><tr><td><code>deleted_at</code></td><td>TIMESTAMP</td><td>NULLABLE</td><td>Soft delete</td></tr><tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td></td></tr><tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td></td></tr></tbody>
+  </table>
+</div>
+
+<p><strong>Recommended Indexes</strong></p>
+<pre class="code">CREATE UNIQUE INDEX idx_users_email ON users(email) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX idx_users_phone ON users(phone) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_role_id ON users(role_id);
+CREATE INDEX idx_users_status ON users(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_created_at ON users(created_at DESC);</pre>
+
+
+<div class="entity">
+  <div class="entity-header">sessions</div>
+  <table class="entity-table">
+    <thead><tr><th style="width:30%">Column</th><th style="width:25%">Type</th><th style="width:20%">Constraint</th><th style="width:25%">Notes</th></tr></thead>
+    <tbody><tr><td><code>id</code></td><td>UUID</td><td>PK</td><td></td></tr><tr><td><code>user_id</code></td><td>UUID</td><td>FK users.id, NOT NULL</td><td></td></tr><tr><td><code>session_token</code></td><td>VARCHAR(512)</td><td>UNIQUE</td><td>Hashed token</td></tr><tr><td><code>refresh_token_hash</code></td><td>VARCHAR(512)</td><td>NULLABLE</td><td></td></tr><tr><td><code>device_fingerprint</code></td><td>VARCHAR(255)</td><td>NULLABLE</td><td></td></tr><tr><td><code>ip_address</code></td><td>INET</td><td>NULLABLE</td><td></td></tr><tr><td><code>user_agent</code></td><td>TEXT</td><td>NULLABLE</td><td></td></tr><tr><td><code>is_current</code></td><td>BOOLEAN</td><td>DEFAULT false</td><td></td></tr><tr><td><code>expires_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td></td></tr><tr><td><code>revoked_at</code></td><td>TIMESTAMP</td><td>NULLABLE</td><td></td></tr><tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td></td></tr><tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td></td></tr></tbody>
+  </table>
+</div>
+
+<p><strong>Recommended Indexes</strong></p>
+<pre class="code">CREATE UNIQUE INDEX idx_sessions_token ON sessions(session_token);
+CREATE INDEX idx_sessions_user_id ON sessions(user_id) WHERE revoked_at IS NULL;
+CREATE INDEX idx_sessions_expires_at ON sessions(expires_at);</pre>
+
+
+<div class="entity">
+  <div class="entity-header">roles</div>
+  <table class="entity-table">
+    <thead><tr><th style="width:30%">Column</th><th style="width:25%">Type</th><th style="width:20%">Constraint</th><th style="width:25%">Notes</th></tr></thead>
+    <tbody><tr><td><code>id</code></td><td>UUID</td><td>PK</td><td></td></tr><tr><td><code>name</code></td><td>VARCHAR(100)</td><td>UNIQUE</td><td>SUPER_ADMIN, ADMIN, USER, ...</td></tr><tr><td><code>slug</code></td><td>VARCHAR(100)</td><td>UNIQUE</td><td>Lowercase identifier</td></tr><tr><td><code>description</code></td><td>TEXT</td><td>NULLABLE</td><td></td></tr><tr><td><code>is_system</code></td><td>BOOLEAN</td><td>DEFAULT false</td><td>Built-in vs custom</td></tr><tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td></td></tr><tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td></td></tr></tbody>
+  </table>
+</div>
+
+<p><strong>Other Identity Tables</strong></p>
+<ul><li>&lt;code&gt;user_profiles&lt;/code&gt; — first_name, last_name, avatar_url, locale</li><li>&lt;code&gt;user_settings&lt;/code&gt; — preference flags</li><li>&lt;code&gt;verification_tokens&lt;/code&gt; — token_type, token_value, expires_at</li><li>&lt;code&gt;devices&lt;/code&gt; — fingerprint, push_token, is_trusted</li><li>&lt;code&gt;oauth_accounts&lt;/code&gt; — provider, provider_user_id</li><li>&lt;code&gt;two_factor_auth&lt;/code&gt; — method, code_hash, backup_codes</li><li>&lt;code&gt;permissions&lt;/code&gt; — name, resource, action</li><li>&lt;code&gt;role_permissions&lt;/code&gt; — junction</li></ul>
+
+<h2>S6 PAYMENT-SERVICE Schemas [P3.S6]</h2>
+
+
+<div class="entity">
+  <div class="entity-header">transactions</div>
+  <table class="entity-table">
+    <thead><tr><th style="width:30%">Column</th><th style="width:25%">Type</th><th style="width:20%">Constraint</th><th style="width:25%">Notes</th></tr></thead>
+    <tbody><tr><td><code>id</code></td><td>UUID</td><td>PK</td><td></td></tr><tr><td><code>user_id</code></td><td>UUID</td><td>FK users.id</td><td></td></tr><tr><td><code>subscription_id</code></td><td>UUID</td><td>FK subscriptions.id, NULLABLE</td><td></td></tr><tr><td><code>payment_method_id</code></td><td>UUID</td><td>FK payment_methods.id, NULLABLE</td><td></td></tr><tr><td><code>payment_type</code></td><td>ENUM</td><td>NOT NULL</td><td>one_time, subscription_renewal, manual</td></tr><tr><td><code>amount</code></td><td>BIGINT</td><td>NOT NULL</td><td>Smallest currency unit</td></tr><tr><td><code>currency</code></td><td>CHAR(3)</td><td>NOT NULL</td><td>ISO 4217</td></tr><tr><td><code>gateway_id</code></td><td>UUID</td><td>FK payment_gateways.id, NULLABLE</td><td></td></tr><tr><td><code>gateway_transaction_id</code></td><td>VARCHAR(255)</td><td>NULLABLE</td><td>From provider</td></tr><tr><td><code>status</code></td><td>ENUM</td><td>NOT NULL</td><td>pending, processing, completed, failed, refunded</td></tr><tr><td><code>error_details</code></td><td>JSONB</td><td>NULLABLE</td><td></td></tr><tr><td><code>metadata</code></td><td>JSONB</td><td>NULLABLE</td><td></td></tr><tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td></td></tr><tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td></td></tr></tbody>
+  </table>
+</div>
+
+<p><strong>Recommended Indexes</strong></p>
+<pre class="code">CREATE INDEX idx_transactions_user_id ON transactions(user_id, created_at DESC);
+CREATE INDEX idx_transactions_status ON transactions(status);
+CREATE INDEX idx_transactions_subscription_id ON transactions(subscription_id) WHERE subscription_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_transactions_gateway_tx ON transactions(gateway_id, gateway_transaction_id) WHERE gateway_transaction_id IS NOT NULL;</pre>
+
+<p>Other Payment tables follow same pattern: subscriptions, payment_methods, invoices, refunds, payment_gateways.</p>
+
+<h2>S2-S5 Universal Schemas [P3.S2-S5]</h2>
+<p>Notifications, message_templates, message_queue, message_logs, audit_logs, security_alerts, analytics_events, metrics, cohorts, reports — defined in master template with same structure.</p>
+
+<h2>Project-Specific Schemas [P3.S7+]</h2>
+<p>Add project-specific tables here using the same entity-box format. Each table must include: column name, type, constraint, notes — followed by recommended indexes block.</p>
+
+<h2>Index Strategy — Rules of Thumb</h2>
+<ul><li>Always index foreign keys</li><li>Always unique-index columns used for lookup (email, slug, token)</li><li>Add partial indexes for soft-delete columns: &lt;code&gt;WHERE deleted_at IS NULL&lt;/code&gt;</li><li>Add composite indexes for common WHERE + ORDER BY combinations</li><li>Index columns used in filters with high cardinality (status, type)</li><li>Avoid over-indexing — every index slows down INSERT/UPDATE</li><li>Use BTREE for equality/range, GIN for JSONB and full-text search</li><li>Re-evaluate after 30 days in production based on slow-query log</li></ul>
+
+
+<h1>Phase 4: API Endpoints</h1>
+<p class="note">REST API with versioned base URL /api/v1. All endpoints follow Standard API Response Format below.</p>
+
+<h2>Endpoint Tables</h2>
+<p>Each service has its own endpoint table. Format: METHOD | PATH | ROLE | FEATURE.</p>
+
+<table><colgroup><col style="width:12%"><col style="width:50%"><col style="width:18%"><col style="width:20%"></colgroup><thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Feature</th></tr></thead><tbody><tr><td>POST</td><td>/auth/register</td><td>PUBLIC</td><td>IDENT-REG-01</td></tr><tr><td>POST</td><td>/auth/login</td><td>PUBLIC</td><td>IDENT-LOG-01</td></tr><tr><td>POST</td><td>/auth/logout</td><td>USER</td><td>IDENT-LOG-08</td></tr><tr><td>GET</td><td>/users/me</td><td>USER</td><td>IDENT-PRF-01</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td></tr></tbody></table>
+
+<p>Add endpoints for project-specific services using the same format.</p>
+
+<h2>Standard API Response Format</h2>
+<p><strong>Success</strong></p>
+<pre class="code">{
+  "success": true,
+  "data": { },
+  "error": null,
+  "meta": {
+    "pagination": { "page": 1, "limit": 20, "total": 150, "total_pages": 8 },
+    "request_id": "uuid"
+  }
+}</pre>
+
+<p><strong>Error</strong></p>
+<pre class="code">{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Field is invalid",
+    "details": [{ "field": "email", "message": "Must be valid" }]
+  },
+  "meta": { "request_id": "uuid" }
+}</pre>
+
+<h3>HTTP Status Codes</h3>
+<table><colgroup><col style="width:12%"><col style="width:22%"><col style="width:66%"></colgroup><thead><tr><th>Code</th><th>Status</th><th>Use</th></tr></thead><tbody><tr><td>200</td><td>OK</td><td>GET, PATCH success</td></tr><tr><td>201</td><td>Created</td><td>POST resource created</td></tr><tr><td>204</td><td>No Content</td><td>DELETE success</td></tr><tr><td>400</td><td>Bad Request</td><td>Validation error</td></tr><tr><td>401</td><td>Unauthorized</td><td>Missing/invalid token</td></tr><tr><td>403</td><td>Forbidden</td><td>Insufficient role</td></tr><tr><td>404</td><td>Not Found</td><td>Resource missing</td></tr><tr><td>409</td><td>Conflict</td><td>Duplicate / state conflict</td></tr><tr><td>422</td><td>Unprocessable</td><td>Business rule violation</td></tr><tr><td>429</td><td>Too Many Requests</td><td>Rate limit</td></tr><tr><td>500</td><td>Internal Server Error</td><td>Unexpected</td></tr></tbody></table>
+
+<h3>Pagination</h3>
+<pre class="code">Query: ?page=1&amp;limit=20&amp;sort=created_at:desc
+Max limit: 100  ·  Default: 20  ·  Sort: field:asc | field:desc</pre>
+
+<h3>Error Code Convention</h3>
+<table><colgroup><col style="width:28%"><col style="width:12%"><col style="width:60%"></colgroup><thead><tr><th>Error Code</th><th>HTTP</th><th>Meaning</th></tr></thead><tbody><tr><td>VALIDATION_ERROR</td><td>400</td><td>Field-level validation</td></tr><tr><td>INVALID_CREDENTIALS</td><td>401</td><td>Wrong email/password</td></tr><tr><td>TOKEN_EXPIRED</td><td>401</td><td>JWT expired</td></tr><tr><td>PERMISSION_DENIED</td><td>403</td><td>Role lacks permission</td></tr><tr><td>NOT_FOUND</td><td>404</td><td>Resource missing</td></tr><tr><td>DUPLICATE_ENTRY</td><td>409</td><td>Unique constraint</td></tr><tr><td>BUSINESS_RULE_ERROR</td><td>422</td><td>Business logic</td></tr><tr><td>RATE_LIMIT_EXCEEDED</td><td>429</td><td>Too many requests</td></tr><tr><td>INTERNAL_ERROR</td><td>500</td><td>Server error</td></tr></tbody></table>
+
+
+<h1>Phase 5: Event-Driven Architecture</h1>
+
+<h2>Architecture Mode</h2>
+<ul><li>Monolith mode — NestJS @nestjs/event-emitter (in-process)</li><li>Microservices mode — Redis Pub/Sub (MVP) → Kafka (scale)</li><li>Same event names, same payload format in both modes</li></ul>
+
+<h2>Standard Event Payload</h2>
+<pre class="code">{
+  "event":       "{service}.{entity}.{action}",
+  "version":     "1.0",
+  "occurred_at": "ISO 8601 timestamp",
+  "request_id":  "uuid",
+  "producer":    "service-name",
+  "payload":     { ... domain-specific }
+}</pre>
+
+<h2>Universal Event Catalog</h2>
+<table><colgroup><col style="width:38%"><col style="width:32%"><col style="width:30%"></colgroup><thead><tr><th>Event</th><th>Trigger</th><th>Consumers</th></tr></thead><tbody><tr><td>identity.user.registered</td><td>User signup</td><td>NOTIFICATION, AUDIT, ANALYTICS</td></tr><tr><td>identity.user.login</td><td>Login success</td><td>AUDIT, ANALYTICS</td></tr><tr><td>identity.user.password_changed</td><td>Password change</td><td>NOTIFICATION, AUDIT</td></tr><tr><td>payment.transaction.completed</td><td>Charge success</td><td>NOTIFICATION, AUDIT, ANALYTICS</td></tr><tr><td>payment.transaction.failed</td><td>Charge failed</td><td>NOTIFICATION, AUDIT</td></tr><tr><td>payment.subscription.renewed</td><td>Auto-renew</td><td>NOTIFICATION, AUDIT</td></tr><tr><td>payment.refund.completed</td><td>Refund processed</td><td>NOTIFICATION, AUDIT</td></tr><tr><td>audit.alert.created</td><td>Security alert</td><td>NOTIFICATION (admin)</td></tr><tr><td>messages.delivery.failed</td><td>Max retries</td><td>AUDIT, NOTIFICATION</td></tr></tbody></table>
+
+<h2>Project Event Catalog [<span class="ph">{{PROJECT_NAME}}</span>]</h2>
+<p>Add project-specific events here using the same convention.</p>
+
+<h2>Consumer Rules</h2>
+<ul><li>Listeners must be idempotent</li><li>All processed events logged to audit_logs</li><li>Failed handlers retried with exponential backoff</li><li>Dead-letter queue (DLQ) after 3 retries</li><li>Event order not guaranteed</li><li>Event payload must never contain raw passwords or tokens</li></ul>
+
+
+<h1>Phase 6: Technology Stack</h1>
+
+<h2>Frontend</h2>
+<table><colgroup><col style="width:22%"><col style="width:28%"><col style="width:15%"><col style="width:35%"></colgroup><thead><tr><th>Layer</th><th>Technology</th><th>Version</th><th>Purpose</th></tr></thead><tbody><tr><td>Web Framework</td><td>Next.js</td><td>15+</td><td>SSR + SSG + App Router</td></tr><tr><td>Mobile</td><td>React Native + Expo</td><td>Latest</td><td>iOS + Android</td></tr><tr><td>Language</td><td>TypeScript</td><td>5+</td><td>Type safety</td></tr><tr><td>UI Library</td><td>Tailwind CSS</td><td>3+</td><td>Utility CSS</td></tr><tr><td>Components</td><td>shadcn/ui</td><td>Latest</td><td>Accessible primitives</td></tr><tr><td>State</td><td>Zustand</td><td>4+</td><td>Client state</td></tr><tr><td>Server State</td><td>TanStack Query</td><td>5+</td><td>Cache + fetching</td></tr><tr><td>Forms</td><td>React Hook Form + Zod</td><td>Latest</td><td>Forms + validation</td></tr><tr><td>HTTP</td><td>Axios</td><td>1+</td><td>API client</td></tr><tr><td>i18n</td><td><span class="ph">{{next-i18next OR i18n-js}}</span></td><td>Latest</td><td><span class="ph">{{LANGUAGES}}</span></td></tr><tr><td>Icons</td><td>Lucide / Expo Icons</td><td>Latest</td><td></td></tr></tbody></table>
+
+<h2>Backend</h2>
+<table><colgroup><col style="width:22%"><col style="width:28%"><col style="width:15%"><col style="width:35%"></colgroup><thead><tr><th>Layer</th><th>Technology</th><th>Version</th><th>Purpose</th></tr></thead><tbody><tr><td>Framework</td><td>NestJS</td><td>10+</td><td>Modular monolith</td></tr><tr><td>Language</td><td>TypeScript</td><td>5+</td><td></td></tr><tr><td>Runtime</td><td>Node.js</td><td>20+ LTS</td><td></td></tr><tr><td>API</td><td>REST</td><td>-</td><td>JSON envelope</td></tr><tr><td>ORM</td><td>Prisma</td><td>5+</td><td>DB + migrations</td></tr><tr><td>Auth</td><td>Passport.js + JWT</td><td>Latest</td><td></td></tr><tr><td>Password</td><td>bcrypt</td><td>5+</td><td>Cost 12</td></tr><tr><td>Events</td><td>@nestjs/event-emitter</td><td>Latest</td><td>Internal bus</td></tr><tr><td>Queue</td><td>BullMQ</td><td>5+</td><td>Background jobs</td></tr><tr><td>Logger</td><td>Pino</td><td>Latest</td><td>Structured</td></tr><tr><td>Docs</td><td>@nestjs/swagger</td><td>Latest</td><td>OpenAPI</td></tr></tbody></table>
+
+<h2>Database &amp; Storage</h2>
+<table><colgroup><col style="width:22%"><col style="width:28%"><col style="width:15%"><col style="width:35%"></colgroup><thead><tr><th>Layer</th><th>Technology</th><th>Version</th><th>Purpose</th></tr></thead><tbody><tr><td>Primary DB</td><td>PostgreSQL</td><td>16+</td><td>Relational</td></tr><tr><td>Cache</td><td>Redis</td><td>7+</td><td>Sessions, rate limit, queues</td></tr><tr><td>Search</td><td>PostgreSQL Full-Text → Elasticsearch</td><td>-</td><td>MVP → scale</td></tr><tr><td>File Storage</td><td><span class="ph">{{AWS S3 / Backblaze B2 / Supabase Storage}}</span></td><td>Latest</td><td></td></tr><tr><td>CDN</td><td><span class="ph">{{CloudFront / Bunny.net}}</span></td><td>Latest</td><td></td></tr></tbody></table>
+
+<h2>Integrations</h2>
+<table><colgroup><col style="width:25%"><col style="width:30%"><col style="width:45%"></colgroup><thead><tr><th>Category</th><th>Provider</th><th>Purpose</th></tr></thead><tbody><tr><td>Email</td><td><span class="ph">{{SendGrid / Mailgun / SES}}</span></td><td>Transactional email</td></tr><tr><td>SMS</td><td><span class="ph">{{Eskiz.uz / Twilio}}</span></td><td>OTP and alerts</td></tr><tr><td>Push</td><td>Firebase FCM</td><td>Mobile + web push</td></tr><tr><td>Payment</td><td><span class="ph">{{Stripe / Payme / Uzum / Click}}</span></td><td>Payments</td></tr><tr><td>Maps</td><td><span class="ph">{{Yandex.Maps / Google Maps}}</span></td><td>Geocoding (if needed)</td></tr><tr><td>OAuth</td><td>Google OAuth 2.0</td><td>Social login</td></tr></tbody></table>
+
+<h2>Infrastructure</h2>
+<table><colgroup><col style="width:25%"><col style="width:30%"><col style="width:45%"></colgroup><thead><tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr></thead><tbody><tr><td>Containers</td><td>Docker</td><td>Service containers</td></tr><tr><td>Orchestration</td><td>Docker Compose</td><td>Local + staging</td></tr><tr><td>CI/CD</td><td>GitHub Actions</td><td>Build, test, deploy</td></tr><tr><td>Hosting</td><td><span class="ph">{{Hetzner / DO / Railway / Render / AWS}}</span></td><td>App server</td></tr><tr><td>Reverse Proxy</td><td>Nginx</td><td>SSL, routing, rate limit</td></tr><tr><td>SSL</td><td>Let's Encrypt</td><td>HTTPS</td></tr><tr><td>Process</td><td>PM2</td><td>Node supervision</td></tr></tbody></table>
+
+<h2>Testing &amp; Monitoring</h2>
+<table><colgroup><col style="width:25%"><col style="width:30%"><col style="width:45%"></colgroup><thead><tr><th>Type</th><th>Tool</th><th>Purpose</th></tr></thead><tbody><tr><td>Unit (backend)</td><td>Jest</td><td>Service tests</td></tr><tr><td>Integration</td><td>Supertest + Jest</td><td>API tests</td></tr><tr><td>E2E (web)</td><td>Playwright</td><td>Browser flows</td></tr><tr><td>E2E (mobile)</td><td>Detox / Maestro</td><td>RN automation</td></tr><tr><td>Errors</td><td>Sentry</td><td>Runtime errors</td></tr><tr><td>Uptime</td><td>UptimeRobot / Betterstack</td><td>Health</td></tr><tr><td>Metrics</td><td>Prometheus + Grafana</td><td>Metrics</td></tr><tr><td>Logs</td><td>Loki + Grafana</td><td>Log aggregation</td></tr></tbody></table>
+
+
+<h1>Phase 7: UI / UX Foundation</h1>
+<p class="note">Foundation only. Detailed screen list is generated per project from modules in Phase 2.</p>
+
+<h2>Role × Platform Access</h2>
+<table><colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup><thead><tr><th>Role</th><th>Mobile</th><th>Web Public</th><th>Web Admin</th></tr></thead><tbody><tr><td>USER</td><td><span class="ph">{{yes/no}}</span></td><td><span class="ph">{{yes/no}}</span></td><td>No</td></tr><tr><td>ADMIN</td><td>No</td><td>No</td><td>Yes</td></tr><tr><td>SUPER_ADMIN</td><td>No</td><td>No</td><td>Yes</td></tr><tr><td><span class="ph">{{CUSTOM_ROLE}}</span></td><td><span class="ph">{{?}}</span></td><td><span class="ph">{{?}}</span></td><td><span class="ph">{{?}}</span></td></tr></tbody></table>
+
+<h2>UI/UX Design Principles</h2>
+<table><colgroup><col style="width:28%"><col style="width:72%"></colgroup><thead><tr><th>Principle</th><th>Rule</th></tr></thead><tbody><tr><td>Design System</td><td>Tailwind + shadcn/ui (web), NativeWind (mobile)</td></tr><tr><td>Color Scheme</td><td><span class="ph">{{PRIMARY_COLOR + ACCENT_COLOR + neutral grays}}</span></td></tr><tr><td>Typography</td><td><span class="ph">{{FONT_FAMILY}}</span></td></tr><tr><td>Spacing</td><td>8px base grid</td></tr><tr><td>Responsive</td><td>Mobile-first; sm 640 / md 768 / lg 1024 / xl 1280</td></tr><tr><td>Dark Mode</td><td><span class="ph">{{yes/no}}</span></td></tr><tr><td>Loading States</td><td>Skeleton loaders on async data</td></tr><tr><td>Empty States</td><td>Illustrated empty state with CTA</td></tr><tr><td>Error States</td><td>Inline field errors + toast</td></tr><tr><td>Accessibility</td><td>WCAG 2.1 AA</td></tr><tr><td>i18n</td><td><span class="ph">{{LANGUAGES — instant toggle}}</span></td></tr></tbody></table>
+
+<h2>Interaction Patterns</h2>
+<table><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>Pattern</th><th>Implementation</th></tr></thead><tbody><tr><td>Navigation</td><td>Bottom tabs (mobile) / Sidebar (admin)</td></tr><tr><td>Auth Guard</td><td>Redirect /auth/login if no session</td></tr><tr><td>Role Guard</td><td>Redirect 403 if insufficient role</td></tr><tr><td>Token Refresh</td><td>Silent refresh before expiry</td></tr><tr><td>Optimistic UI</td><td>Read/delete actions</td></tr><tr><td>Pagination</td><td>page + limit + sort</td></tr><tr><td>Search</td><td>Debounced 300ms</td></tr><tr><td>Confirmation</td><td>Modal for destructive actions</td></tr><tr><td>Toast</td><td>Auto-dismiss 4s</td></tr></tbody></table>
+
+<h2>Branding Placeholders</h2>
+<table><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>Token</th><th>Value</th></tr></thead><tbody><tr><td>{{APP_NAME}}</td><td><span class="ph">{{PROJECT_NAME}}</span></td></tr><tr><td>{{TAGLINE}}</td><td><span class="ph">{{TAGLINE}}</span></td></tr><tr><td>{{PRIMARY_COLOR}}</td><td><span class="ph">{{#HEX}}</span></td></tr><tr><td>{{ACCENT_COLOR}}</td><td><span class="ph">{{#HEX}}</span></td></tr><tr><td>{{FONT_FAMILY}}</td><td><span class="ph">{{FONT}}</span></td></tr><tr><td>{{LOGO_URL}}</td><td><span class="ph">{{URL}}</span></td></tr><tr><td>{{SUPPORT_EMAIL}}</td><td><span class="ph">{{EMAIL}}</span></td></tr><tr><td>{{DOMAIN}}</td><td><span class="ph">{{DOMAIN}}</span></td></tr></tbody></table>
+
+<h2>Page Inventory [P7.PI]</h2>
+<p class="note"><strong>Generate this section LAST</strong> — pages depend on Phase 1 (overview), Phase 2 (modules), Phase 3 (schemas), Phase 4 (endpoints), Phase 6 (stack), and Phase 7 role × platform access. Page IDs become the universal join key for design artifacts (Figma frame names, screenshot filenames, Claude Design HTML files). Format: <code>&lt;feature-slug&gt;-&lt;screen-slug&gt;</code> in kebab-case, stable for the project lifetime. Auto-skip platform-irrelevant rows: web-only projects omit mobile rows, mobile-only projects omit web rows.</p>
+<table><colgroup><col style="width:18%"><col style="width:18%"><col style="width:12%"><col style="width:12%"><col style="width:40%"></colgroup><thead><tr><th>Page ID</th><th>Page Name</th><th>Platform</th><th>Auth</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>auth-login</code></td><td>Login</td><td>web</td><td>public</td><td>Email + password sign-in</td></tr>
+<tr><td><code>auth-signup</code></td><td>Sign up</td><td>web</td><td>public</td><td>New account creation</td></tr>
+<tr><td><code>auth-forgot-password</code></td><td>Forgot password</td><td>web</td><td>public</td><td>Reset link request</td></tr>
+<tr><td><code>dashboard-home</code></td><td>Dashboard</td><td>web</td><td>private</td><td>Main authenticated landing</td></tr>
+<tr><td><code>settings-profile</code></td><td>Profile</td><td>web</td><td>private</td><td>View / edit own profile</td></tr>
+<tr><td><code>mobile-onboarding</code></td><td>Onboarding</td><td>mobile</td><td>public</td><td>Three-step welcome carousel</td></tr>
+<tr><td><span class="ph">{{PAGE_ID}}</span></td><td><span class="ph">{{PAGE_NAME}}</span></td><td><span class="ph">{{web|mobile|both}}</span></td><td><span class="ph">{{public|private}}</span></td><td><span class="ph">{{ONE_SENTENCE_DESCRIPTION}}</span></td></tr>
+</tbody></table>
+
+<p class="note"><strong>Page ID rules:</strong> stable for the project lifetime. Renames must go through the engine's <code>delta scope</code> flow. The page ID drives the Figma frame name, the screenshot filename (<code>&lt;page-id&gt;.png</code>), the Claude Design export (<code>&lt;page-id&gt;.html</code>), and the generated component file. Builders never invent pages outside this inventory.</p>
+
+
+<h1>Phase 8: Development Approach &amp;amp; Steps</h1>
+
+<h2>Development Approach</h2>
+<ul><li>Architecture: Monolith-first, modular (microservices-ready)</li><li>Code style: Clean Architecture + DDD-lite + DRY</li><li>Pattern: NestJS modular monolith — each service is a NestJS module</li><li>Migration path: Modules can be extracted into microservices later</li><li>Code quality: ESLint + Prettier + Husky pre-commit</li><li>Code review: All PRs require 1 approval before merge</li></ul>
+
+<h2>Environments</h2>
+<table><colgroup><col style="width:20%"><col style="width:40%"><col style="width:40%"></colgroup><thead><tr><th>Environment</th><th>URL</th><th>Purpose</th></tr></thead><tbody><tr><td>Local</td><td>localhost:3000</td><td>Developer machine</td></tr><tr><td>Development</td><td>dev.<span class="ph">{{DOMAIN}}</span></td><td>Internal dev</td></tr><tr><td>Staging</td><td>staging.<span class="ph">{{DOMAIN}}</span></td><td>QA + client preview</td></tr><tr><td>Production</td><td><span class="ph">{{DOMAIN}}</span></td><td>Live</td></tr></tbody></table>
+
+<h2>Git Workflow</h2>
+<table><colgroup><col style="width:22%"><col style="width:53%"><col style="width:25%"></colgroup><thead><tr><th>Branch</th><th>Purpose</th><th>Merges Into</th></tr></thead><tbody><tr><td>main</td><td>Production-ready</td><td>—</td></tr><tr><td>develop</td><td>Integration</td><td>main</td></tr><tr><td>feature/*</td><td>New features</td><td>develop</td></tr><tr><td>fix/*</td><td>Bug fixes</td><td>develop</td></tr><tr><td>hotfix/*</td><td>Critical prod fixes</td><td>main + develop</td></tr><tr><td>release/*</td><td>Release prep</td><td>main + develop</td></tr></tbody></table>
+
+<p><strong>Commit Format</strong></p>
+<pre class="code">Format:  type(scope): subject
+Types:   feat, fix, refactor, docs, test, chore, style
+Example: feat(identity): add 2FA backup codes</pre>
+
+<h2>Development Steps</h2>
+
+<h3>STEP 1 — Project Setup &amp;amp; Infrastructure</h3>
+<table><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>Task</th><th>Action</th></tr></thead><tbody><tr><td>Create GitHub repos</td><td><span class="ph">{{PROJECT}}</span>-backend, <span class="ph">{{PROJECT}}</span>-web, <span class="ph">{{PROJECT}}</span>-mobile</td></tr><tr><td>Initialize Git</td><td>.gitignore + README + LICENSE</td></tr><tr><td>Branch protection</td><td>main, develop require PR review</td></tr><tr><td>Docker setup</td><td>docker-compose.yml — postgres, redis, app, nginx</td></tr><tr><td>Environment files</td><td>.env.local / .env.staging / .env.production</td></tr><tr><td>VPS / cloud</td><td>Docker + Nginx + ufw firewall</td></tr><tr><td>Domain + SSL</td><td>Cloudflare DNS + Let's Encrypt</td></tr></tbody></table>
+
+<h3>STEP 2 — Backend Setup (NestJS)</h3>
+<pre class="code">nvm install 20
+npm i -g @nestjs/cli
+nest new &lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;-backend
+npm i @nestjs/config @nestjs/jwt @nestjs/passport
+npm i @nestjs/event-emitter @nestjs/schedule
+npm i -D prisma &amp;&amp; npm i @prisma/client
+npm i class-validator class-transformer zod
+npm i passport passport-jwt bcrypt
+npm i nestjs-pino pino-http
+npm i @nestjs/swagger</pre>
+
+<h3>STEP 3 — Database Setup</h3>
+<ul><li>Define all tables in &lt;code&gt;prisma/schema.prisma&lt;/code&gt;</li><li>Generate client: &lt;code&gt;npx prisma generate&lt;/code&gt;</li><li>First migration: &lt;code&gt;npx prisma migrate dev --name init&lt;/code&gt;</li><li>Seed roles, permissions, default categories</li><li>Configure connection pooling (pgbouncer)</li><li>Daily backup schedule (pg_dump → S3)</li></ul>
+
+<h3>STEP 4 — Module Implementation Order</h3>
+<p>Dependencies-driven order. Adjust per project.</p>
+<table><colgroup><col style="width:10%"><col style="width:55%"><col style="width:35%"></colgroup><thead><tr><th>Order</th><th>Module</th><th>Depends On</th></tr></thead><tbody><tr><td>1</td><td>Identity → Registration + Login</td><td>—</td></tr><tr><td>2</td><td>Identity → Verification + Password</td><td>Registration</td></tr><tr><td>3</td><td>Identity → Profile + Sessions + Devices</td><td>Login</td></tr><tr><td>4</td><td>Identity → RBAC</td><td>Profile</td></tr><tr><td>5</td><td>Notification + Preferences</td><td>Identity</td></tr><tr><td>6</td><td>Messages → Templates + Delivery</td><td>Notification</td></tr><tr><td>7</td><td>Audit → Logging</td><td>Identity</td></tr><tr><td>8</td><td>Payment → Gateways + Methods</td><td>Identity</td></tr><tr><td>9</td><td>Payment → Transactions + Subscriptions</td><td>Gateways</td></tr><tr><td>10</td><td>Analytics → Events + Metrics</td><td>All previous</td></tr><tr><td>11+</td><td><span class="ph">{{PROJECT_MODULES}}</span></td><td><span class="ph">{{?}}</span></td></tr></tbody></table>
+
+<h3>STEP 5 — Frontend Web Setup</h3>
+<pre class="code">npx create-next-app@latest &lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;-web --typescript --tailwind --app
+npx shadcn-ui@latest init
+npm i zustand @tanstack/react-query
+npm i react-hook-form @hookform/resolvers zod
+npm i axios lucide-react sonner</pre>
+
+<h3>STEP 6 — Frontend Mobile Setup</h3>
+<pre class="code">npx create-expo-app &lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;-mobile --template
+npm i nativewind
+npm i @react-navigation/native @react-navigation/native-stack
+npm i zustand @tanstack/react-query
+npx expo install expo-notifications</pre>
+
+<h3>STEP 7 — Integration &amp;amp; Wiring</h3>
+<ul><li>API URL per environment</li><li>Auth flow: login → tokens → silent refresh</li><li>Role guard: 403 redirect</li><li>Push notifications: FCM token registration</li><li>Payment webhooks: signature verification</li><li>Email/SMS templates wired</li></ul>
+
+<h3>STEP 8 — Testing</h3>
+<ul><li>Unit (backend) — Jest, 70% service coverage</li><li>Integration — Supertest, all endpoints</li><li>E2E web — Playwright, critical flows</li><li>E2E mobile — Detox / Maestro</li><li>Load — k6</li><li>Security — npm audit + Snyk</li></ul>
+
+<h3>STEP 9 — Deployment</h3>
+<ul><li>Push to main via PR → GitHub Actions runs CI</li><li>Build Docker images, push to registry</li><li>Deploy via SSH or platform API</li><li>&lt;code&gt;npx prisma migrate deploy&lt;/code&gt; pre-deploy</li><li>Smoke tests post-deploy</li><li>Monitor Sentry first 24h</li></ul>
+
+<h3>STEP 10 — Post-Launch Operations</h3>
+<ul><li>Sentry — real-time error monitoring</li><li>UptimeRobot — endpoint health every 1 min</li><li>Grafana — daily metrics review</li><li>Daily database backup to S3</li><li>Weekly security alerts review</li><li>Dependabot for dependency updates</li></ul>
+
+<h2>Acceptance Criteria</h2>
+<ul><li>All Phase 2 features implemented and tested</li><li>Test coverage &gt;= 70% backend, &gt;= 50% frontend</li><li>All endpoints follow Standard API Response Format</li><li>All UI translated to specified languages</li><li>No critical/high-severity bugs at launch</li><li>Production passes smoke tests</li><li>Source code transferred to client repository</li></ul>
+
+
+<h1>Phase 9: Folder Structures &amp;amp; CI/CD</h1>
+
+<h2>9.1 Backend Folder Structure (NestJS)</h2>
+<pre class="code">&lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;-backend/
+├── src/
+│   ├── modules/
+│   │   ├── identity/        # S1
+│   │   ├── notification/    # S2
+│   │   ├── messages/        # S3
+│   │   ├── audit/           # S4
+│   │   ├── analytics/       # S5
+│   │   ├── payment/         # S6
+│   │   └── &lt;span class="ph"&gt;{{CUSTOM_MODULES}}&lt;/span&gt;/
+│   ├── common/
+│   │   ├── decorators/
+│   │   ├── filters/         # exception filters
+│   │   ├── guards/          # auth + role guards
+│   │   ├── interceptors/    # response interceptor
+│   │   ├── middlewares/
+│   │   └── pipes/           # validation pipes
+│   ├── config/              # @nestjs/config schemas
+│   ├── database/            # prisma client wrapper
+│   ├── events/              # event-emitter setup
+│   ├── jobs/                # BullMQ queue processors
+│   ├── main.ts
+│   └── app.module.ts
+├── prisma/
+│   ├── schema.prisma
+│   ├── migrations/
+│   └── seed.ts
+├── test/                    # E2E tests
+├── .env.example
+├── docker-compose.yml
+├── Dockerfile
+├── nest-cli.json
+├── tsconfig.json
+└── package.json</pre>
+
+<h2>9.2 Frontend Web Folder Structure (Next.js 15 App Router)</h2>
+<pre class="code">&lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;-web/
+├── src/
+│   ├── app/
+│   │   ├── (public)/                # Public marketing pages
+│   │   │   ├── page.tsx
+│   │   │   └── about/
+│   │   ├── (auth)/                  # Auth flows
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   │   ├── verify/
+│   │   │   └── forgot-password/
+│   │   ├── (dashboard)/             # Authenticated user area
+│   │   │   ├── layout.tsx
+│   │   │   ├── profile/
+│   │   │   ├── notifications/
+│   │   │   ├── billing/
+│   │   │   └── &lt;span class="ph"&gt;{{USER_FEATURES}}&lt;/span&gt;/
+│   │   ├── (admin)/                 # Admin panel
+│   │   │   ├── layout.tsx
+│   │   │   ├── users/
+│   │   │   ├── audit/
+│   │   │   ├── analytics/
+│   │   │   └── payments/
+│   │   ├── api/                     # API route handlers (proxy if needed)
+│   │   ├── layout.tsx
+│   │   ├── globals.css
+│   │   └── not-found.tsx
+│   ├── components/
+│   │   ├── ui/                      # shadcn/ui primitives
+│   │   ├── forms/                   # form components
+│   │   ├── tables/                  # data tables
+│   │   ├── modals/                  # dialogs and sheets
+│   │   ├── layouts/                 # layout wrappers
+│   │   └── shared/                  # reusable atoms/molecules
+│   ├── lib/
+│   │   ├── api/
+│   │   │   ├── client.ts            # axios instance + interceptors
+│   │   │   └── endpoints/           # one file per service
+│   │   ├── hooks/                   # custom React hooks
+│   │   ├── utils/                   # helpers
+│   │   └── validations/             # zod schemas
+│   ├── stores/                      # Zustand stores
+│   ├── i18n/
+│   │   ├── locales/
+│   │   │   ├── en.json
+│   │   │   ├── ru.json
+│   │   │   └── &lt;span class="ph"&gt;{{LOCALE}}&lt;/span&gt;.json
+│   │   └── config.ts
+│   ├── types/                       # TypeScript types
+│   ├── styles/                      # additional CSS
+│   └── middleware.ts                # Next.js middleware (auth, locale)
+├── public/                          # static assets
+├── .env.local.example
+├── next.config.js
+├── tailwind.config.ts
+├── tsconfig.json
+├── components.json                  # shadcn config
+└── package.json</pre>
+
+<h2>9.3 Frontend Mobile Folder Structure (Expo + React Native)</h2>
+<pre class="code">&lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;-mobile/
+├── src/
+│   ├── app/                         # Expo Router (file-based)
+│   │   ├── (auth)/
+│   │   ├── (tabs)/
+│   │   │   ├── _layout.tsx
+│   │   │   ├── home.tsx
+│   │   │   ├── search.tsx
+│   │   │   └── profile.tsx
+│   │   ├── _layout.tsx
+│   │   └── +not-found.tsx
+│   ├── components/                  # reusable RN components
+│   ├── lib/
+│   │   ├── api/
+│   │   ├── hooks/
+│   │   └── utils/
+│   ├── stores/                      # Zustand
+│   ├── i18n/
+│   ├── types/
+│   └── theme/                       # colors, typography
+├── assets/                          # images, fonts, icons
+├── app.json                         # Expo config
+├── eas.json                         # EAS build config
+├── babel.config.js
+├── tsconfig.json
+└── package.json</pre>
+
+<h2>9.4 Infrastructure Folder Structure</h2>
+<pre class="code">&lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;-infrastructure/
+├── docker/
+│   ├── backend.Dockerfile
+│   ├── web.Dockerfile
+│   ├── nginx.Dockerfile
+│   └── postgres.Dockerfile
+├── docker-compose/
+│   ├── docker-compose.local.yml
+│   ├── docker-compose.staging.yml
+│   └── docker-compose.production.yml
+├── nginx/
+│   ├── nginx.conf                   # main config
+│   ├── conf.d/
+│   │   ├── default.conf
+│   │   ├── api.conf                 # api.&lt;span class="ph"&gt;{{DOMAIN}}&lt;/span&gt;
+│   │   ├── web.conf                 # &lt;span class="ph"&gt;{{DOMAIN}}&lt;/span&gt;
+│   │   ├── admin.conf               # admin.&lt;span class="ph"&gt;{{DOMAIN}}&lt;/span&gt;
+│   │   └── ssl.conf                 # SSL/TLS settings
+│   └── snippets/
+│       ├── rate-limit.conf
+│       ├── security-headers.conf
+│       └── gzip.conf
+├── certbot/
+│   └── renew.sh
+├── postgres/
+│   ├── init.sql
+│   └── backup.sh
+├── redis/
+│   └── redis.conf
+├── monitoring/
+│   ├── prometheus/
+│   │   └── prometheus.yml
+│   ├── grafana/
+│   │   └── dashboards/
+│   └── loki/
+│       └── loki.yml
+├── scripts/
+│   ├── deploy.sh
+│   ├── rollback.sh
+│   ├── healthcheck.sh
+│   └── migrate.sh
+├── .env.example
+└── README.md</pre>
+
+<h2>9.5 GitHub Actions — CI/CD Files</h2>
+
+<h3>.github/workflows/ci.yml</h3>
+<pre class="code">name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+
+  type-check:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - run: npm run type-check
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: type-check
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        ports: ['5432:5432']
+        options: &gt;-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5432/test_db
+      - run: npm run test:unit -- --coverage
+      - uses: codecov/codecov-action@v4
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npm run test:e2e
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [unit-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - run: npm run build
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm audit --audit-level=high
+      - uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}</pre>
+
+<h3>.github/workflows/cd.yml</h3>
+<pre class="code">name: CD
+
+on:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy target'
+        required: true
+        type: choice
+        options: [staging, production]
+
+jobs:
+  deploy-staging:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/backend.Dockerfile
+          push: true
+          tags: ${{ secrets.REGISTRY_URL }}/&lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;-backend:staging-${{ github.sha }}
+
+      - name: Deploy to staging via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /opt/&lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;
+            docker compose pull
+            npx prisma migrate deploy
+            docker compose up -d
+            ./scripts/healthcheck.sh
+
+      - name: Smoke tests
+        run: ./scripts/smoke-tests.sh ${{ secrets.STAGING_URL }}
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://&lt;span class="ph"&gt;{{DOMAIN}}&lt;/span&gt;
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Manual approval gate
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ${{ secrets.APPROVERS }}
+
+      - name: Build and push images
+        run: |
+          docker build -f docker/backend.Dockerfile -t backend:${{ github.sha }} .
+          docker push ${{ secrets.REGISTRY_URL }}/&lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;-backend:${{ github.sha }}
+
+      - name: Deploy to production
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /opt/&lt;span class="ph"&gt;{{PROJECT}}&lt;/span&gt;
+            docker compose pull
+            npx prisma migrate deploy
+            docker compose up -d --no-deps backend web
+            ./scripts/healthcheck.sh
+
+      - name: Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        with:
+          environment: production
+          version: ${{ github.sha }}
+
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}</pre>
+
+<h2>9.6 CI/CD Rules &amp;amp; Conventions</h2>
+<ul><li>Every push to &lt;code&gt;develop&lt;/code&gt; or &lt;code&gt;main&lt;/code&gt; triggers CI</li><li>PRs from &lt;code&gt;feature/*&lt;/code&gt; or &lt;code&gt;fix/*&lt;/code&gt; must pass all CI before merge</li><li>Lint, type-check, unit tests run on every push</li><li>E2E tests run only on PR (faster main loop)</li><li>Code coverage must not drop below 70% (backend) / 50% (frontend)</li><li>Security scan (npm audit + Snyk) runs on every push, blocks on high-severity</li><li>Merge to &lt;code&gt;develop&lt;/code&gt; auto-deploys to staging</li><li>Merge to &lt;code&gt;main&lt;/code&gt; requires manual approval before production deploy</li><li>Database migrations run pre-deploy (&lt;code&gt;prisma migrate deploy&lt;/code&gt;)</li><li>Rollback script available — &lt;code&gt;./scripts/rollback.sh&lt;/code&gt;</li><li>Sentry release tagged on every production deploy</li><li>Slack notification on production deploy success/failure</li><li>Secrets stored in GitHub Secrets, never committed to repo</li><li>Container images tagged with git SHA for traceability</li><li>Smoke tests run after every deploy (health endpoints + critical paths)</li></ul>
+
+<h2>9.7 Required GitHub Secrets</h2>
+<table><colgroup><col style="width:35%"><col style="width:65%"></colgroup><thead><tr><th>Secret</th><th>Purpose</th></tr></thead><tbody><tr><td>REGISTRY_URL</td><td>Container registry URL</td></tr><tr><td>REGISTRY_USER / REGISTRY_TOKEN</td><td>Registry authentication</td></tr><tr><td>STAGING_HOST / PROD_HOST</td><td>SSH target hosts</td></tr><tr><td>SSH_USER / SSH_KEY</td><td>SSH credentials</td></tr><tr><td>APPROVERS</td><td>Production deploy approvers (GitHub usernames)</td></tr><tr><td>SENTRY_AUTH_TOKEN</td><td>Sentry release tagging</td></tr><tr><td>SLACK_WEBHOOK</td><td>Slack notification URL</td></tr><tr><td>SNYK_TOKEN</td><td>Snyk security scanning</td></tr><tr><td>DATABASE_URL</td><td>Per-environment connection string</td></tr></tbody></table>
+
+
+<h1>Phase 10: Extended Modules &amp;amp; Operational Specs</h1>
+<p class="note">Universal patterns. Adjust per project. These cover operational maturity expected of a production deployment.</p>
+
+<h2>10.1 Provider Payouts &amp;amp; Settlement Pattern (if marketplace)</h2>
+<p>Add only if project is a marketplace with provider revenue split.</p>
+<ul><li>Define payment flow: cash-on-location vs digital-direct vs escrow</li><li>Define payout schedule (e.g. weekly automatic)</li><li>Define minimum payout threshold</li><li>Define payout method (bank transfer / gateway routed)</li><li>Add payout_accounts and payouts tables</li><li>Log all payouts to AUDIT</li></ul>
+
+<h2>10.2 Disputes &amp;amp; Resolution Pattern</h2>
+<ul><li>Disputes raised within fixed window (e.g. 7 days)</li><li>Counter-party response window (e.g. 48 hours)</li><li>Escalation to admin if unresolved</li><li>Outcomes: refund full / partial / none / warning / suspension</li><li>All messages stored for audit</li><li>Add disputes and dispute_messages tables</li></ul>
+
+<h2>10.3 Favorites Pattern (if discovery-driven)</h2>
+<ul><li>User can save entities (providers, products, articles)</li><li>Cached offline (mobile)</li><li>Used as input to recommendation engine</li></ul>
+
+<h2>10.4 Recommendations (Phase 2)</h2>
+<ul><li>Phase 1: rule-based (popular near you, recent categories)</li><li>Phase 2: collaborative filtering on user history</li><li>Daily scheduled refresh</li><li>Cold-start fallback for new users</li><li>Opt-out flag respected</li></ul>
+
+<h2>10.5 Verification Badge Display Rules</h2>
+<table><colgroup><col style="width:25%"><col style="width:40%"><col style="width:35%"></colgroup><thead><tr><th>Badge</th><th>Earned When</th><th>Display</th></tr></thead><tbody><tr><td>ID Verified</td><td>Identity document approved</td><td>Blue check</td></tr><tr><td>License Verified</td><td>Professional license approved</td><td>Green badge</td></tr><tr><td>Top Rated</td><td>Avg &gt;= 4.5 with &gt;= 50 transactions</td><td>Star badge</td></tr><tr><td>Trusted</td><td>All verifications + Top Rated</td><td>Premium ribbon</td></tr><tr><td>New</td><td>Active &lt; 30 days</td><td>Yellow new tag</td></tr></tbody></table>
+
+<h2>10.6 Mobile-Specific Requirements</h2>
+<h3>Permissions</h3>
+<table><colgroup><col style="width:25%"><col style="width:30%"><col style="width:45%"></colgroup><thead><tr><th>Permission</th><th>When</th><th>Purpose</th></tr></thead><tbody><tr><td>Location</td><td>User opens map/search</td><td>Nearby content</td></tr><tr><td>Notifications</td><td>After signup</td><td>Push alerts</td></tr><tr><td>Camera</td><td>Photo upload</td><td>Profile / review photos</td></tr><tr><td>Photo Library</td><td>Upload</td><td>Select from gallery</td></tr><tr><td>Contacts</td><td>Optional</td><td>Quick invite</td></tr><tr><td>Calendar</td><td>Optional (Phase 2)</td><td>Sync events</td></tr></tbody></table>
+
+<h3>Authentication</h3>
+<ul><li>Biometric login: Face ID / Touch ID / Fingerprint (opt-in)</li><li>PIN fallback when biometric unavailable</li><li>Tokens in iOS Keychain / Android Keystore — never localStorage</li></ul>
+
+<h3>Push Notifications</h3>
+<p>Define title + body templates per notification type. Localize per language.</p>
+
+<h3>Deep Linking</h3>
+<ul><li>URL scheme: &lt;code&gt;${ph('SCHEME')}://&lt;/code&gt; for app, &lt;code&gt;https://${ph('DOMAIN')}&lt;/code&gt; for universal links</li><li>Booking/order confirmations contain deep links</li><li>Fallback: open mobile web with app install banner if app not installed</li></ul>
+
+<h3>Offline Support</h3>
+<ul><li>Cache user's own data (bookings, favorites, last-viewed)</li><li>Queue uploads (review photos) for retry on reconnect</li><li>Show offline state UI with retry CTA</li></ul>
+
+<h3>Low-Data Mode</h3>
+<ul><li>WebP images with JPEG fallback, max 200KB</li><li>Thumbnail-first loading with full-size on tap</li><li>Lazy-load lists and infinite scroll</li><li>Optional Data Saver toggle in settings</li></ul>
+
+<h2>10.7 Non-Functional Requirements</h2>
+<h3>Performance Targets</h3>
+<table><colgroup><col style="width:45%"><col style="width:55%"></colgroup><thead><tr><th>Metric</th><th>Target</th></tr></thead><tbody><tr><td>API response P50</td><td>&lt; 100 ms</td></tr><tr><td>API response P95</td><td>&lt; 300 ms</td></tr><tr><td>API response P99</td><td>&lt; 800 ms</td></tr><tr><td>Mobile cold start</td><td>&lt; 2 seconds</td></tr><tr><td>Web Time to Interactive</td><td>&lt; 3 seconds on 3G</td></tr><tr><td>Web Largest Contentful Paint</td><td>&lt; 2.5 seconds</td></tr></tbody></table>
+
+<h3>Availability &amp;amp; Capacity</h3>
+<table><colgroup><col style="width:45%"><col style="width:55%"></colgroup><thead><tr><th>Metric</th><th>Target</th></tr></thead><tbody><tr><td>Uptime SLA Year 1</td><td>99.5%</td></tr><tr><td>Uptime SLA Year 2+</td><td>99.9%</td></tr><tr><td>Concurrent users</td><td><span class="ph">{{TARGET}}</span></td></tr><tr><td>Active users target</td><td><span class="ph">{{TARGET}}</span></td></tr><tr><td>Peak load</td><td>10x average</td></tr><tr><td>Auto-scaling threshold</td><td>CPU &gt; 70% or memory &gt; 80%</td></tr></tbody></table>
+
+<h3>Data Retention</h3>
+<table><colgroup><col style="width:45%"><col style="width:55%"></colgroup><thead><tr><th>Data Type</th><th>Retention</th></tr></thead><tbody><tr><td>Audit logs</td><td>7 years</td></tr><tr><td>Invoices</td><td>7 years</td></tr><tr><td>Verification documents</td><td>7 years</td></tr><tr><td>Soft-deleted user data</td><td>30 days then hard delete</td></tr><tr><td>Analytics events</td><td>2 years</td></tr><tr><td>Message logs</td><td>12 months</td></tr><tr><td>Notifications</td><td>90 days</td></tr></tbody></table>
+
+<h3>Security Baseline</h3>
+<ul><li>Passwords: bcrypt cost 12</li><li>Verification documents: AES-256 at rest</li><li>HTTPS only (TLS 1.2+)</li><li>JWT access 15 min, refresh 7 days, rotation enabled</li><li>Rate limit: 100 req/min per user, 1000 req/min per IP</li><li>OWASP Top 10 mitigations</li><li>Quarterly security audit</li><li>Annual penetration test (post-MVP)</li></ul>
+
+<h2>10.8 Compliance</h2>
+<h3>Data Protection</h3>
+<ul><li>User can export own data (JSON)</li><li>User can request permanent account deletion (30-day grace)</li><li>PII anonymized in analytics events</li><li>Sensitive document access logged to AUDIT</li><li>Data residency: ${ph('REGION_REQUIREMENT')}</li></ul>
+
+<h3>Payment Compliance</h3>
+<ul><li>PCI DSS: card data tokenized via gateway</li><li>Webhook signatures verified</li><li>Refund and chargeback follow gateway procedures</li></ul>
+
+<h3>Age Restrictions</h3>
+<ul><li>Default minimum age: ${ph('AGE')} (registration requires birthdate)</li><li>Adult-only flagged categories: 18+</li><li>Underage attempts blocked at sensitive flows</li></ul>
+
+<h2>10.9 Risks, Assumptions, Out of Scope</h2>
+<h3>Assumptions (client-provided)</h3>
+<ul><li>Domain registration</li><li>Brand assets (logo, colors, fonts)</li><li>Legal entity for operation in target region</li><li>Approved merchant accounts (Stripe / Payme / Uzum / Click)</li><li>SMS provider account</li><li>Email provider with domain authentication</li><li>Maps API key (commercial license if applicable)</li><li>Apple Developer + Google Play Console enrollment</li><li>Privacy Policy + Terms of Service legal review</li><li>Marketing budget (separate scope)</li></ul>
+
+<h3>Risks</h3>
+<table><colgroup><col style="width:40%"><col style="width:15%"><col style="width:45%"></colgroup><thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead><tbody><tr><td>Third-party API rate limits / pricing</td><td>Medium</td><td>Caching, fallback providers</td></tr><tr><td>Payment gateway downtime</td><td>High</td><td>Multi-gateway, retry, monitoring</td></tr><tr><td>SMS delivery delays</td><td>Medium</td><td>Email fallback for OTP</td></tr><tr><td>Race conditions (concurrent state)</td><td>High</td><td>DB row-locks + idempotency</td></tr><tr><td>GDPR-style data request</td><td>Low</td><td>Data export and deletion features built-in</td></tr><tr><td>App Store rejection</td><td>Medium</td><td>Pre-submission policy review</td></tr><tr><td>Regulatory change in region</td><td>Medium</td><td>Configurable structure</td></tr><tr><td>Scaling beyond forecast</td><td>Low</td><td>Auto-scaling cloud infra</td></tr></tbody></table>
+
+<h3>Out of Scope (Phase 1 MVP)</h3>
+<ul><li>${ph('OUT_OF_SCOPE_1')}</li><li>${ph('OUT_OF_SCOPE_2')}</li><li>Native desktop apps (web is responsive)</li><li>Blockchain or cryptocurrency</li><li>Voice interface or chatbot interaction</li><li>AI-powered recommendations (Phase 2 unless specified)</li><li>Multi-tenant white-label (Phase 2)</li><li>Public partner API (Phase 2 unless specified)</li></ul>
+
+<h2>10.10 Pre-Launch Branding &amp;amp; Setup Checklist</h2>
+<table><colgroup><col style="width:40%"><col style="width:25%"><col style="width:35%"></colgroup><thead><tr><th>Item</th><th>Owner</th><th>Required For</th></tr></thead><tbody><tr><td>Final app name</td><td>Client</td><td>All branding</td></tr><tr><td>Domain registered + DNS</td><td>Client</td><td>Production deploy</td></tr><tr><td>Logo (SVG + PNG)</td><td>Brand Designer</td><td>Web, mobile, marketing</td></tr><tr><td>Brand colors (hex)</td><td>Brand Designer</td><td>UI design system</td></tr><tr><td>Font family</td><td>Brand Designer</td><td>UI design system</td></tr><tr><td>App icon (iOS + Android)</td><td>Brand Designer</td><td>App Store</td></tr><tr><td>Splash screen</td><td>Brand Designer</td><td>App Store</td></tr><tr><td>Marketing copy (per language)</td><td>Copywriter</td><td>Public web</td></tr><tr><td>Email templates</td><td>Copywriter + Designer</td><td>Messages-Service</td></tr><tr><td>SMS templates</td><td>Copywriter</td><td>Messages-Service</td></tr><tr><td>Privacy Policy</td><td>Legal</td><td>App Store + production</td></tr><tr><td>Terms of Service</td><td>Legal</td><td>App Store + production</td></tr><tr><td>Refund Policy</td><td>Client + Legal</td><td>Payment flow</td></tr><tr><td>Support email + phone</td><td>Client</td><td>Footer, app, transactional</td></tr><tr><td>Apple Developer enrollment</td><td>Client</td><td>iOS submission</td></tr><tr><td>Google Play Console</td><td>Client</td><td>Android submission</td></tr><tr><td>Payment merchant accounts</td><td>Client</td><td>Payment integration</td></tr><tr><td>Email provider auth (SPF/DKIM)</td><td>DevOps</td><td>Email delivery</td></tr><tr><td>SMS sender ID</td><td>Client</td><td>SMS delivery</td></tr><tr><td>Maps API key</td><td>Client</td><td>Maps integration</td></tr><tr><td>Firebase project + FCM</td><td>DevOps</td><td>Push notifications</td></tr><tr><td>Sentry / monitoring</td><td>DevOps</td><td>Observability</td></tr><tr><td>SSL certificates</td><td>DevOps</td><td>HTTPS</td></tr></tbody></table>
+
+</body>
+</html>

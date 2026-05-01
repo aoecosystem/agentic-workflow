@@ -1,0 +1,63 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Build / coverage
+dist/
+build/
+out/
+coverage/
+.next/
+.turbo/
+
+# Logs
+*.log
+logs/
+
+# Workflow runtime artifacts
+.pipeline/drafts/
+.pipeline/cache/
+memory/mcp-cache/*.local.md
+
+# Local user input drafts (keep templates clean)
+docs/*.local.md
+docs/*.local.pdf
+
+# Tooling
+.cache/
+.eslintcache
+.parcel-cache/
+
+# Python bytecode
+scripts/__pycache__/
+**/__pycache__/
