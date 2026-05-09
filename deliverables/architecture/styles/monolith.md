@@ -134,6 +134,45 @@ Phase 6 and lays out the right folder accordingly.
 4. **Workspace root owns shared concerns** — eslint, prettier, husky, ts, lockfile, root `.env.example`, `infra/`.
 5. **`apps/shared/` is optional** — create it only if FE + BE share TypeScript types (DTOs, enums). For non-TS stacks, skip.
 
+### Component file organization (frontend) — HARD CONTRACT
+
+These rules apply to every frontend file under `apps/web/src/`:
+
+1. **One concern per file.** Pages orchestrate sections only — they do NOT contain section JSX. Split each page by **logic boundary**:
+   ```
+   apps/web/src/features/profile/
+     ProfilePage.tsx                ← orchestrator only (composes children)
+     components/
+       ProfileAvatar.tsx
+       ProfilePersonalInfo.tsx
+       ProfileUpdatePassword.tsx
+       ProfileDeleteAccount.tsx
+   apps/web/src/shared/components/header/
+     Header.tsx                     ← container
+     HeaderLogo.tsx
+     HeaderNav.tsx                  ← nav items live INSIDE this file as JSX, not as a prop array
+     HeaderLanguageSwitcher.tsx
+     HeaderUserMenu.tsx
+   apps/web/src/shared/components/footer/
+     Footer.tsx
+     FooterLinks.tsx                ← link groups live INSIDE this file
+     FooterSocial.tsx
+     FooterNewsletter.tsx
+   ```
+
+2. **Component self-containment.** Static UI data (nav items, footer links, FAQ rows, dropdown options, social icons, hero feature lists, language list) lives **inside the component file that renders it**. Pages NEVER pass static arrays as props.
+
+3. **Translation is the only allowed external dependency.** Components call `t('header.nav.home')` directly. i18n keys live in locale files, not in prop arrays.
+
+4. **No `.map()` for static lists.** If the list is fixed at build time, render each `<li>` / `<NavLink>` / `<FaqItem>` directly as JSX. `.map()` is reserved for dynamic data from API/DB/store.
+
+5. **File size budget.** 50–200 lines per component file. Past ~200 lines or two unrelated logic concerns → split immediately.
+
+6. **Dynamic data only flows via props.** Pages may pass: the authenticated user, fetched API/DB content, route state, callbacks. Pages may NOT pass: static UI scaffolding.
+
+**Anti-pattern (FAIL):** `<Header items={navItems} />` where `navItems` is `[{href:'/',label:'Home'}, ...]` defined in the page or a `data.ts`.
+**Correct:** `<Header />` and `HeaderNav.tsx` contains explicit JSX `<NavLink to="/">{t('header.nav.home')}</NavLink>` per item.
+
 ### nginx clarification (two roles, two locations)
 
 | Role | Location | Purpose |

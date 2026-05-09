@@ -399,6 +399,37 @@ Without this, 5 languages drift into 5 chaotic stacks within a year.
 8. **`infra/`** = root-level cluster-wide infrastructure. Per-service k8s lives inside the service.
 9. **No language groups in `services/`** — flat by domain. Coupling folder structure to implementation choice makes language migration painful (and you WILL migrate at least once).
 
+### Component file organization (frontend apps) — HARD CONTRACT
+
+Applies to every Node UI app under `apps/` (web, admin, mobile-web). Same standard as the microservices profile:
+
+1. **One concern per file.** Pages orchestrate sections only — they do NOT contain section JSX. Split by **logic boundary**:
+   ```
+   apps/web/src/features/profile/
+     ProfilePage.tsx                ← orchestrator only
+     components/
+       ProfileAvatar.tsx
+       ProfilePersonalInfo.tsx
+       ProfileUpdatePassword.tsx
+       ProfileDeleteAccount.tsx
+   apps/web/src/shared/components/header/
+     Header.tsx
+     HeaderNav.tsx                  ← nav items as JSX inside this file
+     HeaderUserMenu.tsx
+   ```
+
+2. **Component self-containment.** Static UI data (nav items, footer link groups, FAQ rows, dropdown options, social icons) lives **inside the component file that renders it**. Pages NEVER pass static arrays as props.
+
+3. **Translation is the only allowed external dependency.** Components call `t('...')` directly; i18n keys live in locale files.
+
+4. **No `.map()` for static lists.** If the list is fixed at build time, render each item as explicit JSX. `.map()` is reserved for dynamic data fetched from the gateway.
+
+5. **File size budget.** 50–200 lines per file. Past ~200 → split.
+
+6. **Pages pass dynamic data only** — authenticated user, fetched data, route state, callbacks. Never static UI scaffolding.
+
+7. **Cross-app reuse via `packages/ui/`** — if a component is shared by `apps/web/` and `apps/admin/`, lift it there. The self-containment rule still applies inside the package.
+
 ## Database approach
 
 **Strict DB per service. No exceptions.**

@@ -165,6 +165,34 @@ doesn't have to match the monolith's).
 5. **`packages/ports/`** = the extraction contracts. Both `apps/api/` and any future `services/<name>/` import the same `IdentityPort` interface. This is what makes extraction mechanical.
 6. **Folder names role-based, NOT slug-prefixed** — `apps/api/`, `services/booking/`, NOT `apps/<slug>-api/`.
 
+### Component file organization (frontend) — HARD CONTRACT
+
+Same standard as the monolith profile. `apps/web/` follows feature-sliced layout, but every page/section file obeys these rules:
+
+1. **One concern per file** — pages orchestrate, sections own their JSX:
+   ```
+   apps/web/src/features/booking/
+     BookingPage.tsx                ← orchestrator only
+     components/
+       BookingSearchForm.tsx
+       BookingResultList.tsx
+       BookingDetailsPanel.tsx
+   apps/web/src/shared/components/header/
+     Header.tsx
+     HeaderNav.tsx                  ← nav items as explicit JSX inside this file
+     HeaderUserMenu.tsx
+   ```
+
+2. **Component self-containment** — static UI data (nav, footer, FAQ, dropdown options, social icons) lives **inside the rendering component**. Pages NEVER pass static arrays as props.
+
+3. **i18n is the only allowed external dependency** — components call `t('...')` directly; keys live in locale files.
+
+4. **No `.map()` for static lists** — render each item as JSX. `.map()` is reserved for dynamic data from API/DB/store.
+
+5. **File size budget** — 50–200 lines per file. Past ~200 → split.
+
+6. **Pages pass dynamic data only** — user, fetched content, route state, callbacks. Never static UI scaffolding.
+
 ### Extraction recipe (the hybrid promise)
 
 When a module is ready to extract (typical signals: scaling pressure,

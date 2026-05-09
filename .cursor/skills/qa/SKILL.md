@@ -128,6 +128,104 @@ Validate:
 - The task documents and verifies expected `401` handling for protected routes using live or mocked server behavior.
 - Placeholder-only UI (`coming soon`, static untappable rows, fake success state) is rejected unless the task explicitly scopes it and names the successor task that replaces it.
 
+### Step 6e — Component architecture checks (UI tasks — HARD REJECT)
+
+Run this step for every UI task (any file under `apps/web/`, `apps/admin/`, `apps/<frontend>/`, `packages/ui/`, or files matching `*.tsx`, `*.vue`, `*.svelte`).
+
+These checks mirror the HARD CONTRACT in `deliverables/architecture/styles/<style>.md` → "Component file organization" and `build-task` Step 6. Reject the task if ANY of the following appears:
+
+**1. Static data passed as props (REJECT)**
+
+Scan the diff for components that receive arrays the page itself defined as a static literal. Examples that MUST be rejected:
+
+```tsx
+// page.tsx (or any page-level file)
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/products', label: 'Products' },
+  { href: '/about', label: 'About' },
+];
+return <Header items={navItems} />;        // ← REJECT
+```
+
+```tsx
+// Anywhere in a page
+const faqs = [...];
+return <Faq questions={faqs} />;            // ← REJECT
+```
+
+```tsx
+// Importing a static data module and forwarding it as a prop
+import { footerLinks } from '@/data/footer';
+return <Footer links={footerLinks} />;      // ← REJECT
+```
+
+The fix QA must request: move the array INSIDE the receiving component (`Header.tsx`, `Faq.tsx`, `Footer.tsx`) and call the page as `<Header />` / `<Faq />` / `<Footer />` with no props (or only dynamic props).
+
+**Allowed (do NOT reject):**
+- Dynamic data from `useQuery`, `await fetch()`, server component `await db...`, route loader, or props that originated from such a source: `<ProductGrid products={products} />` on `/products` page where `products` came from a fetch.
+- Translation keys / locale objects (i18n is the only allowed external dependency).
+- Auth context (`<UserMenu user={user} />` where `user` came from session).
+
+**2. `.map()` over a static literal (REJECT)**
+
+Scan for `.map(` on the same scope where the array is defined as a static literal in the component or imported from a `data.ts` module. Render each item as explicit JSX instead.
+
+```tsx
+// REJECT
+const links = [{ href: '/', label: 'Home' }, ...];
+return <ul>{links.map(l => <li><a href={l.href}>{l.label}</a></li>)}</ul>;
+```
+
+```tsx
+// CORRECT
+return (
+  <ul>
+    <li><a href="/">{t('nav.home')}</a></li>
+    <li><a href="/products">{t('nav.products')}</a></li>
+    <li><a href="/about">{t('nav.about')}</a></li>
+  </ul>
+);
+```
+
+`.map()` is allowed only when the source array is dynamic (API/DB/store/user input).
+
+**3. Page file contains section JSX directly (REJECT)**
+
+Page files (e.g. `ProductsPage.tsx`, `ProfilePage.tsx`, `app/products/page.tsx`) must orchestrate components only. If a page file contains the JSX for a section (header markup inline, FAQ markup inline, profile-avatar markup inline, etc.) instead of `<Header />`, `<Faq />`, `<ProfileAvatar />`, reject and request the section be extracted to its own file under `components/<feature>/`.
+
+**4. File size budget (REJECT past hard ceiling)**
+
+- Soft target: 50–200 lines per component file. Past 200 lines, the Builder must justify it in `QA notes:` (e.g. "single complex form, splitting would fragment one logic concern"). Without justification → reject.
+- Hard ceiling: 400 lines. Past 400 lines → reject unconditionally with a list of suggested split points.
+- Multiple unrelated logic concerns in one file (e.g. `ProfilePage.tsx` containing avatar update + password change + delete account inline) → reject regardless of line count.
+
+**5. Component file naming and folder placement (REJECT)**
+
+- Each logical concern lives in its own file under `components/<feature>/<Concern>.tsx` (or framework equivalent — `.vue`, `.svelte`).
+- Names match the concern: `ProfileAvatar.tsx`, NOT `ProfileSection1.tsx` / `Avatar.tsx` (when ambiguous) / `Component.tsx`.
+- No "kitchen sink" files — `components.tsx` containing 5 unrelated components is a reject.
+
+**Rejection format for this gate:**
+```
+REJECTED. Component architecture violations.
+1. apps/web/src/app/page.tsx:14 — `<Header items={navItems} />` passes static
+   array as prop. Move `navItems` inside `apps/web/src/components/header/HeaderNav.tsx`
+   and render as explicit JSX with `t('nav.<key>')` calls. Page should call
+   `<Header />` with no items prop.
+2. apps/web/src/components/Footer.tsx:38 — `.map()` over static literal `socials`.
+   Render each <SocialIcon> as explicit JSX.
+3. apps/web/src/app/profile/page.tsx:1-247 — page contains avatar + password
+   + delete-account JSX inline. Split into:
+     components/profile/ProfileAvatar.tsx
+     components/profile/ProfilePersonalInfo.tsx
+     components/profile/ProfileUpdatePassword.tsx
+     components/profile/ProfileDeleteAccount.tsx
+   ProfilePage.tsx should orchestrate only.
+```
+
+These rejections have the same severity as a failing test — there is no "we'll refactor later" path. The Builder must split before re-submitting.
+
 ### Step 6d — Deferred-language detection (NO "WE'LL FIX LATER" APPROVALS)
 
 Scan the task block, the diff of changed files, and the Builder's

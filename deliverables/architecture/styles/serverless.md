@@ -188,6 +188,41 @@ Proxy / Accelerate to avoid cold-start penalties on Lambda.
 7. **No app imports from another app's `src/`.** Cross-app code reuse goes through `packages/`.
 8. **Folder names role-based, NOT slug-prefixed** — `apps/api/`, NOT `apps/<slug>-api/`.
 
+### Component file organization (frontend) — HARD CONTRACT
+
+Applies to every frontend file under `apps/web/src/` (and to API routes co-located inside Next.js `app/`):
+
+1. **One concern per file.** Pages orchestrate sections only — they do NOT contain section JSX. Split by **logic boundary**:
+   ```
+   apps/web/src/features/profile/
+     ProfilePage.tsx                ← orchestrator only
+     components/
+       ProfileAvatar.tsx
+       ProfilePersonalInfo.tsx
+       ProfileUpdatePassword.tsx
+       ProfileDeleteAccount.tsx
+   apps/web/src/shared/components/header/
+     Header.tsx
+     HeaderNav.tsx                  ← nav items as JSX inside this file
+     HeaderUserMenu.tsx
+   apps/web/src/shared/components/footer/
+     Footer.tsx
+     FooterLinks.tsx
+     FooterSocial.tsx
+   ```
+
+2. **Component self-containment.** Static UI data (nav items, footer link groups, FAQ rows, dropdown options, social icons) lives **inside the component file that renders it**. Pages NEVER pass static arrays as props.
+
+3. **Translation is the only allowed external dependency.** Components call `t('...')` directly; i18n keys live in locale files.
+
+4. **No `.map()` for static lists.** If the list is fixed at build time, render each item as explicit JSX. `.map()` is reserved for dynamic data fetched via Route Handlers / Server Components / functions.
+
+5. **File size budget.** 50–200 lines per file. Past ~200 → split.
+
+6. **Pages pass dynamic data only** — fetched data, route state, callbacks. Never static UI scaffolding.
+
+7. **Server Components vs Client Components don't change the rule.** Whether a component renders on the edge or in the browser, static data still lives inside it; only dynamic data (props from `<page>.tsx` after `await fetch(...)`) flows in.
+
 ### Local dev contract
 
 Serverless local dev is platform-specific. Document the chosen flow in

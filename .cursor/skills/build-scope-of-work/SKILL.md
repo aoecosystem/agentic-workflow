@@ -82,8 +82,9 @@ For any project with `apps/web/` (so: monolith, hybrid, microservices, polyglot-
 - **Font pairing** — one pairing ID from the 57 in `data/typography.csv`. List the heading font + body font + mono font (if any) with the canonical weights and the responsive size ramp.
 - **Component library** — `shadcn/ui` (default for React stacks) | platform-native (SwiftUI / Flutter / etc.) | bespoke. If shadcn/ui, list the components the project will use (from the SoW Phase 2 modules). The component library MUST be added to Phase 6 Tech Stack as well.
 - **Charts** — for any module that visualizes data, pick the chart type from the 25 in `data/charts.csv` (bar / line / area / scatter / heatmap / etc.) with one line of justification per chart.
+- **Component decomposition (HARD CONTRACT)** — pages compose small logical components; static UI data (nav items, footer link groups, FAQ rows, dropdown options, social icons) lives **inside** the component that renders it (with `t()` calls for i18n), NEVER passed from pages as static prop arrays. No `.map()` over build-time-static lists — render each item as explicit JSX. One concern per file under `components/<feature>/<Concern>.tsx` (e.g. profile page → `ProfileAvatar.tsx` + `ProfilePersonalInfo.tsx` + `ProfileUpdatePassword.tsx`). 50–200 lines per file, split past ~200. Pages pass dynamic data only (user, fetched content, route state, callbacks).
 
-These choices are the source of truth for `build-task` during the build phase — UI task agents read this Phase 9 sub-section and treat it as a hard contract. Never let a UI task pick its own palette or font.
+These choices are the source of truth for `build-task` during the build phase — UI task agents read this Phase 9 sub-section and treat it as a hard contract. Never let a UI task pick its own palette or font, and never let a page dump static arrays into a component as props.
 
 ### Universal rule
 

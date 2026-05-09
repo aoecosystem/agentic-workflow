@@ -183,6 +183,42 @@ folder accordingly.
 5. **No service imports another service's `src/`.** Cross-service code reuse goes through `packages/proto/` (contracts) or `packages/events/` (schemas).
 6. **Folder names are role-based, NOT slug-prefixed** — `services/identity/`, NOT `services/<slug>-identity/`.
 
+### Component file organization (frontend apps) — HARD CONTRACT
+
+Applies to every UI app under `apps/` (web, admin, mobile-web):
+
+1. **One concern per file.** Pages orchestrate sections only — they do NOT contain section JSX. Split by **logic boundary**:
+   ```
+   apps/web/src/features/profile/
+     ProfilePage.tsx                ← orchestrator only
+     components/
+       ProfileAvatar.tsx
+       ProfilePersonalInfo.tsx
+       ProfileUpdatePassword.tsx
+       ProfileDeleteAccount.tsx
+   apps/web/src/shared/components/header/
+     Header.tsx
+     HeaderLogo.tsx
+     HeaderNav.tsx                  ← nav items as JSX inside this file
+     HeaderUserMenu.tsx
+   apps/web/src/shared/components/footer/
+     Footer.tsx
+     FooterLinks.tsx
+     FooterSocial.tsx
+   ```
+
+2. **Component self-containment.** Static UI data (nav items, footer link groups, FAQ rows, dropdown options, social icons) lives **inside the component file that renders it**. Pages NEVER pass static arrays as props.
+
+3. **Translation is the only allowed external dependency.** Components call `t('header.nav.home')` directly; i18n keys live in locale files, not in prop arrays.
+
+4. **No `.map()` for static lists.** If the list is fixed at build time, render each item as explicit JSX. `.map()` is reserved for dynamic data from API/gateway.
+
+5. **File size budget.** 50–200 lines per file. Past ~200 → split.
+
+6. **Pages pass dynamic data only** — authenticated user, fetched API data, route state, callbacks. Never static UI scaffolding.
+
+7. **Cross-app reuse goes through `packages/ui/`**, not page props. If `Header` is shared across `apps/web/` and `apps/admin/`, lift it to `packages/ui/header/` — and the same self-containment rule still applies inside the package.
+
 ### Per-service vs cluster-wide infra (clear split)
 
 | Concern | Lives in | Why |
