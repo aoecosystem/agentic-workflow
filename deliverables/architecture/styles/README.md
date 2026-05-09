@@ -9,7 +9,8 @@ Architecture styles. The user picks one in brief Section 3, and every
 |------|--------------------|----------|
 | `monolith.md` | Single deploy, single DB, all features in one repo | Small/medium projects, single team, fast time-to-ship |
 | `hybrid.md` | Modular monolith with extraction-ready boundaries | Most projects — start as monolith, ready to extract services later |
-| `microservices.md` | Independent services, DB per service, Kafka required | Large projects, multiple teams, real distributed-system needs |
+| `microservices.md` | Independent services (single language), DB per service, Kafka required | Large projects, multiple teams, real distributed-system needs |
+| `polyglot-microservices.md` | Microservices where each service is in its own language (Node + Go + Python + ...) | When one or two services have genuinely different runtime needs (heavy compute, ML, real-time) |
 | `serverless.md` | Functions on AWS Lambda / Cloudflare Workers / Vercel | Spiky traffic, pay-per-request, JAMstack |
 | `_schema.md` | Required structure every style must follow | Reference for adding new styles |
 

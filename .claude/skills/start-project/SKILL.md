@@ -57,8 +57,12 @@ When Stage is `INIT`, this skill becomes the **brief interview** — same
 4. After Section 1 (Project Basics), derive a kebab-case slug from
    project name and confirm with user.
 5. After Section 3.2, ask for **Architecture style**:
-   `monolith` | `hybrid` | `microservices` | `serverless`. Default
-   `monolith`. Briefly explain each option in plain language.
+   `monolith` | `hybrid` | `microservices` | `polyglot-microservices` | `serverless`. Default
+   `monolith`. Briefly explain each option in plain language. Note for
+   `polyglot-microservices`: only pick this when one or two services
+   have genuinely different runtime needs (heavy compute, ML, real-time)
+   that a single language can't serve well — otherwise prefer plain
+   `microservices`.
 6. After all 13 sections, show summary, ask `save`.
 7. On save: write `deliverables/brief/<slug>-brief.html` v1.0,
    transition Stage to `BRIEF_DRAFT`, append audit log.

@@ -171,7 +171,7 @@ section.cover { height: 100vh; width: 100%;
 <table class="brief">
   <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
   <tbody>
-    <tr><td class="lbl-cell">Architecture style</td><td><span class="ph">{{monolith / hybrid / microservices / serverless}}</span> — see options below</td></tr>
+    <tr><td class="lbl-cell">Architecture style</td><td><span class="ph">{{monolith / hybrid / microservices / polyglot-microservices / serverless}}</span> — see options below</td></tr>
     <tr><td class="lbl-cell">Communication style</td><td><span class="ph">{{REST / gRPC / GraphQL / Events-only / mixed}}</span></td></tr>
     <tr><td class="lbl-cell">Style reference</td><td>The chosen style maps to <code>system-architecture/styles/&lt;style&gt;.md</code> in the repo, which drives all downstream generation.</td></tr>
   </tbody>
@@ -182,7 +182,8 @@ section.cover { height: 100vh; width: 100%;
   <ul>
     <li><strong>monolith</strong> (default, recommended for &lt;5 person teams): one app, one deploy, one database. Modules import each other directly. Fastest to ship, easiest to operate. Most projects start (and stay) here.</li>
     <li><strong>hybrid</strong> (recommended for ~70% of "we want microservices someday" projects): modular monolith with extraction-ready boundaries. One deploy + one DB today, BUT each service has strict interfaces (<code>ports.ts</code>) and owns its own tables (no cross-service FKs). Tomorrow you can lift any service out without rewriting business logic.</li>
-    <li><strong>microservices</strong> (only when you have multiple teams + real distributed-system needs): independent services, DB per service, Kafka required, gateway in front. Real distributed-systems pain — pick this only when monolith / hybrid genuinely won't scale.</li>
+    <li><strong>microservices</strong> (only when you have multiple teams + real distributed-system needs, single language across services): independent services, DB per service, Kafka required, gateway in front. Real distributed-systems pain — pick this only when monolith / hybrid genuinely won't scale.</li>
+    <li><strong>polyglot-microservices</strong> (microservices where each service is in its own language — Node + Go + Python + ...): pick this only when one or two services have genuinely different runtime needs (heavy compute, ML inference, real-time fan-out) that a single language can't serve well. Adds polyglot operational overhead — multiple toolchains, per-language CI matrices, buf-based contract codegen, language-baseline docs.</li>
     <li><strong>serverless</strong> (Lambda / Cloudflare Workers / Vercel Functions): pay-per-request, auto-scaling, stateless. Best for spiky traffic, JAMstack apps, edge-distributed APIs.</li>
   </ul>
   <p>Pick what fits the project's scale and team — not what sounds impressive. You can change this later via <code>/review-brief 3</code>; downstream documents will need to be re-generated to pick up the change.</p>

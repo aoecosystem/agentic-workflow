@@ -50,7 +50,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Architecture style awareness (READ THIS BEFORE GENERATING)
 
 The brief Section 3.2 contains an "Architecture style" choice (one of:
-`monolith` | `hybrid` | `microservices` | `serverless`). Before
+`monolith` | `hybrid` | `microservices` | `polyglot-microservices` | `serverless`). Before
 generating output, this skill MUST:
 
 1. Read the brief Section 3.2 to find the chosen style.
@@ -66,12 +66,24 @@ defaulted to monolith. Run /review-brief 3 to set explicitly."
 ### Style application points (skill-specific)
 
 - **Phase 1.5 Service Architecture:** use the style's Description as the architectural rationale paragraph.
-- **Phase 2 Modules:** structure modules according to style's Folder structure (monolith = `src/services/<name>/`, hybrid/microservices = `services/<name>/`, serverless = `functions/<feature>-<action>/`).
-- **Phase 3 Database Schemas:** apply style's Database approach (single DB for monolith/hybrid, per-service DB for microservices, NoSQL/serverless DB for serverless).
-- **Phase 4 API Endpoints:** match style's Communication style (single API tree for monolith, per-service APIs + gateway for microservices, per-function URLs for serverless).
-- **Phase 5 Event-Driven Architecture:** apply style's events approach (in-process for monolith, in-process-with-Kafka-naming for hybrid, Kafka required for microservices, EventBridge/SNS for serverless).
-- **Phase 6 Tech Stack:** auto-inject the style's "Default tech additions" — these become required rows in the Integrations and Infrastructure tables.
-- **Phase 9 Folder Structures:** copy the style's Folder structure block verbatim (replacing `<slug>` placeholders) into Phase 9.
+- **Phase 2 Modules:** structure modules according to style's Folder structure (monolith = `apps/api/src/modules/<name>/`, hybrid = `apps/api/src/modules/<name>/` with `services/` reserved for future extraction, microservices / polyglot-microservices = `services/<name>/`, serverless = `apps/api/src/functions/<feature>/<action>.ts`).
+- **Phase 3 Database Schemas:** apply style's Database approach (single DB for monolith/hybrid, per-service DB for microservices / polyglot-microservices, serverless DB for serverless).
+- **Phase 4 API Endpoints:** match style's Communication style (single API tree for monolith, per-service APIs + gateway for microservices and polyglot-microservices, per-function URLs for serverless).
+- **Phase 5 Event-Driven Architecture:** apply style's events approach (in-process for monolith, in-process-with-Kafka-naming for hybrid, Kafka required for microservices and polyglot-microservices, EventBridge/SNS/Queues for serverless).
+- **Phase 6 Tech Stack:** auto-inject the style's "Default tech additions" — these become required rows in the Integrations and Infrastructure tables. For `polyglot-microservices`, the per-service language picks (Node / Go / Python / Java / Rust) MUST appear in Phase 6 with a one-line rationale per service citing why that language fits its workload (heavy compute, ML, real-time, etc.).
+- **Phase 9 Folder Structures:** copy the style's Folder structure block verbatim (replacing `<slug>` placeholders) into Phase 9. For `polyglot-microservices`, also copy the per-language service shape sub-blocks the project actually uses (skip languages not picked).
+
+### Design language (ALL projects with a frontend)
+
+For any project with `apps/web/` (so: monolith, hybrid, microservices, polyglot-microservices, serverless), invoke the `ui-ux-pro-max` skill while generating Phase 9 to lock the design language ONCE so every later UI task builds against the same choices. Capture in Phase 9 under a "Design language" sub-section:
+
+- **Visual style** — exactly one from the 67 styles in `ui-ux-pro-max` (e.g. `minimalism`, `bento-grid`, `glassmorphism`, `dark-mode`). Cite the rule from `data/styles.csv` that justifies the pick given the product type.
+- **Color palette** — one palette ID from the 96 in `data/colors.csv`. List the resolved tokens (primary / secondary / accent / background / surface / foreground / muted / destructive / border / ring) as CSS variable names + hex values.
+- **Font pairing** — one pairing ID from the 57 in `data/typography.csv`. List the heading font + body font + mono font (if any) with the canonical weights and the responsive size ramp.
+- **Component library** — `shadcn/ui` (default for React stacks) | platform-native (SwiftUI / Flutter / etc.) | bespoke. If shadcn/ui, list the components the project will use (from the SoW Phase 2 modules). The component library MUST be added to Phase 6 Tech Stack as well.
+- **Charts** — for any module that visualizes data, pick the chart type from the 25 in `data/charts.csv` (bar / line / area / scatter / heatmap / etc.) with one line of justification per chart.
+
+These choices are the source of truth for `build-task` during the build phase — UI task agents read this Phase 9 sub-section and treat it as a hard contract. Never let a UI task pick its own palette or font.
 
 ### Universal rule
 

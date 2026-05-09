@@ -18,12 +18,25 @@ description: Implement exactly one task from TASKS.md end to end — consume Fig
 Before writing any code:
 1. Read the task block from `state/TASKS.md` (full block including acceptance criteria).
 2. Read `state/SCOPE.md` — the relevant feature section only.
-3. Read `memory/ARCHITECTURE.md` — find where new files should live.
-4. Read `memory/PATTERNS.md` — identify which patterns apply to this task.
-5. Read `memory/DECISIONS.md` — note any past decisions that constrain this task.
-6. Read `memory/STACK-GUIDANCE.md` when it exists — use it for stack-specific architecture, state, UI, and testing defaults.
-7. If present, read task fields: `Design source`, `Codegen artifact`, `Design checklist`, `Visual baseline refs`, `Plugin artifact refs`.
-8. If present, read the product-context addendum: `User value`, `User flow`, `Functional notes`, `Edge cases`, and `Test cases`.
+3. Read `state/SESSION-STATE.md` — note the `Architecture style:` field (monolith / hybrid / microservices / serverless). This drives folder placement for every file you create.
+4. Read `deliverables/architecture/styles/<style>.md` — the **Folder structure** section is a HARD CONTRACT. Every file you create or move must land at the path declared by this profile. If the file doesn't fit any declared folder, stop and surface a question — never invent a new top-level folder. Note especially:
+   - **FE/BE split rules** (e.g. `apps/api/` vs `apps/web/` for monolith — never combined)
+   - **ORM folder convention** — for monolith with Prisma → `apps/api/prisma/`, with Drizzle → `apps/api/drizzle/`, with TypeORM/Sequelize/Kysely/MikroORM → `apps/api/database/`
+   - **Root-level `infra/`** — never put compose/docker/scripts inside an app folder
+   - **No slug-prefixed app folders** — `apps/api/`, NOT `apps/<slug>-api/`
+5. Read `memory/ARCHITECTURE.md` — find project-specific overrides on top of the style profile.
+6. Read `memory/PATTERNS.md` — identify which patterns apply to this task.
+7. Read `memory/DECISIONS.md` — note any past decisions that constrain this task.
+8. Read `memory/STACK-GUIDANCE.md` when it exists — use it for stack-specific architecture, state, UI, and testing defaults.
+9. If present, read task fields: `Design source`, `Codegen artifact`, `Design checklist`, `Visual baseline refs`, `Plugin artifact refs`.
+10. If present, read the product-context addendum: `User value`, `User flow`, `Functional notes`, `Edge cases`, and `Test cases`.
+11. **For ANY UI task** (component, page, layout, styling, form, modal, table, chart, navigation, etc.), invoke the `ui-ux-pro-max` skill before planning. Use it to:
+    - Pick / confirm the visual style (from 67 styles — glassmorphism / minimalism / bento grid / dark mode / etc.) consistent with the project's chosen design language in the SoW
+    - Pick / confirm the color palette (from 96 palettes) — never hardcode arbitrary colors
+    - Pick / confirm the font pairing (from 57 pairings) — heading + body
+    - Read the relevant UX guidelines for the element being built (e.g. forms, modals, tables) — including accessibility, touch targets, focus states, error feedback
+    - For charts: pick the right chart type (from 25 types) for the data being shown
+    Record the design choices in the task's `QA notes:` so reviewers and downstream tasks reuse them.
 
 ### Step 2 — Mark task in-progress and check attempt budget
 
@@ -89,6 +102,16 @@ Build in this order (skip layers not applicable to the task):
 
 **Rules during implementation:**
 - Read any existing file before editing it.
+- **Folder placement is non-negotiable** — every new file MUST sit at a path declared by `deliverables/architecture/styles/<style>.md` → Folder structure. If unsure, re-read that section. Never dump everything into a single combined folder (e.g. `apps/<slug>/`) when the style requires a FE/BE split.
+- **ORM folder respects the chosen ORM** — Prisma → `prisma/`, Drizzle → `drizzle/`, TypeORM/Sequelize/Kysely/MikroORM → `database/`. Do not hardcode `prisma/` if the project uses a different ORM.
+- **First task of the build phase** scaffolds the workspace: root `package.json`, `pnpm-workspace.yaml` (or equivalent), `tsconfig.base.json`, shared `eslint.config.mjs`, `infra/` skeleton — so subsequent tasks have somewhere to land.
+- **UI tasks follow `ui-ux-pro-max` HARD RULES** — these are not suggestions:
+    - **Accessibility (CRITICAL):** color contrast ≥ 4.5:1 for normal text, visible focus rings on every interactive element, descriptive `alt` text, `aria-label` for icon-only buttons, tab order matches visual order, `<label htmlFor>` on every form field
+    - **Touch & interaction (CRITICAL):** minimum 44×44px touch targets, `cursor-pointer` on clickable elements, disable buttons during async operations, error feedback near the problem
+    - **Layout & responsive (HIGH):** `<meta name="viewport" content="width=device-width, initial-scale=1">`, minimum 16px body text on mobile, no horizontal scroll, content reflows below 360px
+    - **Typography & color (MEDIUM):** use the chosen palette and font pairing as CSS variables / Tailwind tokens — NEVER hardcode hex colors or pixel font sizes inline. The first UI task scaffolds these tokens; every later UI task imports them.
+    - **Performance (HIGH):** WebP / responsive images with `srcset`, `loading="lazy"`, respect `prefers-reduced-motion`, reserve space for async content to prevent layout shift
+- **Frontend-stack-specific rules** — read the relevant `data/stacks/<stack>.md` reference inside the `ui-ux-pro-max` skill folder for the project's chosen frontend (React / Next.js / Vue / Svelte / SwiftUI / React Native / Flutter / Tailwind / shadcn-ui).
 - Follow patterns from `memory/PATTERNS.md` exactly.
 - Follow `memory/STACK-GUIDANCE.md` when present; treat it as the stack-specific implementation playbook for this project.
 - Use the tech stack specified in `state/SCOPE.md` — do not introduce new dependencies without noting it.
@@ -107,6 +130,14 @@ Run all gates from `01-verification.mdc` and `04-design-fidelity.mdc` when UI is
 3. **Tests** — run tests scoped to changed files. All must pass.
 4. **Acceptance criteria self-check** — go through every `[ ]` item in the task block. Verify each one is satisfied. Check them: `[x]`.
 5. **Design checklist self-check (UI only)** — validate token usage, state parity, and responsive requirements from `Design checklist`.
+   - **AND** run the `ui-ux-pro-max` quality gate. Walk every CRITICAL + HIGH rule:
+     - [ ] Accessibility: every interactive element has visible focus, 4.5:1 contrast, alt/aria where needed, keyboard tab order matches visual order
+     - [ ] Touch: every clickable area ≥ 44×44px, `cursor-pointer` on clickables, disabled state during async
+     - [ ] Layout: viewport meta present, ≥ 16px body on mobile, no horizontal scroll at 360–768–1024–1440px
+     - [ ] Typography & color: ZERO hardcoded hex / pixel sizes — all values resolve to design tokens (CSS vars / Tailwind theme / shadcn tokens)
+     - [ ] Performance: images optimized + lazy where below the fold; `prefers-reduced-motion` respected; layout shift prevented
+     - [ ] Style consistency: visual style matches the one chosen in the SoW (no mixing minimalism + claymorphism in the same page)
+   - **Failing ANY checkbox = task fails the gate.** Same severity as a failed lint or test — fix before proceeding to Step 8.
 6. **Codegen traceability self-check (UI with codegen)** — confirm every file/widget in scope maps back to the codegen file map, or add a `GAP-XX` note explaining the divergence.
 7. **Product-context self-check** — confirm the implementation covers the documented `User flow`, `Edge cases`, and `Test cases`, or document any scope-bound omission clearly in `QA notes:`.
 
