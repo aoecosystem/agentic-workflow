@@ -96,7 +96,7 @@ no external script.
 
 ---
 
-## Available slash commands (28 skills, 29 commands)
+## Available slash commands (33 skills, 33 commands)
 
 Quick reference — see `AGENTS.md` for full table with stage transitions:
 

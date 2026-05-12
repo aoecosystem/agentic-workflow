@@ -51,16 +51,28 @@ If any gate fails, revise task decomposition before showing user.
 ### Step 1 — Read inputs
 
 Read these files before generating anything:
-- `docs/` SOW/requirements docs — if present, this is the preferred ReqOps source
-- `state/SCOPE.md` — full content
-- `state/TASKS.md` — check if tasks already exist (ask user before overwriting)
-- `memory/ARCHITECTURE.md` — if it exists, use its module map to assign file paths
-- `memory/STACK-GUIDANCE.md` — if it exists, use it to keep tasks aligned with the chosen stack's architecture, UI, and testing conventions
-- `.pipeline/sow.md` — fallback ReqOps source if docs/SCOPE SOW is unavailable
-- `.pipeline/requirements.md` — if present
-- `.pipeline/features-list.md` — if present
-- `.pipeline/system-design-provided.md` — if present
-- `.pipeline/features/requirements/` — if present, for existing feature dependencies and conflicts
+- `state/SESSION-STATE.md` — locate `Architecture style:` field (one of `monolith`, `hybrid`, `microservices`, `polyglot-microservices`, `serverless`). This is a **HARD CONTRACT** — every task's `Files to create/modify:` paths must conform to the matching style profile.
+- `deliverables/architecture/styles/<style>.md` — **HARD CONTRACT**. Read this profile's "Folder structure" section. Every file path you emit in TASKS.md must sit under a folder declared by this profile. Memorize:
+  - The FE/BE split (e.g. `apps/api/` + `apps/web/` for monolith — never combined)
+  - The ORM folder convention (Prisma → `prisma/`, Drizzle → `drizzle/`, TypeORM/Sequelize/Kysely/MikroORM → `database/`)
+  - Root-level `infra/` (compose, docker, scripts, environments)
+  - Role-based app naming (`apps/api/`, NOT `apps/<slug>-api/`)
+  - For component files: `components/<feature>/<Concern>.tsx` granularity (Header → HeaderNav.tsx + HeaderLogo.tsx + HeaderUserMenu.tsx; Footer → FooterLinks.tsx + FooterSocial.tsx; Profile page → ProfileAvatar.tsx + ProfilePersonalInfo.tsx + ProfileUpdatePassword.tsx)
+- `state/SCOPE.md` — full content. Pay special attention to:
+  - **Section 3 Tech Stack** — every task block must record the resolved frontend / backend / ORM choices in its `Stack:` field.
+  - **Section 5 Feature Breakdown** including every Phase 4 API endpoint and Phase 7 Page Inventory row.
+  - **Section 8 Page Inventory** — every page must appear in at least one UI task.
+  - **Section 9 Database Schemas** — every entity must appear in TASK-001 (schema task) or a feature-specific schema task.
+  - **Section 12 Design Language** — UI tasks reference this for visual style, palette, font pairing, component library, and component decomposition rules.
+- `state/TASKS.md` — check if tasks already exist (ask user before overwriting).
+- `memory/ARCHITECTURE.md` — if it exists, use its module map to assign file paths.
+- `memory/STACK-GUIDANCE.md` — if it exists, use it to keep tasks aligned with the chosen stack's architecture, UI, and testing conventions.
+- `memory/PAGES.md` — if it exists, the authoritative page inventory; cross-check against SCOPE §8.
+- `docs/` SOW/requirements docs — supplemental ReqOps source only.
+- `.pipeline/sow.md` — fallback ReqOps source if docs/SCOPE SOW is unavailable.
+- `.pipeline/requirements.md`, `.pipeline/features-list.md`, `.pipeline/system-design-provided.md`, `.pipeline/features/requirements/` — supplemental if present.
+
+**Failure modes:** if SESSION-STATE has no `Architecture style:` field, refuse with "Architecture style missing — re-run /build-scope-of-work to lock Phase 9". If `deliverables/architecture/styles/<style>.md` does not exist, halt — never improvise a folder structure.
 
 ### Step 2 — ReqOps pre-pass (when SOW sources exist)
 
@@ -202,9 +214,23 @@ For each task, write 3–6 acceptance criteria items as checkboxes. Derive them 
 Every task must have at minimum:
 - `[ ]` The primary function works end-to-end
 - `[ ]` Error paths are handled (invalid input, auth failure, not found)
-- `[ ]` Tests cover happy path + at least one error case
 - `[ ]` Lint and typecheck pass
 - `[ ]` Behavior matches mapped scope items (screens/endpoints/models/flow transitions) for this task
+- `[ ]` All files declared in `Files to create/modify:` sit under folders declared by `deliverables/architecture/styles/<style>.md` (no improvised top-level folders, no slug-prefixed app names, no combined FE+BE folder)
+
+**For API tasks (every task that adds or modifies an HTTP endpoint), the AC baseline tightens — vague "happy + one error" is not sufficient. Every endpoint MUST have explicit test cases for:**
+- `[ ]` `200`/`201` success path with a representative valid payload
+- `[ ]` `401` Unauthorized when the route is protected (omitted only if route is documented public in SCOPE.md)
+- `[ ]` `403` Forbidden when role-based authorization applies (e.g. tutor-only endpoint called by parent)
+- `[ ]` `4xx` validation failure (`400` or `422`) for each constrained input field
+- `[ ]` `404` Not Found when the resource is a path parameter (e.g. `/bookings/:id`)
+- `[ ]` `500` or domain-specific 5xx surface for at least one internal failure path (e.g. DB unavailable, downstream timeout)
+
+**For UI tasks (every task that creates or modifies a page or component), the AC baseline includes the component-architecture HARD CONTRACT:**
+- `[ ]` No static data arrays passed as props — static UI data (nav items, footer links, FAQ rows, dropdown options) lives INSIDE the component that renders it
+- `[ ]` No `.map()` over build-time-static literals — each static item rendered as explicit JSX (translation keys via `t()` are the only allowed external dependency)
+- `[ ]` One concern per file: pages orchestrate components only; section JSX lives in `components/<feature>/<Concern>.tsx` files, each ≤200 lines
+- `[ ]` Design tokens used everywhere — zero hardcoded hex colors or pixel font sizes
 
 Additional task-specific requirements:
 - UI tasks with `Design source: Figma` must include an acceptance item requiring implementation traceability to the linked `*-codegen.md` file map, or a documented `GAP-XX` in `QA notes:` explaining why a scaffold file/widget was intentionally not implemented.
@@ -259,6 +285,9 @@ Write the full `state/TASKS.md` in this format:
 ## TASK-000
 - Feature group: Scaffold
 - Title: Initialize project structure
+- Architecture style: <monolith | hybrid | microservices | polyglot-microservices | serverless>     ← from SESSION-STATE
+- Stack: { frontend: <name>, backend: <name>, orm: <name>, db: <name> }                            ← from SoW Phase 6 / SCOPE §3
+- Folder root: workspace                                                                            ← scaffold writes at repo root
 - Depends on: none
 - Assigned agent: orchestrator
 - MCP URL: none
@@ -269,13 +298,22 @@ Write the full `state/TASKS.md` in this format:
   - Integration status: not-started
 - Files to create/modify:
   - package.json
-  - tsconfig.json
-  - [list all config files]
+  - pnpm-workspace.yaml
+  - tsconfig.base.json
+  - eslint.config.mjs
+  - infra/compose/docker-compose.development.yml
+  - infra/docker/postgres/                     ← respect chosen ORM table (Prisma | Drizzle | TypeORM | Sequelize | Kysely | MikroORM)
+  - apps/api/                                  ← role-based, NEVER apps/<slug>-api/
+  - apps/web/                                  ← role-based, NEVER apps/<slug>-web/
+  - [other config files declared by deliverables/architecture/styles/<style>.md]
 - Acceptance criteria:
   - [ ] Project installs and runs with no errors
   - [ ] TypeScript compiles with zero errors
   - [ ] Linting passes
   - [ ] Test runner is configured and a placeholder test passes
+  - [ ] Folder layout exactly matches `deliverables/architecture/styles/<style>.md` Folder structure section — no improvised top-level folders, no slug-prefixed app names, no combined FE+BE folder
+  - [ ] `infra/` lives at repo root with compose / docker / scripts / environments sub-folders (NOT inside any app folder)
+  - [ ] If style = monolith / hybrid / microservices / polyglot-microservices: `packages/` exists for shared code (types, ui, events as applicable)
 - QA notes:
 - Attempts: 0
 - Max attempts: 3
@@ -287,6 +325,9 @@ Write the full `state/TASKS.md` in this format:
 ## TASK-001
 - Feature group: Database
 - Title: Create database schema and migrations
+- Architecture style: <inherited from SESSION-STATE>
+- Stack: { orm: <Prisma | Drizzle | TypeORM | Sequelize | Kysely | MikroORM>, db: <Postgres | MySQL | ...> }
+- Folder root: apps/api/<orm-folder>/         ← prisma/ | drizzle/ | database/ depending on ORM
 - Depends on: TASK-000
 - Assigned agent: builder-1
 - MCP URL: none
@@ -296,11 +337,14 @@ Write the full `state/TASKS.md` in this format:
   - Mobile owner: none
   - Integration status: not-started
 - Files to create/modify:
-  - [ORM schema file or migration files]
+  - apps/api/prisma/schema.prisma              ← when ORM = Prisma; otherwise drizzle/schema.ts or database/entities/*
+  - apps/api/prisma/migrations/                ← respect chosen ORM CLI conventions
 - Acceptance criteria:
-  - [ ] All data models from SCOPE.md are defined
+  - [ ] Every entity from SCOPE.md §9 Database Schemas exists with all columns + types + constraints
+  - [ ] Every relationship from SCOPE.md §9 is wired in the schema
   - [ ] Migrations run cleanly on a fresh database
-  - [ ] TypeScript types generated/defined for all models
+  - [ ] TypeScript types generated/defined for all models (when ORM supports it)
+  - [ ] ORM folder placed correctly (Prisma → `prisma/`, Drizzle → `drizzle/`, others → `database/`)
 - QA notes:
 - Attempts: 0
 - Max attempts: 3
@@ -382,19 +426,55 @@ Also include traceability in each task block:
 
 Only include IDs that apply to the task.
 
-### Step 8 — Present and confirm
+### Step 8 — Present, run coverage gate, confirm
 
 Before writing `state/TASKS.md`:
-1. Show the user a summary: total tasks, tasks per feature group, Builder assignments, estimated parallelism.
-2. Show coverage summary:
+
+1. **Show summary:** total tasks, tasks per feature group, Builder assignments, estimated parallelism.
+
+2. **Run HARD COVERAGE GATE — refuse to save TASKS.md if any item fails.** Each source-of-truth item must be assigned to ≥1 task; gaps below 100% are P0 blockers, not warnings:
+
+   | Source of truth | Required mapping | If less than 100% |
+   |---|---|---|
+   | **SoW Phase 4 endpoints** (every row of every endpoint table) | each endpoint → at least one task with that endpoint in `Files to create/modify:` or `Functional notes:` | **REFUSE TO SAVE**. List missing endpoints. "API partly worked" symptom. |
+   | **SoW Phase 7 Page Inventory** (every page row) | each page → at least one UI task with the matching `Page IDs:` field | **REFUSE TO SAVE**. List missing pages. "Features missed" symptom. |
+   | **SoW Phase 3 / Database §2 entities** (every entity) | each entity → in TASK-001 (schema) or a feature-specific schema task | **REFUSE TO SAVE**. List missing entities. |
+   | **SoW Phase 5 events** (when present) | each event → at least one producer task AND at least one consumer task | **REFUSE TO SAVE**. List orphan events. |
+   | **SoW Phase 5.5 business processes** (when present) | each process → ordered task sequence preserving the transition (e.g. booking pending → tutor accepts → payment) | **REFUSE TO SAVE**. List unmapped flows. |
+   | **Brief §8 third-party integrations** (Stripe, SendGrid, Twilio, S3, Cloudinary, etc.) | each integration → at least one task with the integration name in `Functional notes:` | **REFUSE TO SAVE**. Integrations silently dropped is "features missed". |
+   | **Architecture style folder structure** | every task's `Files to create/modify:` paths must conform to `deliverables/architecture/styles/<style>.md` Folder structure | **REFUSE TO SAVE**. List offending paths + the rule they break. |
+   | **Component decomposition** (UI tasks) | no task creates a page file >200 lines or assigns multiple unrelated concerns to one component file | **REFUSE TO SAVE**. List offending tasks; require splitting before save. |
+
+   Show coverage like:
+   ```text
+   Coverage gate:
+     SoW Phase 4 endpoints:  47 / 47 mapped       ✓
+     SoW Phase 7 pages:      23 / 23 mapped       ✓
+     SoW Phase 3 entities:   18 / 18 mapped       ✓
+     SoW Phase 5 events:      9 / 9 mapped        ✓
+     Brief §8 integrations:   4 / 5 mapped        ✗ FAIL  (missing: Twilio SMS)
+     Style folder paths:    142 / 142 conform     ✓
+     Component budgets:      ALL ≤200 lines       ✓
+   GATE: FAIL — refusing to save TASKS.md until Twilio SMS is mapped to a task.
+   ```
+
+3. **Show coverage details:**
    - screens mapped / total
    - endpoints mapped / total
    - models mapped / total
    - major flow transitions mapped / total
-3. List any inferred items and unresolved gaps.
-4. If coverage is incomplete, do not ask for write confirmation yet.
-5. If complete, ask: "Does this look correct? Reply 'yes' to write state/TASKS.md, or tell me what to adjust."
-6. Only write the file after the user confirms.
+   - integrations mapped / total
+
+4. **List inferred items and unresolved gaps.**
+
+5. **If the coverage gate failed, do not ask for write confirmation.** Tell the user exactly which items are unmapped and offer to:
+   - (a) Add a task for each missing item, or
+   - (b) Mark the item explicitly out-of-scope (requires updating SCOPE.md), or
+   - (c) Re-run `import-docs` if the missing items reveal that SCOPE.md itself is incomplete.
+
+6. **If the gate passed, ask:** "Coverage is 100% across all source-of-truth items. Reply 'yes' to write state/TASKS.md, or tell me what to adjust."
+
+7. Only write the file after the user confirms AND the coverage gate passes.
 
 ### Step 9 — Update progress table
 

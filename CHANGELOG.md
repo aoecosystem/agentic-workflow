@@ -6,6 +6,113 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.1.0] — Pipeline fidelity + triple-mirror completion
+
+Reliability release. Tracked back from two real-world runs (sitora-tours,
+saas-email) that produced different folder layouts for the same engine.
+Root causes: data flow gaps and an incomplete triple-mirror.
+
+### Fixed
+
+- **`import-docs` now actually reads the 5 HTML deliverables.** Previously
+  only read `inputs/*.md` and `docs/*` raw files, so SoW Phase 4 endpoints,
+  Phase 7 Page Inventory, Phase 6 Tech Stack, Phase 9 Design Language,
+  and the architecture / database / infrastructure HTMLs were never
+  propagated into SCOPE.md. Caused "API partly worked", "features
+  missed", "different folders each run", "design not classic web pages".
+  Tier 1 (5 HTMLs) is now canonical; Tier 2 (markdown) is fallback only.
+- **`parse-scope` now reads Architecture style and propagates it.** Reads
+  `state/SESSION-STATE.md → Architecture style:` and `deliverables/architecture/styles/<style>.md`
+  as HARD CONTRACTS. Every task block now carries `Architecture style:`,
+  `Stack:`, `Folder root:` fields. Refuses to save if any task path
+  doesn't conform to the style's folder structure.
+- **Coverage gate in `parse-scope` Step 8.** Refuses to save TASKS.md
+  unless 100% of SoW Phase 4 endpoints, Phase 7 pages, Phase 3 entities,
+  Phase 5 events, Phase 5.5 processes, Brief §8 integrations are mapped
+  to at least one task.
+- **Tighter API acceptance criteria.** Baseline AC for API tasks now
+  requires explicit `200/201` + `401` (when protected) + `403` (when
+  role-gated) + `4xx` validation + `404` (path params) + `5xx` test
+  cases. "Happy + one error" is no longer sufficient.
+- **UI acceptance criteria locked.** Component self-containment
+  (no static arrays as props, no `.map()` over static literals, one
+  concern per file ≤200 LOC, design tokens only) baked into every UI
+  task block.
+- **Triple-mirror completed for commands.** 33 commands now mirrored
+  byte-identical across `.claude/commands/`, `.cursor/commands/`,
+  `.agent/commands/`. Previously only `.claude/commands/` existed —
+  Cursor and Antigravity had zero slash-command access.
+- **`ui-ux-pro-max` drift reconciled.** `.cursor/` had no frontmatter
+  (so auto-trigger broken); `.agent/` had stale "50 styles" metadata
+  from pre-v2. All three trees now byte-identical (v2 with 67 styles
+  / 96 palettes / 57 font pairings).
+- **`INSTRUCTIONS.md` created.** CLAUDE.md mandates reading it on every
+  session start; previously the file didn't exist.
+- **Docs hygiene.** Removed `/audit-tasks` references from README
+  (orphan command — `/approve-tasks` is the real audit). Updated
+  `28 skills, 29 commands` count to `33 skills, 33 commands` across
+  README / CLAUDE.md / AGENTS.md.
+
+### Why this matters
+
+The user's complaints — "different folders each run, methods confused,
+commands not found, features missed, design not classic, API partly
+worked" — all trace to the same root cause: data from the 5 HTML
+deliverables never reached the build phase, and Cursor/Antigravity
+had no commands at all. Both are fixed now. Same engine, same input,
+same output, every time.
+
+---
+
+## [2.0.0] — Workspace-aware architecture profiles + UI design intelligence
+
+Released 2026-05-12. Major upgrade based on the sitora-tours real-world
+run.
+
+### Added
+
+- **Workspace monorepo as default** across all 4 architecture style
+  profiles (`monolith`, `hybrid`, `microservices`, `serverless`).
+  `pnpm-workspace.yaml` + per-app `package.json` + `tsconfig.base.json`
+  at root.
+- **New 5th style: `polyglot-microservices.md`.** Multi-language
+  microservices (Node + Go + Python + Java + Rust) with `go.work`,
+  `pyproject.toml + uv.lock`, `Cargo.toml`, `settings.gradle.kts`,
+  buf-based contract codegen, language-baseline docs, uniform Makefile
+  targets per service.
+- **Component self-containment rule** across all 5 style profiles.
+  Static UI data (nav, footer, FAQ, dropdown options, social icons)
+  lives INSIDE the rendering component; pages never pass static
+  arrays as props; no `.map()` over build-time literals; one concern
+  per file under `components/<feature>/<Concern>.tsx`; ≤200 lines
+  per file.
+- **`ui-ux-pro-max` skill** installed via `npx uipro-cli init` — 67
+  visual styles, 96 color palettes, 57 font pairings, 99 UX guidelines,
+  25 chart types, 13 frontend stacks.
+- **Hard UI quality gate in `build-task` Step 7.** CRITICAL/HIGH
+  ui-ux-pro-max rules (accessibility 4.5:1 contrast, 44×44 touch
+  targets, viewport meta, design tokens only) block task handoff
+  like a failing test.
+- **Design language locked in SoW Phase 9** — visual style, color
+  palette, font pairing, component library, chart types chosen ONCE
+  and treated as a hard contract by every later UI task.
+- **HARD-REJECT QA gate (Step 6e)** for component-architecture
+  violations: static arrays as props, `.map()` over static literals,
+  page files with inline section JSX, files past size budget.
+
+### Changed
+
+- **Folder structure rules** in every style profile clarify FE/BE
+  split (`apps/api/` + `apps/web/`, never combined), root-level
+  `infra/`, ORM-aware folder naming (Prisma → `prisma/`, Drizzle →
+  `drizzle/`, others → `database/`), role-based app names
+  (NOT slug-prefixed).
+- **`build-task` Step 1** now treats `deliverables/architecture/styles/<style>.md`
+  as a HARD CONTRACT — every file placed must sit under a folder
+  declared by the profile.
+
+---
+
 ## [1.0.0] — Initial release
 
 First public release of the agentic-workflow engine — a unified

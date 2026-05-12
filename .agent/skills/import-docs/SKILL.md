@@ -57,35 +57,66 @@ When source docs include user journeys, flows, or screen specs:
 
 ## Steps
 
-### Step 0 — Resolve canonical input artifacts
+### Step 0 — Resolve canonical input artifacts (5 HTML deliverables FIRST)
 
-Before scanning raw uploaded documents, check for the canonical filled-in
-artifacts:
+Because the stage gate enforces `Stage: DOCS_COMPLETE`, the 5 approved
+HTML deliverables exist and are the **canonical source of truth**. They
+MUST be read before anything else. This is the only place SCOPE.md gets
+its data — endpoints, page inventory, tech stack, ERD, infra — so every
+HTML must be scanned.
 
-- `inputs/project-brief.md`
-- `inputs/scope-of-work.md`
+**Resolution order (strict — try each tier; if tier N succeeds, use it
+and skip the rest):**
 
-Resolution rules:
+**Tier 1 — Approved HTML deliverables (preferred path; expected at
+DOCS_COMPLETE).** Read all 5 in this exact order:
 
-1. If **both** canonical files exist and are filled (not just template
-   placeholders), use them directly as the authoritative source. Skip
-   raw-doc scanning.
-2. If **only one** of the two exists, use what's there and synthesize
-   the missing one from the other plus any raw docs in `inputs/`.
-3. If **neither** exists but raw docs are present (PDF, docx, html,
-   md), extract content from those raw docs and write
-   `inputs/project-brief.md` + `inputs/scope-of-work.md` first
-   (using the structure from `templates/project-brief.md` and
-   `templates/scope-of-work.md`). Show drafts for confirmation
-   before saving.
-4. If **neither** canonical files nor raw docs exist, halt and tell
-   the user to either:
-   - run `interview me` to fill them through Q&A, or
-   - drop source documents into `inputs/`.
+| # | File pattern | What to extract |
+|---|---|---|
+| 1 | `deliverables/brief/<slug>-brief.html` | Sections 1-13: vision, users, features, business processes, multi-role flag, success metrics, integrations, NFRs |
+| 2 | `deliverables/scope-of-work/<slug>-sow.html` | Phase 1 service inventory, Phase 2 module breakdown, Phase 3 database schemas, **Phase 4 API endpoints (full table per module)**, Phase 5 events, Phase 5.5 business processes, **Phase 6 tech stack**, **Phase 7 page inventory**, Phase 8 quality criteria, **Phase 9 folder structure + design language** |
+| 3 | `deliverables/architecture/<slug>-architecture.html` | Section 2 service inventory diagram, Section 3 data flow, Section 4 deployment topology, Section 5 Mermaid `architecture` diagram (verbatim) |
+| 4 | `deliverables/database/<slug>-database.html` | Section 2 entity definitions (every column + type + constraints), Section 3 relationships, Section 5 Mermaid `erDiagram` (verbatim) |
+| 5 | `deliverables/infrastructure/<slug>-infrastructure.html` | Section 3 environments, Section 4 cloud providers, Section 5 deployment Mermaid topology, Section 6 secrets + env vars, Section 7 observability + scaling |
 
-After this step, the rest of the skill operates on
-`inputs/project-brief.md` + `inputs/scope-of-work.md` as the source of
-truth, never on raw docs directly.
+Resolve `<slug>` from `state/SESSION-STATE.md` → `Slug:` field. If any
+of the 5 files is missing, halt with the exact missing path — do NOT
+fall back to Tier 2 (DOCS_COMPLETE without all 5 HTMLs is a state
+inconsistency that needs user attention).
+
+HTML reading rules:
+- Strip HTML tags to extract semantic content from each section.
+- Preserve table structure (Phase 4 endpoints, Phase 7 page inventory,
+  Section 2 entities) as structured records — never collapse to prose.
+- Preserve Mermaid code blocks verbatim (used by `parse-scope` to
+  generate ERD-aware tasks).
+- For each section, record `source_file: <path>`, `source_section:
+  <heading>`, `extracted_at: <ISO>` so downstream skills know which
+  HTML the field came from.
+
+**Tier 2 — Legacy markdown inputs (deprecated; fallback only if Tier 1
+is impossible — e.g. user is migrating an old project without the 5
+HTMLs).** Used only when `Stage` is not yet `DOCS_COMPLETE` and the
+user explicitly opted into raw-doc ingestion via `inputs/`:
+
+- `inputs/project-brief.md` (filled)
+- `inputs/scope-of-work.md` (filled)
+
+If only one exists, synthesize the missing one. If neither exists but
+raw docs are present (PDF, docx, html, md), extract content from those
+raw docs and write `inputs/project-brief.md` + `inputs/scope-of-work.md`
+first (using the structure from `templates/project-brief.md` and
+`templates/scope-of-work.md`). Show drafts for confirmation before
+saving.
+
+**Tier 3 — Nothing available.** Halt and tell the user to either:
+- run `interview me` to fill the brief through Q&A and complete the
+  docs phase first, or
+- drop source documents into `inputs/`.
+
+After this step, the rest of the skill operates on the resolved tier's
+sources as the authoritative input. The 5 HTMLs (Tier 1) override
+everything else.
 
 ---
 
@@ -126,17 +157,28 @@ Build a source ledger while reading:
 
 Map content to `state/SCOPE.md` sections and also build an internal `Flow Matrix` for quality checks.
 
-#### 3A) SCOPE mapping
+#### 3A) SCOPE mapping (Tier 1 — 5 HTMLs is the canonical path)
 
-| SCOPE section | Extract from docs |
-|---------------|-------------------|
-| 1. Project Overview | summary, outcomes, target users |
-| 2. System Architecture | frontend/backend/db/auth/services/deploy |
-| 3. Tech Stack | framework/library/tooling choices |
-| 4. MCP URLs | Figma, OpenAPI, plugin export, design tokens |
-| 5. Feature Breakdown | capabilities, screens, endpoints, models, dependencies |
-| 6. Out of Scope | exclusions, future phases |
-| 7. Non-Functional Requirements | performance, security, accessibility, error conventions |
+| SCOPE section | Tier 1 source (5 HTMLs) | Tier 2 source (markdown fallback) |
+|---|---|---|
+| 1. Project Overview | brief §1 (vision) + §2 (target users) + §10 (success metrics) | inputs/project-brief.md §1-3 |
+| 2. System Architecture | sow Phase 1 (service inventory) + architecture §2-§4 + sow Phase 9 (folder structure verbatim) | inputs/scope-of-work.md "Architecture" + raw docs |
+| 3. Tech Stack | **sow Phase 6 (frontend / backend / database / ORM / integrations)** — copy verbatim | inputs/scope-of-work.md "Tech Stack" |
+| 4. MCP URLs | brief §8 (integrations: Figma URL, OpenAPI URL, plugin links) | raw docs |
+| 5. Feature Breakdown | sow Phase 2 (modules) + **Phase 4 (every endpoint as a row)** + Phase 3 (data models for each feature) + Phase 5 (events) + Phase 5.5 (business processes) | inputs/scope-of-work.md feature list |
+| 6. Out of Scope | brief §11 + sow Phase 8 quality criteria exclusions | inputs/scope-of-work.md "Out of scope" |
+| 7. Non-Functional Requirements | brief §9 + infrastructure §7 (observability + scaling SLOs) + sow Phase 8 | inputs/scope-of-work.md "NFRs" |
+| 8. Page Inventory | **sow Phase 7 (full page table — Page ID / Page Name / Platform / Auth / Description)** — copy verbatim | derived at Step 7.6 |
+| 9. Database Schemas | **database §2 (every entity with every column + type + constraints)** + database §3 (relationships) + database §5 (Mermaid erDiagram verbatim) | sow Phase 3 |
+| 10. Architecture Style | sow Phase 9 architecture style + architecture §5 (Mermaid diagram verbatim) | SESSION-STATE.md Architecture style: |
+| 11. Infrastructure | infrastructure §3 (environments) + §4 (cloud providers) + §5 (Mermaid topology) + §6 (secrets/env vars) | sow Phase 9 + infrastructure HTML |
+| 12. Design Language | **sow Phase 9 design language sub-section (visual style + color palette + font pairing + component library + chart types + component decomposition rules)** — copy verbatim | none (must be present in Tier 1) |
+
+**Critical:** rows marked **bold** are the ones most often dropped in the
+old import-docs flow. Their absence is the root cause of "API partly
+worked" (endpoints dropped), "features missed" (pages dropped),
+"different folders each run" (stack + style dropped), "design not
+classic" (design language dropped). Tier 1 MUST populate all 12 rows.
 
 #### 3B) Flow Matrix (required when flow content exists)
 

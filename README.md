@@ -89,7 +89,7 @@ INFRASTRUCTURE_DRAFT  ── /review-infrastructure (loop) ── /approve-infra
  ▼
 SCOPE_PARSED ── /parse-scope
  ▼
-TASKS_GENERATED ── /audit-tasks (optional review) ── /start-build
+TASKS_GENERATED ── /approve-tasks (recommended audit) ── /start-build
  ▼
 BUILDING ── (orchestrator + builders + QA loop, parallel)
  ▼
@@ -180,8 +180,9 @@ if docs were your only goal.
 Optional review:
 
 ```
-/audit-tasks    ← senior-style review of the task graph before build
-/approve-tasks  ← TASKS_APPROVED
+/approve-tasks  ← runs the senior-style task-graph audit (acceptance criteria,
+                  dependency order, file ownership, no orphan / circular deps)
+                  and transitions Stage → TASKS_APPROVED on success
 ```
 
 ### Step 6 — Build
@@ -318,7 +319,7 @@ inside agentic-workflow:
 
 ---
 
-## Slash command reference (28 skills, 29 commands)
+## Slash command reference (33 skills, 33 commands)
 
 ```
 ENTRY + STATUS
@@ -385,7 +386,7 @@ BUILD PHASE
 - **Stage-gated.** Every skill refuses if pipeline isn't in the expected stage.
 - **Reversible.** Re-open any approved stage with `/review-*`. Audit-logged.
 - **Resumable.** Every meaningful turn writes progress to `state/SESSION-STATE.md`.
-- **Triple-mirrored.** All 28 skills byte-identical across `.claude/`, `.cursor/`, `.agent/`. Verified inline by the agent.
+- **Triple-mirrored.** All 33 skills + 33 commands byte-identical across `.claude/`, `.cursor/`, `.agent/`. Verified inline by the agent.
 - **Manual-edit safe.** Edit any HTML or code file — agent detects via SHA-256 hash and asks before overwriting.
 
 ---

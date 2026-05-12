@@ -66,7 +66,7 @@ re-build downstream docs/tasks to pick up the change.
 
 ---
 
-## Slash commands (28 skills, 29 commands)
+## Slash commands (33 skills, 33 commands)
 
 ### Docs phase commands (foundations pipeline)
 
