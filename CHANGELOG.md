@@ -6,6 +6,59 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.4.0] — Leverage Claude Code's built-in subagents
+
+Workflow native to Claude Code. The build + QA flow now delegates to
+Claude Code's stock subagents instead of re-implementing them inline.
+
+### Changed
+
+- **`build-task` Step 5** — new step 8: invoke the **`tdd-guide`**
+  Claude Code subagent for every new-feature or bug-fix task to draft
+  tests FIRST. Implement to pass them. Use the discipline Claude Code
+  ships with instead of describing it inline.
+- **`build-task` Step 7** — Gates 4b + 4c:
+  - **4b: code review** via the **`code-reviewer`** subagent (Task tool
+    `subagent_type: code-reviewer`). REQUIRED for every task that writes
+    code. CRITICAL/HIGH blocks task handoff.
+  - **4c: security review** via the **`security-reviewer`** subagent.
+    REQUIRED when the task touches auth, secrets, API endpoints with
+    user input, payment, file uploads, or external surfaces. Any
+    CRITICAL/HIGH blocks. Hardcoded secrets are auto-rejected.
+- **`qa` Step 5b** — new gate: fan out **`code-reviewer` + `security-reviewer`**
+  in parallel via the Task tool (single message with two Task calls
+  for concurrency, not serial). Merge findings, dedupe by file:line,
+  apply severity rule (CRITICAL/HIGH reject; MEDIUM requires
+  follow-up task ID; LOW annotate only). Subagent name is cited in
+  rejection notes.
+- **`orchestrate` Step 6** — Builder fan-out is now explicit: each
+  Builder is a Claude Code subagent launched via the **Task tool with
+  `subagent_type: general-purpose`**. Multiple Task calls in a single
+  message run concurrently; sequential Task calls run serially. Same
+  pattern for QA fan-out.
+
+### Why
+
+Claude Code ships specialized subagents (`code-reviewer`,
+`security-reviewer`, `tdd-guide`) with calibrated prompts and tool
+restrictions for their domain. Re-implementing the same logic inline
+in qa / build-task duplicated effort and lost calibration. Delegating
+to the stock subagents:
+
+1. Halves wall-clock time on review (parallel Task calls instead of
+   serial inline checks).
+2. Inherits Claude Code's ongoing subagent improvements automatically.
+3. Makes rejection notes more specific (subagent attribution helps the
+   user see which gate failed).
+
+### Migration note
+
+No state file changes. The first build run on v2.4 will simply route
+through the subagents — verdicts arrive faster and rejection notes
+get the subagent attribution.
+
+---
+
 ## [2.3.0] — Claude-only (drop Cursor + Antigravity mirrors)
 
 Consolidation release. The triple-mirror across `.claude/`, `.cursor/`,

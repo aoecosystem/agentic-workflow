@@ -141,16 +141,33 @@ secondary route, and mount the global layout without runtime errors.
 After TASK-000A reaches `done`, proceed to Step 6 (fan out feature
 Builders).
 
-### Step 6 — Fan out Builders
+### Step 6 — Fan out Builders (Claude Code Task tool)
 
 Once scaffold is `done`:
 - For ready UI tasks with Figma MCP URL and missing artifact fields, run `figma-plugin-ingest` first.
 - Treat missing `Codegen artifact`, missing `Screen MCP URLs`, empty `Design checklist`, or screen targets that resolve only to sparse section/device-preview context as ingest blockers, not Builder work.
 - If ingest fails, mark the task `blocked` with the exact failing URL/error (no secondary design skill fallback).
-- Launch every ready Builder chain as a parallel sub-agent using Claude Code's Task tool.
-- Each Builder receives: its chain of task IDs and the instruction to follow `build-task` skill.
-- Builders work in parallel. Each Builder processes its tasks sequentially within its chain.
-- Keep a registry of active Builder IDs and their current chain ownership for reassignment.
+
+**Spawning rule:** every Builder is a Claude Code subagent launched via the **Task tool** with `subagent_type: general-purpose`. To run multiple Builders in parallel, **send a single message with multiple Task tool calls** — the Claude Code harness fans them out concurrently. Sequential Task calls are sequential.
+
+For each ready Builder chain, the spawn looks like:
+
+```
+Task tool call:
+  subagent_type: general-purpose
+  description: "Build <feature-group> chain"
+  prompt: |
+    You are Builder-<N>. Follow the `build-task` skill.
+    Process this chain of tasks sequentially: <TASK-XX>, <TASK-YY>, ...
+    Read state/TASKS.md for each task block. Run all verification gates
+    in Step 7 (lint, typecheck, tests, code-reviewer subagent, security-
+    reviewer subagent if applicable). Mark each task `in-review` when done.
+    Return a brief report listing tasks processed + their final status.
+```
+
+Run them concurrently by including all Task calls in the same response. Each Builder processes its chain sequentially internally. Keep a registry of active Builder IDs and which chain each owns for reassignment.
+
+**QA spawning** follows the same pattern: when a task moves to `in-review`, launch a Task tool call with `subagent_type: general-purpose` and prompt "Follow the `qa` skill on TASK-XX. Run the code-reviewer + security-reviewer subagents in parallel in your own Step 5b. Approve or reject with verdict."
 
 ### Step 7 — Monitor and route (continuous)
 

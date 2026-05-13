@@ -81,6 +81,36 @@ Run tests scoped to the feature:
   - Error/edge cases covered? (invalid input, auth failure, not found, server error)
   - If coverage is clearly insufficient: reject with a note on what's missing.
 
+### Step 5b — Run Gate 3.5: Parallel Claude Code subagent reviews (REQUIRED)
+
+For every task, fan out **two Claude Code subagents in parallel** via the Task tool. Use a single message with two Task tool calls so they run concurrently — total wall-clock cost is one review, not two.
+
+| Subagent | When | What to pass |
+|---|---|---|
+| **`code-reviewer`** | Every task that writes code | List of files changed + diff scope + task's `User flow` + `Edge cases` + relevant entries from `memory/PATTERNS.md` |
+| **`security-reviewer`** | Every task touching auth, secrets, user input on API, payment, file uploads, external integrations | Same context + the security-relevant slice of `state/SCOPE.md` NFRs |
+
+After both subagents return:
+
+1. **Merge findings.** Each subagent returns CRITICAL / HIGH / MEDIUM / LOW issues. Combine into one rejection list, deduped by file:line.
+2. **Apply severity rule:**
+   - Any CRITICAL → reject the task. Same severity as a failing test.
+   - Any HIGH → reject the task. Builder must fix before re-submission.
+   - MEDIUM → reject unless the Builder documented an explicit follow-up task ID in `QA notes:` (e.g. "TASK-099 absorbs this").
+   - LOW → annotate in approval notes but do NOT block.
+3. **Cite the subagent in the rejection note** so the user knows which gate failed:
+   ```
+   REJECTED. code-reviewer found CRITICAL:
+     apps/api/src/modules/auth/auth.service.ts:42 — JWT secret read from
+       hardcoded string, not env. Use config.env.JWT_SECRET (defined in
+       config/env.ts).
+   REJECTED. security-reviewer found HIGH:
+     apps/api/src/modules/users/users.routes.ts:18 — User update endpoint
+       doesn't verify the requester owns the userId. Add ownership check.
+   ```
+
+Why parallel subagents instead of inline review: (a) the built-in Claude Code subagents have specialized prompts and tool restrictions for their domain; re-implementing them inline duplicates work and loses calibration. (b) Running them concurrently is 2× faster than serial inline review.
+
 ### Step 6 — Review Gate 4: Acceptance criteria
 
 Go through every `[ ]` item in the task's acceptance criteria:

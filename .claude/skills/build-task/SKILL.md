@@ -89,6 +89,7 @@ Before writing any file:
 5. If the task has UI: note which MCP/design artifact context applies (component names, layout tokens, props, state matrix, breakpoints).
 6. If the task has `Contract refs`, identify the backend/client contract this task is expected to implement or consume and which other task owns the adjacent surfaces.
 7. Translate `User flow`, `Functional notes`, and `Edge cases` into implementation checkpoints so the task is built around the intended user outcome, not just the file list.
+8. **If the task is a new feature or bug fix**, invoke the **`tdd-guide`** Claude Code subagent (via the Task tool with `subagent_type: tdd-guide`) to draft the test cases FIRST. Implement to pass them. This is the TDD discipline Claude Code ships with — use it instead of re-inventing.
 
 Do not start writing code until this plan is clear.
 
@@ -134,10 +135,14 @@ Build in this order (skip layers not applicable to the task):
 
 Run all gates from `01-verification.mdc` and `04-design-fidelity.mdc` when UI is involved:
 
-1. **Lint** — run linter on all modified files. Fix all errors.
+1. **Lint** — run linter on all modified files (`biome check` or `eslint`). Fix all errors.
 2. **Typecheck** — run `tsc --noEmit` (or equivalent). Fix all errors.
 3. **Tests** — run tests scoped to changed files. All must pass.
 4. **Acceptance criteria self-check** — go through every `[ ]` item in the task block. Verify each one is satisfied. Check them: `[x]`.
+
+4b. **Claude Code code review (REQUIRED for every task that writes code).** Invoke the **`code-reviewer`** Claude Code subagent via the Task tool: `subagent_type: code-reviewer`. Pass it: the list of files changed, the diff scope, and the task's `User flow` + `Edge cases` so the review is task-grounded. The subagent reports CRITICAL / HIGH / MEDIUM / LOW issues. Fix every CRITICAL + HIGH before proceeding. MEDIUM are fixed when possible (note in `QA notes:` if intentionally deferred with a follow-up task ID). LOW are surfaced in `QA notes:` but don't block.
+
+4c. **Security review (REQUIRED for tasks touching auth, secrets, API endpoints with user input, payment, file uploads, or any external surface).** Invoke the **`security-reviewer`** Claude Code subagent via the Task tool: `subagent_type: security-reviewer`. Same hand-off pattern. Any CRITICAL/HIGH finding blocks the task. Secret leaks (hardcoded keys, tokens, passwords in code) are auto-rejected at this gate.
 5. **Design checklist self-check (UI only)** — validate token usage, state parity, and responsive requirements from `Design checklist`.
    - **AND** run the `ui-ux-pro-max` quality gate. Walk every CRITICAL + HIGH rule:
      - [ ] Accessibility: every interactive element has visible focus, 4.5:1 contrast, alt/aria where needed, keyboard tab order matches visual order
