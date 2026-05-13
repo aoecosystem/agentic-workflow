@@ -116,8 +116,7 @@ in `inputs/` and run `/import-docs` directly (Tier 2 fallback path).
 
 ## Five-minute quickstart
 
-1. Open Claude Code (or Cursor / Antigravity — same skills, same
-   commands).
+1. Open Claude Code.
 2. `cd` into this repo.
 3. Type `/start-project`.
 4. Answer the brief questions one at a time.

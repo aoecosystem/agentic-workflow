@@ -37,8 +37,8 @@ git clone <repo-url> my-project
 cd my-project/agentic-workflow
 ```
 
-Open the folder in **Claude Code**, **Cursor**, or **Google Antigravity**.
-The agent reads `CLAUDE.md` / `AGENTS.md` / `GEMINI.md` automatically.
+Open the folder in **Claude Code**. The agent reads `CLAUDE.md` and
+`AGENTS.md` automatically.
 
 Run:
 
@@ -300,11 +300,9 @@ agentic-workflow/                      ← this repo
 │   ├── contracts/                          (API contracts)
 │   └── mcp-cache/                          (cached design context)
 ├── docs/                              ← framework docs + prompts/
-├── AGENTS.md / CLAUDE.md / GEMINI.md  ← agent bootstrap
+├── AGENTS.md / CLAUDE.md              ← agent bootstrap
 ├── README.md                          ← this file (overview + step-by-step)
-├── .claude/skills/, .claude/commands/ ← Claude Code
-├── .cursor/skills/, .cursor/rules/    ← Cursor mirror
-└── .agent/skills/, .agent/rules/      ← Antigravity mirror
+└── .claude/skills/, .claude/commands/ ← Claude Code skills + slash commands
 ```
 
 Generated code lives at the **sibling level** in `../apps/`, never
@@ -386,7 +384,6 @@ BUILD PHASE
 - **Stage-gated.** Every skill refuses if pipeline isn't in the expected stage.
 - **Reversible.** Re-open any approved stage with `/review-*`. Audit-logged.
 - **Resumable.** Every meaningful turn writes progress to `state/SESSION-STATE.md`.
-- **Triple-mirrored.** All 33 skills + 33 commands byte-identical across `.claude/`, `.cursor/`, `.agent/`. Verified inline by the agent.
 - **Manual-edit safe.** Edit any HTML or code file — agent detects via SHA-256 hash and asks before overwriting.
 
 ---

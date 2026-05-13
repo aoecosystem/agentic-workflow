@@ -7,7 +7,7 @@ earliest-stage issues are at the top.
 
 ## Setup and discovery
 
-### Skills are not discovered by Claude Code or Cursor
+### Skills are not discovered by Claude Code
 
 **Symptom:** typing `/` doesn't show `/parse-scope`, `/start-build`, etc.
 or the agent says "no skill matches that trigger".
@@ -18,22 +18,8 @@ folder names were renamed.
 **Fix:**
 1. Confirm you opened the **`agentic-workflow/`** folder, not the
    parent project root.
-2. Run `ls .claude/skills/` — there should be 28 folders.
-3. Verify mirror integrity inline: read each `.claude/skills/<name>/SKILL.md` and compare to `.cursor/skills/<name>/SKILL.md` and `.agent/skills/<name>/SKILL.md` (e.g. `md5sum` all three). The triple-mirror rule is the verifier — no external script.
-4. Restart Claude Code / Cursor so it re-scans.
-
----
-
-### inline mirror verification reports drift on first run
-
-**Symptom:** `Drift detected between .claude/skills/ and .cursor/skills/`.
-
-**Cause:** someone edited a skill in one tree without mirroring the
-other (a contributor mistake, not a bug).
-
-**Fix:** inline mirror correction (read canonical + overwrite mirrors). The canonical source is `.claude/skills/`.
-If you intentionally need a Cursor-specific variant, that's a contract
-break — discuss before committing.
+2. Run `ls .claude/skills/` — there should be 33 folders.
+3. Restart Claude Code so it re-scans.
 
 ---
 
@@ -195,7 +181,6 @@ cp TASKS.md TASKS.md.bak
 cp -r memory memory.bak
 
 # 2. Run sanity checks
-#    - mirror integrity: md5sum + compare across .claude/.cursor/.agent
 #    - state freshness: read state/SESSION-STATE.md and confirm Stage matches expected
 #    - task counts: run /show-status
 

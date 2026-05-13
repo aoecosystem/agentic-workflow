@@ -6,6 +6,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.3.0] — Claude-only (drop Cursor + Antigravity mirrors)
+
+Consolidation release. The triple-mirror across `.claude/`, `.cursor/`,
+`.agent/` added complexity without payoff for a Claude-only user.
+Everything Cursor- and Antigravity-related is removed.
+
+### Removed
+
+- `.cursor/` tree (skills + commands + rules) — 99 files.
+- `.agent/` tree (skills + commands + rules) — 99 files.
+- Triple-mirror contract documentation in `CLAUDE.md`, `AGENTS.md`,
+  `README.md`, `CONTRIBUTING.md`, `docs/TROUBLESHOOTING.md`.
+- "Cursor / Antigravity" mentions in `README.md`, `AGENTS.md`,
+  `INSTRUCTIONS.md`, `docs/prompts/README.md`, `orchestrate/SKILL.md`.
+- `GEMINI.md` references (file itself was already removed in v2.2.0).
+
+### Why
+
+The user runs exclusively Claude Code. Maintaining byte-identical
+mirrors for IDEs that aren't used was pure overhead — every skill edit
+required three writes + sha256 verification. Audit data showed the
+mirrors had drifted in past releases despite the contract (the
+ui-ux-pro-max skill had three different versions before v2.1.0
+reconciliation). Single source of truth at `.claude/` is simpler.
+
+### Migration note
+
+If you ever need to add Cursor or Antigravity back, the skill files at
+`.claude/skills/<name>/SKILL.md` are the canonical source — copy them
+to the new tool's expected location. The byte-equality contract no
+longer applies.
+
+---
+
 ## [2.2.0] — Node.js standards + token-efficient profiles
 
 Standards release. Adds a "Quick reference card" to every architecture

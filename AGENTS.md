@@ -3,9 +3,8 @@
 This file defines how AI agents behave inside the **agentic-workflow**
 repo. Read at the start of every session.
 
-It is the cross-tool contract — Claude Code, Cursor, and Google
-Antigravity all read it. IDE-specific overrides live in `CLAUDE.md` and
-`GEMINI.md`.
+It is the agent contract. Claude Code reads it via `CLAUDE.md` at
+session start.
 
 > **Scope:** agentic-workflow is the **full project engine**. It runs the
 > complete lifecycle from initial idea → 5 documents → generated code →
@@ -109,41 +108,6 @@ re-build downstream docs/tasks to pick up the change.
 
 After every command, the agent reminds the user of the next valid
 commands (or runs the `status` skill internally).
-
----
-
-## Triple-mirror rule (HARD CONTRACT)
-
-The same skill set lives in **three folders** so the workflow runs
-identically across Claude Code, Cursor, and Antigravity:
-
-```
-.claude/skills/<name>/SKILL.md      ← canonical source of truth
-.cursor/skills/<name>/SKILL.md      ← MUST be byte-identical
-.agent/skills/<name>/SKILL.md       ← MUST be byte-identical
-```
-
-**Whenever you edit a skill or rule file, you MUST:**
-
-1. Apply the same edit to ALL mirror copies in the same turn (3 trees
-   for skills; 2 trees for rules).
-2. **Verify byte-equality by reading each copy and comparing contents**
-   (or via SHA-256 / md5 hash). Verification is part of the edit, not
-   optional.
-3. State the verification outcome (e.g. *"3/3 mirrors match"*).
-4. On any drift: fix immediately and re-verify.
-
-The rule is the verifier — no external script. Half-mirrored edits
-cause silent inconsistency across IDEs.
-
-The same rule applies to rule files:
-
-```
-.cursor/rules/00-workflow.mdc       ← canonical source of truth
-.agent/rules/00-workflow.mdc        ← MUST be byte-identical
-.cursor/rules/*.mdc                 ← all rule files
-.agent/rules/*.mdc                  ← MUST mirror
-```
 
 ---
 
@@ -315,7 +279,7 @@ gate (structured logging, error reporting, metrics, tracing).
 | `../apps/<sub-app>/` | YES — Builders write here |
 | `deliverables/architecture/styles/*.md` | NO — snapshot from foundations, read-only |
 | `deliverables/designs/<page-id>.png/jpg/html` | NO — humans drop UI screenshots |
-| `INSTRUCTIONS.md`, `README.md`, `CLAUDE.md`, `AGENTS.md`, `GEMINI.md` | NO — repo documentation |
+| `INSTRUCTIONS.md`, `README.md`, `CLAUDE.md`, `AGENTS.md` | NO — repo documentation |
 | `CHANGELOG.md`, `CONTRIBUTING.md`, `LICENSE` | NO — repo governance |
 
 ---

@@ -147,7 +147,7 @@ Once scaffold is `done`:
 - For ready UI tasks with Figma MCP URL and missing artifact fields, run `figma-plugin-ingest` first.
 - Treat missing `Codegen artifact`, missing `Screen MCP URLs`, empty `Design checklist`, or screen targets that resolve only to sparse section/device-preview context as ingest blockers, not Builder work.
 - If ingest fails, mark the task `blocked` with the exact failing URL/error (no secondary design skill fallback).
-- Launch every ready Builder chain as a parallel sub-agent using Cursor's Task tool.
+- Launch every ready Builder chain as a parallel sub-agent using Claude Code's Task tool.
 - Each Builder receives: its chain of task IDs and the instruction to follow `build-task` skill.
 - Builders work in parallel. Each Builder processes its tasks sequentially within its chain.
 - Keep a registry of active Builder IDs and their current chain ownership for reassignment.

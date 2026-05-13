@@ -43,5 +43,4 @@ the safest, simplest, most common choice.
    Section 3 "Architecture style" field.
 5. Test by running `/start-project` and picking your new style.
 
-Profiles are NOT triple-mirrored across `.claude/.cursor/.agent/` — they
-live once at the repo root and are read by skills in all three trees.
+Profiles live once at the repo root and are read by every build skill.

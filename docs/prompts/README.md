@@ -1,9 +1,8 @@
 # prompts/
 
-Reusable prompt snippets you can paste into Claude Code, Cursor, or any
-chat with this repo's context loaded. Each prompt is a self-contained
-markdown file with the prompt body and a short header explaining when to
-use it.
+Reusable prompt snippets you can paste into Claude Code with this repo's
+context loaded. Each prompt is a self-contained markdown file with the
+prompt body and a short header explaining when to use it.
 
 ## Index
 

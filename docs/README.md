@@ -1,7 +1,7 @@
 # docs/
 
 Reference material that complements the top-level docs (`README.md`,
-`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`).
+`AGENTS.md`, `CLAUDE.md`, `INSTRUCTIONS.md`).
 
 ## Files
 

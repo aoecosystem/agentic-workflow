@@ -80,22 +80,6 @@ See `AGENTS.md` → "Manual Edit Protocol" for the full contract.
 
 ---
 
-## Triple-mirror rule for skills + rules
-
-Whenever you edit a SKILL.md under `.claude/skills/<name>/`, you MUST
-update the matching files at `.cursor/skills/<name>/SKILL.md` and
-`.agent/skills/<name>/SKILL.md` in the same turn so all three IDE
-trees stay byte-identical. **Verify inline by reading and comparing
-each copy** (or via SHA-256 hash).
-
-Same applies to `.cursor/rules/*.mdc` and `.agent/rules/*.mdc`.
-
-This is a hard contract. Half-mirrored edits cause inconsistent
-behavior across IDEs that is hard to debug. The rule is the verifier —
-no external script.
-
----
-
 ## Available slash commands (33 skills, 33 commands)
 
 Quick reference — see `AGENTS.md` for full table with stage transitions:
@@ -171,9 +155,7 @@ agentic-workflow/                          ← this repo
 │   ├── contracts/                         ← API contracts (OpenAPI / gRPC / GraphQL)
 │   └── mcp-cache/                         ← cached design context
 ├── docs/                                  ← framework docs + prompts/
-├── .claude/skills/, .claude/commands/     ← Claude Code skills + slash commands
-├── .cursor/skills/, .cursor/rules/        ← Cursor mirror
-└── .agent/skills/, .agent/rules/          ← Antigravity mirror
+└── .claude/skills/, .claude/commands/     ← Claude Code skills + slash commands
 ```
 
 Builders write code to `../apps/<sub-app>/` (sibling level).
