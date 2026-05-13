@@ -1,315 +1,299 @@
 # Profile: hybrid
 
+## Quick reference card (read first — 95% of build tasks only need this)
+
+**Modular monolith today, extractable to microservices tomorrow. Same root layout as monolith — adds extraction discipline INSIDE `apps/api/`.**
+
+```
+<slug>/
+├── package.json                          ← workspace root (pnpm)
+├── pnpm-workspace.yaml                   ← packages: ['apps/*']     (services/* and packages/* added at extraction time)
+├── pnpm-lock.yaml
+├── tsconfig.base.json
+├── biome.json
+├── README.md
+│
+├── apps/
+│   ├── api/                              ← modular monolith (extraction-ready)
+│   ├── web/                              ← frontend
+│   └── infra/                            ← dev orchestration (compose + dev images + scripts)
+│
+└── docs/
+    ├── ADR-0001-modular-monolith.md
+    └── extraction-playbook.md            ← when + how to extract a module
+```
+
+**Default tech picks (same as monolith — listed differences only):**
+
+| Layer | Default | Notes |
+|---|---|---|
+| Backend framework | **Fastify** (or NestJS for opinionated DI) | Same as monolith |
+| ORM | **Drizzle** | Module-scoped schemas inside one DB |
+| Events | **In-process EventEmitter** with Kafka-shaped schemas | Schemas designed so Kafka migration is mechanical |
+| Cache | **Redis** | Used through a port (swappable) |
+| Future broker | **Kafka** | Added at first extraction (lives in `apps/infra/docker/kafka/` then) |
+
+**The hybrid promise:** every module has a `port.ts` interface. When you extract one to `services/<name>/`, only the `compose-root.ts` import changes — business logic moves without rewrites. The extraction recipe is below.
+
+---
+
 ## Description
 
-A modular monolith with extraction-ready boundaries — and an empty
-`services/` slot at the workspace root for the day one or two modules
-get lifted out. Today you ship the backend as a single deploy
-(`apps/api/`), one database, fast iteration. Tomorrow when one module
-gets too busy or too complex, you extract it into `services/<name>/`
-with its own deploy and DB — without rewriting business logic, because
-every module already talks through interface ports and references other
-modules by ID only. Best fit for ~70% of real projects: teams who say
-"we want microservices eventually" but shouldn't pay distributed-systems
-cost yet. Speed of monolith now, optionality for later.
+A modular monolith with extraction-ready boundaries. Today the backend
+ships as a single deploy (`apps/api/`), one database, fast iteration.
+Tomorrow when one module gets too busy, you extract it into
+`services/<name>/` with its own deploy and DB — without rewriting
+business logic, because every module already talks through interface
+ports and references other modules by ID only.
 
-## Default tech additions
+Best fit for ~70% of real projects: teams who say "we want
+microservices eventually" but shouldn't pay distributed-systems cost
+yet. Speed of monolith now, optionality for later.
 
-- **Workspace manager:** pnpm (default) | npm workspaces | yarn workspaces — single lockfile across `apps/*`, `services/*`, `packages/*`
-- **Frontend framework:** Next.js (default) | Vite + React — talks to the monolith API, plus directly to any extracted services
-- **Backend framework:** NestJS (default) | Express + tRPC | Fastify — same single process serves the monolith
-- **Database:** Postgres — single instance for the monolith core, separate instance per extracted service
-- **ORM / Migration tool:** Prisma (default) | Drizzle | TypeORM | Kysely — monolith uses one schema, extracted services own their own
-- **Cache:** Redis (recommended) — used through a shared port so it's swappable
-- **Job queue:** BullMQ on Redis (recommended) — same Redis used for cache
-- **Events:** in-process EventEmitter today (with event names + schemas matching future Kafka topics) — Kafka added when first service is extracted
-- **API gateway:** none initially — gets added in `infra/gateway/` when the first service is extracted
-- **Service mesh:** none initially — added if 3+ services exist
+**Same layout as monolith** — `apps/api/`, `apps/web/`, `apps/infra/`.
+The differences are entirely INSIDE `apps/api/src/modules/`: every
+module has a `port.ts` interface and `adapters/local.ts` (with a
+`remote.ts` stub for extraction day).
+
+`packages/` is **NOT** created upfront. It is added at first
+extraction (becomes `packages/ports/`, `packages/events/`,
+`packages/proto/`). `services/` is also empty until first extraction.
+
+---
 
 ## Folder structure
 
 ```
-<slug>/                                   ← project root = pnpm workspace root
-├── package.json                          ← workspace deps (eslint, prettier, husky, ts)
-├── pnpm-workspace.yaml                   ← packages: ['apps/*', 'services/*', 'packages/*']
-├── pnpm-lock.yaml                        ← single shared lockfile
+<slug>/                                   ← workspace root
+├── package.json
+├── pnpm-workspace.yaml                   ← packages: ['apps/*']  (extend at extraction time)
+├── pnpm-lock.yaml
 ├── tsconfig.base.json
-├── eslint.config.mjs
+├── biome.json
 ├── .env.example
 ├── README.md
 │
 ├── apps/
-│   ├── web/                              ← frontend (Next.js / Vite-React)
-│   │   ├── src/
-│   │   │   ├── app/                      ← App.tsx + router.tsx (or Next app/)
-│   │   │   ├── features/                 ← feature-sliced UI
-│   │   │   ├── layouts/
-│   │   │   ├── shared/{components,constants,hooks,lib,types}
-│   │   │   ├── styles/
-│   │   │   └── main.tsx
-│   │   ├── public/
-│   │   ├── e2e/                          ← Playwright
-│   │   ├── tests/                        ← unit (Vitest)
-│   │   ├── package.json, Dockerfile, vite.config.ts | next.config.ts
-│   │   └── README.md
+│   ├── api/                              ★ MODULAR MONOLITH — extraction-ready (see "Module shape")
+│   ├── web/                              ← frontend (same layout as monolith — see "Standard apps/web/")
+│   ├── infra/                            ← dev infra (NOT at repo root)
+│   │   ├── compose/
+│   │   │   ├── docker-compose.dev.yml    ← FE + monolith + DB + Redis
+│   │   │   ├── docker-compose.staging.yml
+│   │   │   └── docker-compose.prod.yml
+│   │   ├── docker/
+│   │   │   ├── postgres/                 ← DEV ONLY
+│   │   │   ├── redis/
+│   │   │   └── kafka/                    ★ EMPTY UNTIL FIRST EXTRACTION
+│   │   ├── gateway/                      ★ EMPTY UNTIL FIRST EXTRACTION (Kong/Traefik added later)
+│   │   ├── observability/                ← OPTIONAL: prometheus, grafana, otel-collector
+│   │   ├── environments/
+│   │   └── scripts/
+│   │       ├── dev.sh
+│   │       ├── extract-service.sh        ★ HYBRID-SPECIFIC — automates lifting a module to services/
+│   │       ├── deploy.sh
+│   │       └── rollback.sh
 │   │
-│   └── api/                              ★ MODULAR MONOLITH — single backend deploy today
-│       ├── src/
-│       │   ├── bootstrap/                ← DI container, retry, timeout, app composition
-│       │   ├── compose-root.ts           ★ SINGLE wiring point — swap implementations to extract
-│       │   ├── configs/
-│       │   ├── database/                 ← ORM client, migration runner
-│       │   ├── events/                   ← in-process EventEmitter today; Kafka producer wrappers tomorrow
-│       │   ├── modules/                  ← MODULAR services — extraction-ready boundaries
-│       │   │   ├── identity/
-│       │   │   │   ├── port.ts           ★ INTERFACE — the extraction contract
-│       │   │   │   ├── handlers.ts       ← HTTP handlers
-│       │   │   │   ├── service.ts        ← business logic
-│       │   │   │   ├── repository.ts     ← DB access
-│       │   │   │   ├── events.ts         ← event names + payload schemas (Kafka-shaped)
-│       │   │   │   ├── adapters/         ← in-process adapter today; gRPC client tomorrow
-│       │   │   │   │   ├── local.ts      ← imports service.ts directly
-│       │   │   │   │   └── remote.ts     ← gRPC client (added at extraction time)
-│       │   │   │   └── tests/
-│       │   │   ├── booking/              ← same shape
-│       │   │   ├── payment/              ← same shape
-│       │   │   └── notification/         ← same shape
-│       │   ├── routes/                   ← single HTTP gateway: routes.ts wires modules to URLs
-│       │   ├── shared/{constants,errors,middlewares,plugins,types,utils}
-│       │   └── server.ts                 ← single entry point
-│       ├── <orm-folder>/                 ← prisma/ | drizzle/ | database/ (see ORM convention)
-│       ├── tests/{unit, integration}
-│       ├── package.json
-│       ├── Dockerfile                    ← ONE container today
-│       ├── tsconfig.json
-│       └── README.md
+│   └── shared/                           ← OPTIONAL — only if FE+BE share TS types not in ports/
 │
 ├── services/                             ★ EMPTY UNTIL FIRST EXTRACTION
-│   └── (when a module is extracted, it moves here following microservices.md layout —
-│       services/<name>/{src, <orm-folder>, proto, kubernetes, helm, Dockerfile, package.json, README.md})
+│   └── (each extracted service follows microservices.md layout)
 │
-├── packages/                             ← shared workspace libraries
-│   ├── ports/                            ★ EXTRACTION CONTRACTS — interfaces shared by api + future services
-│   │   ├── identity.ts                   ← IdentityPort interface
-│   │   ├── booking.ts
-│   │   └── package.json                  ← name: "@<slug>/ports"
-│   ├── events/                           ← Kafka-shaped event schemas (in-process today, Kafka tomorrow)
-│   │   ├── schemas/
-│   │   │   ├── booking-created.ts
-│   │   │   └── payment-completed.ts
-│   │   └── package.json                  ← name: "@<slug>/events"
-│   ├── proto/                            ← OPTIONAL — gRPC contracts (added when first service extracted)
-│   │   └── package.json
-│   ├── types/                            ← OPTIONAL — shared TS types not in proto/ports
-│   │   └── package.json
-│   └── ui/                               ← OPTIONAL — shared FE design system
-│       └── package.json
-│
-├── infra/                                ★ ROOT-LEVEL — shared by all apps + services
-│   ├── compose/
-│   │   ├── docker-compose.development.yml    ← FE + monolith + DB/Redis + (extracted services if any)
-│   │   ├── docker-compose.staging.yml
-│   │   ├── docker-compose.production.yml     ← prod uses managed DB, only app images
-│   │   └── docker-compose.images.yml
-│   ├── docker/
-│   │   ├── postgres/                     ← Dockerfile + init/ (DEV ONLY)
-│   │   ├── redis/                        ← Dockerfile + redis.conf
-│   │   ├── kafka/                        ★ EMPTY UNTIL FIRST EXTRACTION (or when async events go cross-process)
-│   │   ├── rabbitmq/                     ← optional alternative to Kafka
-│   │   └── nginx/                        ← reverse proxy in front of api (optional)
-│   ├── gateway/                          ★ EMPTY UNTIL FIRST EXTRACTION
-│   │   └── (Kong / Traefik config added when traffic needs to fan out to multiple services)
-│   ├── kubernetes/                       ← cluster-wide manifests (when deploying to K8s)
-│   ├── observability/
-│   │   ├── prometheus/                   ← scrape configs
-│   │   ├── grafana/                      ← dashboards
-│   │   └── otel-collector.yaml           ← traces ready for distributed mode
-│   ├── environments/
-│   │   ├── api.env
-│   │   ├── postgres.env
-│   │   └── redis.env
-│   └── scripts/
-│       ├── deploy.sh
-│       ├── extract-service.sh            ★ HYBRID-SPECIFIC — automates lifting a module to services/
-│       ├── health.sh
-│       └── rollback.sh
+├── packages/                             ★ EMPTY UNTIL FIRST EXTRACTION
+│   └── (at extraction time:
+│        packages/ports/        — extraction contracts
+│        packages/events/       — Kafka-shaped event schemas
+│        packages/proto/        — gRPC contracts)
 │
 ├── docs/
 │   ├── ADR-0001-modular-monolith.md
-│   └── extraction-playbook.md            ★ HYBRID-SPECIFIC — when + how to extract a module
+│   └── extraction-playbook.md            ★ HYBRID-SPECIFIC — when + how to extract
 └── .github/workflows/
 ```
 
-### ORM folder convention (same as monolith — applied per app/service)
+---
 
-| Language + ORM         | Folder name           | Contents                                   |
-|------------------------|-----------------------|--------------------------------------------|
-| Node + **Prisma**      | `prisma/`             | `schema.prisma` + `migrations/` + `seed.ts`|
-| Node + **Drizzle**     | `drizzle/`            | `schema.ts` + `migrations/`                |
-| Node + **TypeORM**     | `database/`           | `entities/` + `migrations/`                |
-| Node + **Sequelize**   | `database/`           | `models/` + `migrations/` + `seeders/`     |
-| Node + **Kysely**      | `database/`           | `schema.ts` + `migrations/`                |
-| Go + sqlc / GORM       | `db/queries/` or `database/` | per Go convention                  |
-| Python + SQLAlchemy + Alembic | `database/` + `alembic/` | models + migration scripts        |
+## `apps/api/` module shape (THIS is what makes hybrid hybrid)
+
+Every backend module under `apps/api/src/modules/<name>/` follows
+the same extraction-ready shape:
+
+```
+apps/api/src/modules/<name>/
+├── port.ts                  ★ INTERFACE — the extraction contract (IUserService, IBookingService, ...)
+├── <name>.routes.ts         ← HTTP routes (Fastify) or controllers (NestJS)
+├── <name>.service.ts        ← business logic
+├── <name>.repo.ts           ← DB access (single DB today; service-owned DB after extraction)
+├── <name>.schema.ts         ← zod request/response schemas
+├── <name>.events.ts         ← event names + payload schemas (Kafka-shaped)
+├── adapters/
+│   ├── local.ts             ← imports service.ts directly (TODAY)
+│   └── remote.ts            ← gRPC client (added at extraction time)
+└── <name>.test.ts
+```
+
+**`apps/api/src/compose-root.ts`** is the single wiring point. Today
+it imports `adapters/local.ts` for every module. The day a module is
+extracted, you change ONE line in compose-root.ts to import
+`adapters/remote.ts` instead — and that module is now a separate
+service. No business logic changes.
+
+```ts
+// apps/api/src/compose-root.ts (today)
+import { userServiceLocal as userService } from './modules/identity/adapters/local';
+import { bookingServiceLocal as bookingService } from './modules/booking/adapters/local';
+// after extracting identity:
+// import { userServiceRemote as userService } from './modules/identity/adapters/remote';
+```
+
+Rest of `apps/api/` layout (server.ts, app.ts, config/, plugins/,
+middleware/, events/, jobs/, lib/, utils/, types/, ORM folder, test/)
+follows the **monolith profile's "Standard apps/api/ layout"** exactly.
+
+---
+
+## `apps/web/` layout
+
+**Identical to monolith** — see the "Standard apps/web/ layout"
+section in `monolith.md`. Same `src/`, `public/`, `docs/`, `test/{unit,e2e}/`,
+Next.js or Vite, Tailwind + shadcn, TanStack Query, Zustand, etc.
+
+When some backend modules are extracted, `apps/web/src/lib/api.ts`
+points at the API gateway (`apps/infra/gateway/`) instead of the
+monolith directly. The gateway transparently routes — frontend code
+doesn't change.
+
+---
+
+## ORM folder convention
+
+Same table as monolith (`prisma/` | `drizzle/` | `database/`).
 
 **Rule:** `apps/api/` follows its chosen ORM. When a module is
 extracted to `services/<name>/`, that service picks its own ORM (it
 doesn't have to match the monolith's).
 
-### Frontend / backend / extraction split rules
+---
 
-1. **`apps/web/`** = frontend (same shape as monolith profile).
-2. **`apps/api/`** = the modular monolith — ONE backend deploy holding all modules today.
-3. **`apps/api/src/modules/<svc>/`** = a single module — ALWAYS contains `port.ts`, `service.ts`, `repository.ts`, `events.ts`, plus `adapters/local.ts` (and `adapters/remote.ts` once extracted).
-4. **`services/`** = empty at the start. When a module is extracted, it moves here following the microservices layout (own DB, own Dockerfile, own k8s manifests). The monolith then imports `adapters/remote.ts` instead of `adapters/local.ts` for that module — `compose-root.ts` is the single line that changes.
-5. **`packages/ports/`** = the extraction contracts. Both `apps/api/` and any future `services/<name>/` import the same `IdentityPort` interface. This is what makes extraction mechanical.
-6. **Folder names role-based, NOT slug-prefixed** — `apps/api/`, `services/booking/`, NOT `apps/<slug>-api/`.
+## Frontend / backend / extraction split rules (HARD CONTRACT)
 
-### Component file organization (frontend) — HARD CONTRACT
+1. **`apps/web/`** = frontend (same as monolith profile).
+2. **`apps/api/`** = the modular monolith — ONE backend deploy today, holding all modules.
+3. **`apps/api/src/modules/<name>/`** = a single module — ALWAYS contains `port.ts`, `<name>.service.ts`, `<name>.repo.ts`, `<name>.events.ts`, plus `adapters/local.ts` (and `adapters/remote.ts` once extracted).
+4. **`apps/infra/`** = dev infra inside `apps/`, NOT at repo root.
+5. **`services/`** = empty at the start. When a module is extracted, it moves here following the microservices layout.
+6. **`packages/`** = empty at the start. Created at first extraction: `packages/ports/` lifts the port interfaces, `packages/events/` lifts the event schemas, `packages/proto/` for gRPC.
+7. **Folder names role-based, NOT slug-prefixed** — `apps/api/`, `services/booking/`, NOT `apps/<slug>-api/`.
 
-Same standard as the monolith profile. `apps/web/` follows feature-sliced layout, but every page/section file obeys these rules:
+---
 
-1. **One concern per file** — pages orchestrate, sections own their JSX:
-   ```
-   apps/web/src/features/booking/
-     BookingPage.tsx                ← orchestrator only
-     components/
-       BookingSearchForm.tsx
-       BookingResultList.tsx
-       BookingDetailsPanel.tsx
-   apps/web/src/shared/components/header/
-     Header.tsx
-     HeaderNav.tsx                  ← nav items as explicit JSX inside this file
-     HeaderUserMenu.tsx
-   ```
-
-2. **Component self-containment** — static UI data (nav, footer, FAQ, dropdown options, social icons) lives **inside the rendering component**. Pages NEVER pass static arrays as props.
-
-3. **i18n is the only allowed external dependency** — components call `t('...')` directly; keys live in locale files.
-
-4. **No `.map()` for static lists** — render each item as JSX. `.map()` is reserved for dynamic data from API/DB/store.
-
-5. **File size budget** — 50–200 lines per file. Past ~200 → split.
-
-6. **Pages pass dynamic data only** — user, fetched content, route state, callbacks. Never static UI scaffolding.
-
-### Extraction recipe (the hybrid promise)
+## Extraction recipe (the hybrid promise)
 
 When a module is ready to extract (typical signals: scaling pressure,
 team ownership boundary, deploy cadence mismatch):
 
-1. **Move** `apps/api/src/modules/<svc>/` → `services/<svc>/src/modules/<svc>/`.
-2. **Add** `services/<svc>/Dockerfile`, `services/<svc>/<orm-folder>/`, `services/<svc>/package.json`, `services/<svc>/kubernetes/`.
-3. **Add** `services/<svc>/proto/<svc>.proto` and run protobuf codegen — generated client lands in `packages/proto/`.
-4. **Migrate** that module's tables out of the monolith DB into the new service's own DB (data migration script in `infra/scripts/`).
-5. **Switch** `apps/api/src/compose-root.ts` from `adapters/local.ts` to `adapters/remote.ts` (gRPC client) for the extracted module.
-6. **Add** `infra/gateway/` (Kong / Traefik) if not already present, route `/api/<svc>/*` to the new service.
-7. **Update** `infra/compose/docker-compose.development.yml` to include the new service.
-8. The monolith continues serving the other modules. Frontend may continue calling the monolith for the extracted module (gateway transparently routes), or be updated to call the gateway directly.
+1. **Create `packages/ports/` and `packages/events/`** if they don't exist yet. Update `pnpm-workspace.yaml` to include `packages/*`. **Lift** the module's `port.ts` and `<name>.events.ts` to these packages.
+2. **Move** `apps/api/src/modules/<svc>/{service.ts,repo.ts,routes.ts}` → `services/<svc>/src/`. Update `pnpm-workspace.yaml` to include `services/*`.
+3. **Add** `services/<svc>/Dockerfile`, `services/<svc>/<orm-folder>/`, `services/<svc>/package.json`, `services/<svc>/kubernetes/`.
+4. **Add** `services/<svc>/proto/<svc>.proto` and run protobuf codegen — generated client lands in `packages/proto/`.
+5. **Migrate** that module's tables out of the monolith DB into the new service's own DB (script in `apps/infra/scripts/migrate-<svc>.sh`).
+6. **Switch** `apps/api/src/compose-root.ts` from `adapters/local.ts` to `adapters/remote.ts` (gRPC client) for the extracted module.
+7. **Add** `apps/infra/gateway/` (Kong / Traefik) if not already present; route `/api/<svc>/*` to the new service.
+8. **Update** `apps/infra/compose/docker-compose.dev.yml` to include the new service.
+
+The monolith continues serving the other modules. Frontend may continue
+calling the monolith for the extracted module (gateway transparently
+routes), or be updated to call the gateway directly.
 
 This is mechanical because **the interface (`port.ts`) didn't change**.
-The extraction playbook lives in `docs/extraction-playbook.md`.
+The full playbook lives in `docs/extraction-playbook.md`.
+
+---
+
+## Component file organization (frontend) — HARD CONTRACT
+
+**Same standard as the monolith profile.** See `monolith.md` →
+"Component file organization (frontend)" — one concern per file,
+component self-containment, no static `.map()`, ≤200 lines per file.
+
+---
 
 ## Database approach
 
 **Single Postgres instance for the monolith, BUT with strict
-per-module ownership.** All tables in one schema (whatever the chosen
-ORM calls it), but each module owns its own tables and other modules
-reference them by ID only — **no foreign keys across module
-boundaries.**
+per-module ownership.** All tables in one schema, but each module owns
+its own tables and other modules reference them by ID only — **no
+foreign keys across module boundaries**.
 
-- **Tool:** chosen ORM from SoW Phase 6 — defaults to Prisma
-- **Tables grouped by module** in the schema file with section comment headers (e.g. `// === booking ===`)
-- **Cross-module references:** store the foreign ID as a column but DON'T add a `@relation` decorator (Prisma) or matching foreign key constraint (any ORM). The relation lives at the application layer, not the DB layer.
-- **No cross-module SQL JOINs** — modules that need other modules' data go through the port (`identityPort.getUser(id)`).
-- **One linear migration history** for the monolith DB.
-- **Dev DB:** dockerized via `infra/docker/postgres/`
-- **Prod DB:** managed service (Supabase / RDS / Neon)
-- **When you extract a module:** its tables move to a new DB without breaking anything because no other module had FK constraints pointing at them.
-- **No cross-module JOINs are written today**, so extraction is mechanical not creative.
+- **Tool:** chosen ORM from SoW Phase 6 — defaults to Drizzle.
+- **Tables grouped by module** in the schema file with section comment headers (`// === booking ===`).
+- **Cross-module references:** store as IDs only (`booking.customer_id: string`, not a FK to `users.id`).
+- **At extraction time:** the extracted service's tables migrate to its own DB; the monolith's references to those tables stay as ID-only strings.
+
+---
 
 ## Communication style
 
-**Through interface ports, never direct imports of other modules'
-internals.**
+**Today: direct imports via ports.** Modules import each other's
+service through the `port.ts` interface (not directly):
 
 ```ts
-// apps/api/src/modules/booking/handlers.ts
-import type { NotificationPort, IdentityPort } from '@<slug>/ports';
+// apps/api/src/modules/booking/booking.service.ts
+import { UserPort } from './identity/port';
 
-export async function createBooking(
-  input: CreateBookingInput,
-  deps: { notify: NotificationPort; identity: IdentityPort }
-) {
-  const user = await deps.identity.getUser(input.userId);   // through port
-  const booking = await db.bookings.insert(input);
-  await deps.notify.send(input.userId, 'booked');           // through port
-  return booking;
+export function createBookingService(userPort: UserPort) {
+  return {
+    async createBooking(input) {
+      const user = await userPort.findById(input.userId);  // ← interface, not direct call
+      ...
+    }
+  };
 }
-
-// apps/api/src/compose-root.ts (single composition point)
-import { localNotify } from './modules/notification/adapters/local';     // today: in-process
-// import { remoteNotify } from './modules/notification/adapters/remote'; // tomorrow: gRPC, just swap
-import { localIdentity } from './modules/identity/adapters/local';
-
-const deps = {
-  notify: localNotify,
-  identity: localIdentity,
-};
 ```
 
-- **Sync:** through interface (`port.ts`) — implementation injected at composition root
-- **Async:** in-process EventEmitter today, but **event names match what Kafka topics would be later** (`booking.created`, `payment.completed`)
-- **Boundary discipline:** STRICT — no module imports another module's internal files. Lint rule (eslint-plugin-boundaries) enforces this.
-- **Frontend → Backend:** typed HTTP client in `apps/web/src/shared/lib/api.ts`. No direct calls to module internals — only to public routes registered in `apps/api/src/routes/`.
-- **The phrase:** "you probably won't extract them, but if you do, you can."
+The `port.ts` import never changes — only the implementation behind it
+(local adapter today, remote gRPC client tomorrow).
+
+- **Sync:** ports + adapters.
+- **Async:** in-process EventEmitter today, Kafka tomorrow. Event schemas in `<name>.events.ts` are designed to match Kafka topics so the migration is mechanical.
+- **Frontend → Backend:** typed HTTP client in `apps/web/src/lib/api.ts`. No direct calls to module internals — only to public routes registered in `apps/api/src/routes/`.
+
+---
 
 ## Mermaid diagram patterns
 
 ### System architecture diagram
 
-Outer subgraph per layer (Client / API / Domain / Data / Infrastructure
-/ External). Inside Domain, each module is a separate node with
-**rounded edges and dotted internal arrows** to suggest "could become
-independent." Show `port.ts` as a labeled boundary on each module
-edge. External nodes (broker, mesh) shown grayed-out / dashed because
-they're not deployed yet but the contract for them is there.
+Modules as separate nodes inside a `Backend` subgraph. Arrows show
+port-based dependencies. Mark which modules are "extraction
+candidates" with a different color.
 
 ```mermaid
 flowchart TB
-  Client["Web (Next.js)"] --> API["API Gateway (apps/api)"]
-  subgraph Domain["Domain (modular monolith)"]
+  Client["Web (Next.js)"] --> Gateway["API (Fastify modular monolith)"]
+  subgraph Backend
     direction LR
-    M1(["Identity"])
-    M2(["Booking"])
-    M3(["Payment"])
-    M4(["Notification"])
-    M2 -.->|port| M1
-    M2 -.->|port| M3
-    M2 -.->|port| M4
+    M1["Identity (port)"]
+    M2["Booking (port)"]
+    M3["Payment (port)"]
+    M4["Notification (port)"]
+    M2 --> M1
+    M2 --> M3
+    M2 --> M4
   end
-  API --> Domain
-  Domain --> DB[(Postgres)]
-  Domain --> Cache[(Redis)]
-  Kafka([Kafka — added on first extraction]):::future
-  classDef future stroke-dasharray: 6 4,fill:#f9f9f9,color:#999
+  Gateway --> Backend
+  Backend --> DB[(Postgres - shared)]
+  Backend --> Cache[(Redis)]
 ```
 
 ### Database diagram
 
-Single `erDiagram` block, but entities are grouped by module via
-section comments. **No `||--o{` lines crossing module boundaries** —
-only ID references annotated as `# ref→users.id (module: identity)`.
-This visually enforces the no-cross-module-FK rule.
+Single `erDiagram` with entities grouped by module. **No FK lines
+crossing module boundaries.** Module groupings shown with comment
+headers in the schema.
 
 ### Infrastructure diagram
 
-Same as monolith for now (one web + one API + one Postgres + Redis +
-external integrations) but with a **callout block**:
-
-> **Migration path:** each module in `apps/api/src/modules/<name>/` can
-> be lifted to `services/<name>/` for independent deploy when scale
-> demands. See `docs/extraction-playbook.md` for the recipe.
-> Cross-module communication uses ports today (in-process), gRPC after
-> extraction. `infra/gateway/` and `infra/docker/kafka/` activate at
-> first extraction.
+Today: same as monolith — one web container + one API container + DB +
+Redis. Show extraction targets dashed. Show `apps/infra/gateway/` and
+`apps/infra/docker/kafka/` as "future" with dashed border.

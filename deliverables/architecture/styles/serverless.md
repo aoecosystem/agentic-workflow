@@ -1,5 +1,51 @@
 # Profile: serverless
 
+## Quick reference card (read first — 95% of build tasks only need this)
+
+**Functions, not servers. FE on edge CDN + functions as backend. Root `infra/` because IaC is cluster-level.**
+
+```
+<slug>/
+├── package.json                          ← pnpm workspace
+├── pnpm-workspace.yaml                   ← packages: ['apps/*', 'packages/*']
+├── pnpm-lock.yaml
+├── tsconfig.base.json
+├── biome.json
+│
+├── apps/
+│   ├── web/                              ← Next.js / Astro on Vercel/Cloudflare Pages
+│   └── api/                              ← function bundle (Hono on Cloudflare Workers default)
+│                                         ← may not exist if Next.js Route Handlers cover backend
+│
+├── packages/                             ← REQUIRED (FE + functions share schema + auth)
+│   ├── db/                               ← Drizzle schema (canonical, edge-compatible)
+│   ├── auth/                             ← JWT verify + session helpers
+│   └── events/                           ← event name + payload schemas (zod)
+│
+└── infra/                                ← IaC at root (NOT inside apps/)
+    ├── <iac-framework>/                  ← SST | CDK | Serverless Framework | SAM | Pulumi | Terraform
+    ├── environments/                     ← per-env vars (NOT secrets — use the platform's secrets store)
+    └── scripts/
+```
+
+**Default tech picks:**
+
+| Layer | Default | Alternative |
+|---|---|---|
+| Frontend host | **Vercel** | Cloudflare Pages / Netlify |
+| Function runtime | **Cloudflare Workers (Hono)** | AWS Lambda / Vercel Functions |
+| Function framework | **Hono** (4× faster than Fastify on edge) | Vercel Route Handlers / AWS Lambda handlers |
+| ORM | **Drizzle** (only edge-compatible TS ORM) | — |
+| Database | **Neon Postgres** | PlanetScale / Supabase / Turso / D1 / DynamoDB |
+| Auth | **Lucia v3** or **@hono/jwt** | NextAuth (if Next-only) |
+| Validation | **Zod** | — |
+| IaC | **SST v3** (best DX for AWS Lambda) | CDK / Serverless Framework / SAM / Pulumi / Terraform |
+| Frontend framework | **Next.js 16 App Router** | Astro / SvelteKit |
+| Tests | **Vitest** + **Playwright** | — |
+| Lint+Format | **Biome** | ESLint + Prettier |
+
+---
+
 ## Description
 
 Functions, not servers. The frontend deploys to a CDN edge (Vercel /
@@ -43,19 +89,13 @@ starts, vendor lock-in, harder local dev, no long-lived connections
 ├── README.md
 │
 ├── apps/
-│   ├── web/                              ← frontend (Next.js / Astro / Vite-React)
-│   │   ├── src/
-│   │   │   ├── app/                      ← App Router (or pages/ for older Next)
-│   │   │   ├── features/                 ← feature-sliced UI
-│   │   │   ├── layouts/
-│   │   │   ├── shared/{components,constants,hooks,lib,types}
-│   │   │   ├── styles/
-│   │   │   └── main.tsx
+│   ├── web/                              ← see "Standard apps/web/ layout" in monolith.md
+│   │   ├── src/                          ← app/ + components/ + features/ + lib/ + ...
 │   │   ├── public/
-│   │   ├── e2e/                          ← Playwright
-│   │   ├── tests/                        ← unit (Vitest)
-│   │   ├── package.json
+│   │   ├── docs/
+│   │   ├── test/{unit, e2e}/             ← e2e optional for serverless (edge testing harder)
 │   │   ├── next.config.ts | vite.config.ts | astro.config.mjs
+│   │   ├── tailwind.config.ts, biome.json, tsconfig.json, package.json
 │   │   └── README.md
 │   │
 │   └── api/                              ★ SERVERLESS FUNCTIONS — one or many deploy units

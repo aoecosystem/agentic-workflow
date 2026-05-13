@@ -300,20 +300,26 @@ Write the full `state/TASKS.md` in this format:
   - package.json
   - pnpm-workspace.yaml
   - tsconfig.base.json
-  - eslint.config.mjs
-  - infra/compose/docker-compose.development.yml
-  - infra/docker/postgres/                     ← respect chosen ORM table (Prisma | Drizzle | TypeORM | Sequelize | Kysely | MikroORM)
+  - biome.json                                 ← OR eslint.config.mjs if the SoW picked ESLint
   - apps/api/                                  ← role-based, NEVER apps/<slug>-api/
   - apps/web/                                  ← role-based, NEVER apps/<slug>-web/
+  - [infra path depends on style — see acceptance criteria]
   - [other config files declared by deliverables/architecture/styles/<style>.md]
 - Acceptance criteria:
   - [ ] Project installs and runs with no errors
   - [ ] TypeScript compiles with zero errors
-  - [ ] Linting passes
-  - [ ] Test runner is configured and a placeholder test passes
+  - [ ] Linting passes (Biome `check` or ESLint, whichever the SoW picked)
+  - [ ] Test runner (Vitest by default) is configured and a placeholder test passes
   - [ ] Folder layout exactly matches `deliverables/architecture/styles/<style>.md` Folder structure section — no improvised top-level folders, no slug-prefixed app names, no combined FE+BE folder
-  - [ ] `infra/` lives at repo root with compose / docker / scripts / environments sub-folders (NOT inside any app folder)
-  - [ ] If style = monolith / hybrid / microservices / polyglot-microservices: `packages/` exists for shared code (types, ui, events as applicable)
+  - [ ] `infra/` lives at the STYLE-CORRECT location:
+        - monolith / hybrid → `apps/infra/` (inside `apps/`, next to `api/` and `web/`)
+        - microservices / polyglot-microservices / serverless → ROOT-LEVEL `infra/`
+  - [ ] `packages/` only exists if the style requires it:
+        - monolith → NOT created (use `apps/shared/` if FE+BE share TS types)
+        - hybrid → empty (created at first extraction)
+        - microservices / polyglot-microservices → `packages/{proto,events,types,ui}` created
+        - serverless → `packages/{db,auth,events}` created
+  - [ ] `apps/web/` follows the standard layout: `src/`, `public/`, `docs/`, `test/{unit, e2e?}/` — `test/e2e/` only when SoW Page Inventory has ≥3 multi-step flows OR style is microservices / polyglot-microservices (e2e is mandatory there)
 - QA notes:
 - Attempts: 0
 - Max attempts: 3

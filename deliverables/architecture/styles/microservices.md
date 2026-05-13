@@ -1,5 +1,61 @@
 # Profile: microservices
 
+## Quick reference card (read first — 95% of build tasks only need this)
+
+**Independent backend services + frontends + shared packages. Root-level `infra/` because k8s/mesh/gateway are cluster-wide.**
+
+```
+<slug>/
+├── package.json                          ← workspace root (pnpm)
+├── pnpm-workspace.yaml                   ← packages: ['apps/*', 'services/*', 'packages/*']
+├── tsconfig.base.json
+├── biome.json
+│
+├── apps/                                 ← user-facing frontends only
+│   ├── web/                              ← main SPA / Next.js
+│   └── admin/                            ← optional internal dashboard
+│
+├── services/                             ← backend microservices (one folder per service)
+│   ├── identity/
+│   ├── booking/
+│   ├── payment/
+│   └── ...
+│
+├── packages/                             ← REQUIRED (cross-service contracts)
+│   ├── proto/                            ← gRPC contracts (canonical)
+│   ├── events/                           ← Kafka event schemas
+│   ├── types/                            ← shared TS types (Node services only)
+│   └── ui/                               ← shared FE design system (optional)
+│
+└── infra/                                ← CLUSTER-WIDE (NOT inside apps/)
+    ├── kubernetes/                       ← cluster ingress, cert-manager, etc.
+    ├── helm/                             ← cluster-wide Helm releases
+    ├── mesh/                             ← Istio / Linkerd configs
+    ├── gateway/                          ← Kong / Traefik route configs
+    ├── observability/                    ← prometheus, grafana, otel-collector
+    ├── compose/                          ← local dev
+    └── scripts/
+```
+
+**Default tech picks:**
+
+| Layer | Default | Alternative |
+|---|---|---|
+| Backend framework (per service) | **Fastify** (Node) | NestJS / Go chi / Python FastAPI |
+| API gateway | **Kong** | Traefik / nginx / AWS API Gateway |
+| Service mesh | **Istio** | Linkerd / none |
+| Message broker | **Kafka** (REQUIRED) | RabbitMQ |
+| Cache | **Redis Cluster** (REQUIRED) | — |
+| Database per service | **Postgres** | per-service choice |
+| ORM (per service) | **Drizzle** (Node) | Prisma / sqlc (Go) / SQLAlchemy+Alembic (Python) |
+| Tracing | **OpenTelemetry → Jaeger/Tempo** | — |
+| Orchestration | **Kubernetes** | Nomad / Docker Swarm |
+| Frontend | **Next.js + Tailwind + shadcn/ui + TanStack Query + Zustand** | same as monolith |
+
+**Why root-level `infra/` (vs `apps/infra/` in monolith):** services span k8s clusters with shared concerns (mesh, gateway, observability) that aren't owned by any single app. Per-service k8s manifests live inside `services/<svc>/kubernetes/`; cluster-wide manifests live in `infra/`.
+
+---
+
 ## Description
 
 Independent backend services, one frontend (or several), all in a
@@ -40,21 +96,19 @@ failures, service-mesh complexity, and a steep operational bar.
 ├── .env.example
 ├── README.md
 │
-├── apps/                                 ← user-facing frontends
-│   ├── web/                              ← main customer SPA / Next.js app
-│   │   ├── src/
-│   │   │   ├── app/                      ← App.tsx + router.tsx (or Next app/)
-│   │   │   ├── features/                 ← feature-sliced UI
-│   │   │   ├── layouts/
-│   │   │   ├── shared/{components,constants,hooks,lib,types}
-│   │   │   ├── styles/
-│   │   │   └── main.tsx
-│   │   ├── public/
-│   │   ├── e2e/                          ← Playwright
-│   │   ├── tests/                        ← unit (Vitest)
-│   │   ├── package.json, Dockerfile, vite.config.ts | next.config.ts
-│   │   └── README.md
-│   └── admin/                            ← OPTIONAL — internal admin dashboard (same shape)
+├── apps/                                 ← user-facing frontends (Node only)
+│   ├── web/                              ← see "Standard apps/web/ layout" in monolith.md
+│   │   ├── src/                          ← app/ + components/ + features/ + lib/ + hooks/ + ...
+│   │   ├── public/                       ← static assets
+│   │   ├── docs/                         ← component docs
+│   │   ├── test/{unit,e2e}/              ← e2e is REQUIRED for microservices (integration boundary)
+│   │   ├── Dockerfile
+│   │   ├── next.config.ts | vite.config.ts
+│   │   ├── tailwind.config.ts
+│   │   ├── biome.json
+│   │   ├── tsconfig.json
+│   │   └── package.json
+│   └── admin/                            ← OPTIONAL — internal admin dashboard (same shape as web/)
 │
 ├── services/                             ← backend microservices (one folder per service)
 │   ├── identity/                         ← each service owns EVERYTHING for itself

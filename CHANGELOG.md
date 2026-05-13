@@ -6,6 +6,79 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.2.0] — Node.js standards + token-efficient profiles
+
+Standards release. Adds a "Quick reference card" to every architecture
+style profile, locks down Node.js project structure conventions
+(folders + tech defaults), and adjusts `infra/` placement per style.
+
+### Added
+
+- **Quick reference card** at the top of every architecture style profile.
+  Builders read ~30 lines (folder tree + tech defaults table) for 95%
+  of tasks. Saves ~200 tokens per build-task invocation.
+- **Standard `apps/api/` layout** in `monolith.md` (Fastify default):
+  `src/{server.ts, app.ts, config/, plugins/, modules/, middleware/,
+  events/, jobs/, lib/, utils/, types/, <orm-folder>/}` with consistent
+  per-module shape (`*.routes.ts`, `*.service.ts`, `*.schema.ts`,
+  `*.repo.ts`, `*.test.ts`).
+- **Standard `apps/web/` layout** across all 5 profiles:
+  `src/`, `public/`, `docs/`, `test/{unit, e2e?}/`. `test/e2e/` is
+  added when SoW Page Inventory has ≥3 multi-step flows OR style is
+  microservices / polyglot-microservices.
+- **Tech defaults tables** in every profile so the agent picks the
+  same lighter / faster stack each time: Fastify (vs Express), Drizzle
+  (vs Prisma), Pino, Zod, BullMQ, Next.js + Tailwind + shadcn/ui,
+  TanStack Query, Zustand, Vitest, Playwright, Biome, pnpm.
+  Serverless adds Hono on Cloudflare Workers + Neon.
+
+### Changed
+
+- **`infra/` placement is now style-dependent:**
+  - `monolith` / `hybrid` → `apps/infra/` (inside `apps/`, next to
+    `api/` and `web/`). Dev orchestration lives next to the apps it
+    orchestrates.
+  - `microservices` / `polyglot-microservices` / `serverless` → root
+    `infra/` (cluster-wide k8s, mesh, gateway, IaC).
+- **`packages/` is now conditional:**
+  - `monolith` → NOT created by default (use `apps/shared/` if FE+BE
+    share TS types).
+  - `hybrid` → empty until first extraction (created at extraction
+    time as `packages/ports/`, `packages/events/`, `packages/proto/`).
+  - `microservices` / `polyglot-microservices` → required
+    (`packages/{proto,events,types,ui}`).
+  - `serverless` → required (`packages/{db,auth,events}`).
+- **`build-task` Step 1** reads the Quick reference card first,
+  full profile only for scaffold or non-standard tasks.
+- **`parse-scope` TASK-000 template** updated: `Files to create/modify`
+  no longer hardcodes root `infra/`; acceptance criteria call out the
+  style-correct `infra/` location and conditional `packages/`.
+- **Biome over ESLint+Prettier** as default linter (10-15× faster,
+  one tool, drop two dev deps). ESLint+Prettier remain as alternatives
+  if the SoW picks them.
+
+### Removed
+
+- `GEMINI.md` — duplicated `AGENTS.md` content with no unique value.
+  Antigravity reads `.agent/` natively; the 94-line bootstrap pointer
+  was noise.
+
+### Rationale
+
+Two test runs (`sitora-tours`, `saas-email`) produced different
+folder layouts and tech picks because:
+1. The agent had no quick canonical reference — it re-derived the
+   structure from the full profile each time (lossy on long contexts).
+2. Tech picks were free-form per task instead of locked at the SoW.
+3. `infra/` was always at root, but for `monolith` projects the
+   orchestration concerns are app-local, not cluster-level.
+4. `packages/` was created unconditionally, but a single-team
+   monolith has no use for it.
+
+v2.2 removes all four sources of drift.
+
+---
+
 ## [2.1.0] — Pipeline fidelity + triple-mirror completion
 
 Reliability release. Tracked back from two real-world runs (sitora-tours,

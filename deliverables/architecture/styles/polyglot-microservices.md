@@ -1,5 +1,63 @@
 # Profile: polyglot-microservices
 
+## Quick reference card (read first — 95% of build tasks only need this)
+
+**Microservices in multiple languages (Node + Go + Python + Java/Kotlin + Rust). Root `infra/` because cluster-wide. `apps/web/` always Node.**
+
+```
+<slug>/
+├── package.json                          ← pnpm workspace (Node apps + Node services + Node packages)
+├── pnpm-workspace.yaml                   ← packages: ['apps/*', 'services/*' (Node ones), 'packages/*']
+├── pnpm-lock.yaml
+├── go.work                               ← Go workspace (Go services)
+├── pyproject.toml                        ← Python workspace (uv-managed)
+├── settings.gradle.kts                   ← JVM workspace (Java/Kotlin)
+├── Cargo.toml                            ← Rust workspace (workspace = ["services/<rust-svc>"])
+├── biome.json
+│
+├── apps/
+│   ├── web/                              ← always Node (Next.js)
+│   └── admin/                            ← optional Node app
+│
+├── services/                             ← flat by domain, language is implementation detail
+│   ├── identity/                         ← Node (NestJS or Fastify)
+│   ├── booking/                          ← Node
+│   ├── pricing/                          ← Go (chi)
+│   ├── recommendation/                   ← Python (FastAPI)
+│   ├── search/                           ← Java/Kotlin (Spring Boot)
+│   └── notification-rt/                  ← Rust (axum)
+│
+├── packages/
+│   ├── proto/                            ← canonical .proto files
+│   ├── proto-ts/, proto-go/, proto-py/   ← generated stubs (committed)
+│   ├── events/                           ← Avro/JSON Schema event definitions
+│   └── ui/, ts-types/                    ← Node-only (apps + Node services)
+│
+├── tools/
+│   └── codegen/                          ← buf config + per-language codegen scripts
+│
+├── docs/
+│   └── language-baseline/                ← <lang>.md per language (style, tooling, observability)
+│
+└── infra/                                ← CLUSTER-WIDE
+    ├── kubernetes/, helm/, mesh/, gateway/, observability/, compose/, scripts/
+```
+
+**Default tech picks per language:**
+
+| Language | Framework | ORM / DB tool | Key libs |
+|---|---|---|---|
+| **Node** | Fastify or NestJS | Drizzle / Prisma | Zod, Pino, BullMQ |
+| **Go** | chi | sqlc + golang-migrate | zerolog, zap |
+| **Python** | FastAPI | SQLAlchemy + Alembic | pydantic, structlog, uv |
+| **Java/Kotlin** | Spring Boot | Spring Data JPA + Flyway | Logback |
+| **Rust** | axum | sqlx + sqlx-cli | tracing, serde |
+| **All** | gRPC + Kafka | per-service Postgres | OpenTelemetry SDK |
+
+**The 5 hard rules** (see full text below): canonical `packages/proto/`, uniform Makefile targets per service, DB-per-service, OpenTelemetry everywhere, language-baseline docs per language.
+
+---
+
 ## Description
 
 Independent backend services like `microservices.md`, but each service
@@ -67,9 +125,12 @@ auth, and deploy patterns.
 ├── README.md
 │
 ├── apps/                                      ← user-facing frontends (always Node)
-│   ├── web/                                   ← Next.js / Vite-React
-│   │   ├── src/{app, features, layouts, shared, styles}, public/, e2e/, tests/
-│   │   ├── package.json, Dockerfile, next.config.ts | vite.config.ts
+│   ├── web/                                   ← see "Standard apps/web/ layout" in monolith.md
+│   │   ├── src/                               ← app/ + components/ + features/ + lib/ + ...
+│   │   ├── public/
+│   │   ├── docs/
+│   │   ├── test/{unit, e2e}/                  ← e2e REQUIRED (cross-service integration)
+│   │   ├── Dockerfile, next.config.ts | vite.config.ts, biome.json, tsconfig.json, package.json
 │   │   └── README.md
 │   └── admin/                                 ← OPTIONAL — internal admin (same shape)
 │
