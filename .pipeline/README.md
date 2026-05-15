@@ -34,7 +34,7 @@ at the repo root.
 ## When this folder fills up
 
 Normally only when you ran `reqops` or `parse scope` with a SOW source. If
-you never run `reqops` and your SOW is in `inputs/` or `SCOPE.md`, this
+you never run `reqops` and your SOW lives in `state/SCOPE.md`, this
 folder may stay empty — that is fine.
 
 ## Cleanup

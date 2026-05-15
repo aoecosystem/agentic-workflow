@@ -288,7 +288,6 @@ agentic-workflow/                      ← this repo
 │   └── <slug>-infrastructure-diagram.html  (filled)
 ├── deliverables/designs/                    ← UI screenshots (human-uploaded)
 │   └── <page-id>.png/jpg/html
-├── inputs/                            ← optional: import SoW from elsewhere
 ├── state/                             ← per-project auto-state
 │   ├── SESSION-STATE.md                    (Stage + audit log + hashes)
 │   ├── SCOPE.md                            (parsed from docs)
@@ -360,7 +359,6 @@ BUILD PHASE
   /resume-build                     (continue scheduler)
   /show-status                      (TASKS.md status counts)
   /qa-only                          (run QA on in-review tasks)
-  /scope-interview                  (fallback Q&A when no foundations docs)
 ```
 
 ---

@@ -1,6 +1,6 @@
 ---
 name: import-docs
-description: Read scope/system-design/requirements documents from inputs/ (PDF, Word, Markdown, TXT), extract a high-fidelity app-flow-aware SCOPE.md, and generate memory/STACK-GUIDANCE.md. Trigger when the user says "import docs", "ingest my spec", drops PDFs/docx files into inputs/ and wants SCOPE populated, or asks to extract project scope from uploaded documents. Do NOT trigger when SCOPE.md is already filled and the user wants to generate tasks (use parse-scope for that).
+description: Extract a high-fidelity app-flow-aware SCOPE.md from the 5 approved HTML deliverables (brief, scope-of-work, architecture, database, infrastructure) and generate memory/STACK-GUIDANCE.md. Trigger when the user says "import docs", "ingest the deliverables", or wants SCOPE.md populated as an inspectable intermediate before /parse-scope. This step is OPTIONAL — /parse-scope can read the 5 HTMLs directly. Do NOT trigger before all 5 HTMLs are approved (Stage: DOCS_COMPLETE).
 ---
 
 ## Stage gate (RUN FIRST)
@@ -26,7 +26,7 @@ hashes, ask user to accept on drift.
 
 **Trigger:** User says `import docs` (or uses the `/import-docs` slash command)
 
-**Purpose:** Read one or more requirement/design documents from `inputs/`, extract high-fidelity project scope plus end-to-end app flow details, draft a production-ready `state/SCOPE.md`, and generate `memory/STACK-GUIDANCE.md` after user confirmation.
+**Purpose:** Extract high-fidelity project scope plus end-to-end app flow details from the 5 approved HTML deliverables, draft a production-ready `state/SCOPE.md`, and generate `memory/STACK-GUIDANCE.md` after user confirmation.
 
 This skill must produce SOW quality that is execution-ready for `parse scope` and `start build`, not a vague summary.
 
@@ -44,17 +44,6 @@ When source docs include user journeys, flows, or screen specs:
 
 ---
 
-## Supported formats
-
-| Format | How it's read |
-|--------|---------------|
-| `.pdf` | Read directly |
-| `.docx` | Convert first (see Step 1) |
-| `.doc` | Convert first (see Step 1) |
-| `.txt` / `.md` | Read directly |
-
----
-
 ## Steps
 
 ### Step 0 — Resolve canonical input artifacts (5 HTML deliverables FIRST)
@@ -65,11 +54,7 @@ MUST be read before anything else. This is the only place SCOPE.md gets
 its data — endpoints, page inventory, tech stack, ERD, infra — so every
 HTML must be scanned.
 
-**Resolution order (strict — try each tier; if tier N succeeds, use it
-and skip the rest):**
-
-**Tier 1 — Approved HTML deliverables (preferred path; expected at
-DOCS_COMPLETE).** Read all 5 in this exact order:
+**The 5 approved HTML deliverables are the ONLY source.** Read all 5 in this exact order:
 
 | # | File pattern | What to extract (with verified section numbers) |
 |---|---|---|
@@ -80,9 +65,9 @@ DOCS_COMPLETE).** Read all 5 in this exact order:
 | 5 | `deliverables/infrastructure/<slug>-infrastructure.html` | **§1 Environments**, **§2 Hosting & Compute**, **§3 Database/Storage/Cache**, **§4 Network & Domains**, **§5 External Services & Integrations**, **§6 Security & Secrets**, §7 Backup & DR, §8 CI/CD Pipeline, **§9 Topology Mermaid diagram (verbatim)** |
 
 Resolve `<slug>` from `state/SESSION-STATE.md` → `Slug:` field. If any
-of the 5 files is missing, halt with the exact missing path — do NOT
-fall back to Tier 2 (DOCS_COMPLETE without all 5 HTMLs is a state
-inconsistency that needs user attention).
+of the 5 files is missing, halt with the exact missing path. The stage
+gate enforces `DOCS_COMPLETE`, so all 5 SHOULD exist — a missing file
+is a state inconsistency, not a fallback condition.
 
 HTML reading rules:
 - Strip HTML tags to extract semantic content from each section.
@@ -94,48 +79,12 @@ HTML reading rules:
   <heading>`, `extracted_at: <ISO>` so downstream skills know which
   HTML the field came from.
 
-**Tier 2 — Legacy markdown inputs (deprecated; fallback only if Tier 1
-is impossible — e.g. user is migrating an old project without the 5
-HTMLs).** Used only when `Stage` is not yet `DOCS_COMPLETE` and the
-user explicitly opted into raw-doc ingestion via `inputs/`:
-
-- `inputs/project-brief.md` (filled)
-- `inputs/scope-of-work.md` (filled)
-
-If only one exists, synthesize the missing one. If neither exists but
-raw docs are present (PDF, docx, html, md), extract content from those
-raw docs and write `inputs/project-brief.md` + `inputs/scope-of-work.md`
-first (using the structure from `templates/project-brief.md` and
-`templates/scope-of-work.md`). Show drafts for confirmation before
-saving.
-
-**Tier 3 — Nothing available.** Halt and tell the user to either:
-- run `interview me` to fill the brief through Q&A and complete the
-  docs phase first, or
-- drop source documents into `inputs/`.
-
-After this step, the rest of the skill operates on the resolved tier's
-sources as the authoritative input. The 5 HTMLs (Tier 1) override
-everything else.
-
 ---
 
-### Step 1 — Scan input sources and prepare readable files
+### Step 1 — (removed)
 
-Source: `inputs/` is the single drop zone for raw source documents.
-
-If `inputs/` is empty:
-- Tell user to place documents in `inputs/`, then rerun `import docs`.
-- Stop.
-
-If `.docx` / `.doc` files exist in the chosen source:
-- Check `pandoc --version`.
-- If available, convert each file to markdown alongside the original:
-  ```bash
-  pandoc inputs/input.docx -o inputs/input-converted.md
-  ```
-- If not available, tell user to export to PDF or install pandoc
-  (`brew install pandoc`), then continue with other readable files.
+There is no longer a separate "scan inputs" step. The 5 HTMLs are the
+only source. Skip to Step 2.
 
 ### Step 2 — Read all sources before extracting
 
@@ -150,29 +99,29 @@ Build a source ledger while reading:
 
 Map content to `state/SCOPE.md` sections and also build an internal `Flow Matrix` for quality checks.
 
-#### 3A) SCOPE mapping (Tier 1 — 5 HTMLs is the canonical path)
+#### 3A) SCOPE mapping (single source: 5 approved HTMLs)
 
-| SCOPE section | Tier 1 source (5 HTMLs) | Tier 2 source (markdown fallback) |
-|---|---|---|
-| 1. Project Overview | brief §1 (vision) + §2 (target users) + §10 (success metrics) | inputs/project-brief.md §1-3 |
-| 2. System Architecture | sow Phase 1 (service inventory) + architecture §2 (service inventory) + §3 (layered) + §4 (data flow) + §7 (Mermaid) + sow Phase 9 (folder structure verbatim) | inputs/scope-of-work.md "Architecture" + raw docs |
-| 3. Tech Stack | **sow Phase 6 (frontend / backend / database / ORM / integrations)** — copy verbatim | inputs/scope-of-work.md "Tech Stack" |
-| 4. MCP URLs | brief §8 (integrations: Figma URL, OpenAPI URL, plugin links) | raw docs |
-| 5. Feature Breakdown | sow Phase 2 (modules) + **Phase 4 (every endpoint as a row)** + Phase 3 (data models for each feature) + Phase 5 (events) + Phase 5.5 (business processes) | inputs/scope-of-work.md feature list |
-| 6. Out of Scope | brief §11 + sow Phase 8 quality criteria exclusions | inputs/scope-of-work.md "Out of scope" |
-| 7. Non-Functional Requirements | brief §9 + infrastructure §6 (security/secrets) + §7 (backup/DR) + sow Phase 8 | inputs/scope-of-work.md "NFRs" |
-| 8. Page Inventory | **sow Phase 7 (full page table — Page ID / Page Name / Platform / Auth / Description)** — copy verbatim | derived at Step 7.6 |
-| 9. Database Schemas | **database §2 (every entity with every column + type + constraints)** + database §3 (relationships) + database §4 (indexes) + database §6 (Mermaid erDiagram verbatim) | sow Phase 3 |
-| 10. Architecture Style | sow Phase 9 architecture style + architecture §7 (Mermaid diagram verbatim) | SESSION-STATE.md Architecture style: |
-| 11. Infrastructure | infrastructure §1 (environments) + §2 (hosting) + §3 (db/storage/cache) + §4 (network/domains) + §5 (external integrations) + §6 (secrets) + §8 (CI/CD) + §9 (Mermaid topology verbatim) | sow Phase 9 + infrastructure HTML |
-| 12. Design Language | **sow Phase 9 design language sub-section (visual style + color palette + font pairing + component library + chart types + component decomposition rules)** — copy verbatim | none (must be present in Tier 1) |
-| 13. AI Generation Instructions | brief §13 (Instructions for AI Agent) — passed through as execution rules to parse-scope and build-task | none |
+| SCOPE section | Source |
+|---|---|
+| 1. Project Overview | brief §1 (vision) + §2 (target users) + §10 (success metrics) |
+| 2. System Architecture | sow Phase 1 (service inventory) + architecture §2 + §3 + §4 + §7 (Mermaid) + sow Phase 9 (folder structure verbatim) |
+| 3. Tech Stack | **sow Phase 6 (frontend / backend / database / ORM / integrations)** — copy verbatim |
+| 4. MCP URLs | brief §8 (integrations: Figma URL, OpenAPI URL, plugin links) |
+| 5. Feature Breakdown | sow Phase 2 (modules) + **Phase 4 (every endpoint as a row)** + Phase 3 (data models for each feature) + Phase 5 (events) + Phase 5.5 (business processes) |
+| 6. Out of Scope | brief §11 + sow Phase 8 quality criteria exclusions |
+| 7. Non-Functional Requirements | brief §9 + infrastructure §6 (security/secrets) + §7 (backup/DR) + sow Phase 8 |
+| 8. Page Inventory | **sow Phase 7 (full page table — Page ID / Page Name / Platform / Auth / Description)** — copy verbatim |
+| 9. Database Schemas | **database §2 (every entity)** + §3 (relationships) + §4 (indexes) + §6 (Mermaid erDiagram verbatim) |
+| 10. Architecture Style | sow Phase 9 architecture style + architecture §7 (Mermaid diagram verbatim) |
+| 11. Infrastructure | infrastructure §1 + §2 + §3 + §4 + §5 + §6 + §8 + §9 (Mermaid topology verbatim) |
+| 12. Design Language | **sow Phase 9 design language sub-section (visual style + color palette + font pairing + component library + chart types + component decomposition rules)** — copy verbatim |
+| 13. AI Generation Instructions | brief §13 (Instructions for AI Agent) — passed through as execution rules to parse-scope and build-task |
 
 **Critical:** rows marked **bold** are the ones most often dropped in the
 old import-docs flow. Their absence is the root cause of "API partly
 worked" (endpoints dropped), "features missed" (pages dropped),
 "different folders each run" (stack + style dropped), "design not
-classic" (design language dropped). Tier 1 MUST populate all 12 rows.
+classic" (design language dropped). All 13 rows MUST be populated from the 5 HTMLs.
 
 #### 3B) Flow Matrix (required when flow content exists)
 
@@ -271,7 +220,7 @@ Rules:
 ### Step 5.5 — Clarifying-questions loop (95% accuracy gate, RUN BEFORE ANY WRITE)
 
 This is a hard gate. No file is written (no `state/SCOPE.md`, no
-`memory/STACK-GUIDANCE.md`, no `inputs/*.md`) until the loop exits with
+`memory/STACK-GUIDANCE.md`) until the loop exits with
 >= 95% accuracy. "Accuracy" here means: every required field across
 SCOPE sections 1-7 is either (a) sourced from the input docs, or (b)
 explicitly confirmed by the user, or (c) marked `TBD` with the user's

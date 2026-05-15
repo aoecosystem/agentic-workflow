@@ -104,7 +104,6 @@ re-build downstream docs/tasks to pick up the change.
 | `/resume-build` | orchestrate | (resume scheduler from current state) |
 | `/show-status` | (inline) | Summarize TASKS.md status counts |
 | `/qa-only` | qa | (run QA on `in-review` tasks only) |
-| `/scope-interview` | scope-interview | (fallback Q&A when no foundations docs) |
 | `/approve-tasks` | approve-tasks | TASKS_GENERATED → TASKS_APPROVED |
 | `/approve-build` | approve-build | BUILD_COMPLETE → BUILD_APPROVED |
 | `/verify-build` | verify-build | BUILD_APPROVED → VERIFIED |

@@ -31,7 +31,6 @@ agentic-workflow/                   ← you are here
 │   ├── SCOPE.md                    ← parsed from the 5 HTMLs
 │   └── TASKS.md                    ← generated build tasks
 ├── memory/                         ← cross-session knowledge
-├── inputs/                         ← optional: drop existing SoW docs here
 └── ../apps/                        ← generated source code lives at sibling level
 ```
 
@@ -82,8 +81,9 @@ which commands are valid next.
     native runtime check → `VERIFIED`.
 15. `/package-release` → `READY_TO_DEPLOY`.
 
-If you have existing SoW docs and want to skip the interview, drop them
-in `inputs/` and run `/import-docs` to populate SCOPE.md first.
+If you have existing SoW docs, paste their contents directly into the
+brief interview at the relevant section instead of using a drop zone.
+The interview is the only supported entry path.
 
 ### Utility commands
 

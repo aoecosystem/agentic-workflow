@@ -127,7 +127,6 @@ BUILD PHASE
   /resume-build             (continue scheduler)
   /show-status              (TASKS.md status counts)
   /qa-only                  (run QA on in-review tasks)
-  /scope-interview          (fallback Q&A when no foundations docs)
   /approve-build            (BUILD_COMPLETE → BUILD_APPROVED — human lock of completed build)
   /verify-build             (BUILD_APPROVED → VERIFIED — final lint + types + tests)
   /package-release          (VERIFIED → READY_TO_DEPLOY)
@@ -148,7 +147,6 @@ agentic-workflow/                          ← this repo
 │   └── styles/                            ← 4 architecture-style profile files
 ├── deliverables/                      ← Database + Infrastructure diagrams
 ├── deliverables/designs/                        ← UI screenshots / Figma exports (human-uploaded)
-├── inputs/                                ← optional: import SoW from elsewhere
 ├── state/                                 ← per-project auto-state
 │   ├── SESSION-STATE.md                   ← Stage + audit log + hashes (BOTH phases)
 │   ├── SCOPE.md                           ← parsed from foundations docs

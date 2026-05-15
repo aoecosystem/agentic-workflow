@@ -6,6 +6,60 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.7.0] — Remove inputs/ + scope-interview (single entry point)
+
+Consolidation release. The engine had two entry points: `/start-project`
+(canonical) and `inputs/` + `/scope-interview` (legacy migration). The
+user's workflow only uses `/start-project`. Removing the legacy path.
+
+### Removed
+
+- `inputs/` directory (drop zone for legacy migration source documents)
+- `scope-interview` skill + `/scope-interview` command (legacy interview
+  that wrote markdown into `inputs/`; `/start-project` already covers
+  the interview, writing directly to `deliverables/brief/<slug>-brief.html`)
+- Tier 2 fallback path in `import-docs` (read `inputs/*.md` / `*.pdf`).
+  `import-docs` is now Tier 1 only — reads the 5 approved HTML
+  deliverables and writes SCOPE.md.
+
+### Changed
+
+- **`import-docs`** is now optional and 5-HTML-only. It produces an
+  inspectable SCOPE.md intermediate. `/parse-scope` can also read the
+  5 HTMLs directly without it.
+- **`reqops`** reads scope from `state/SCOPE.md` (with `.pipeline/sow.md`
+  as fallback). No more `inputs/` drop-zone path.
+- **`parse-scope`** ReqOps pre-pass simplified — runs when
+  `.pipeline/features/requirements/*.md` exists, sourced from SCOPE.md
+  alone.
+- **`delta-scope`** watches `state/SCOPE.md` for changes (not `inputs/`).
+- **AGENTS.md / CLAUDE.md / README.md / INSTRUCTIONS.md**: removed
+  `inputs/` references; `/scope-interview` row removed from command tables.
+- **`.claude/commands/import-docs.md`** description rewritten to clarify
+  it's optional and reads the 5 HTMLs.
+- **`.claude/commands/reqops.md`** description updated for SCOPE.md
+  as primary source.
+
+### Rationale
+
+The user has always started fresh with `/start-project` → 13-section
+brief interview → 5 HTMLs. `inputs/` was a legacy migration path used
+zero times in their workflow. `scope-interview` overlapped 100% with
+`/start-project`'s built-in interview.
+
+Removing both:
+- One entry point: `/start-project` (always).
+- One source of truth path: brief HTML → SoW → arch → db → infra → SCOPE.md → TASKS.md.
+- ~50 lines of conditional logic across 4 skills gone.
+- One skill + one command + one folder removed.
+
+### Migration note
+
+If you ever need to import legacy documents in the future, you can
+paste them directly into the brief interview at the relevant section.
+
+---
+
 ## [2.6.0] — Engine integrity: stage machine + cross-skill contracts
 
 Critical reliability release. A 4-dimensional audit (command wiring,
