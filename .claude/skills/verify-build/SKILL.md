@@ -72,7 +72,7 @@ runnable build artifact, not just compile clean.
 
 If the project declares no build command, halt with:
 ```
-ERROR: state/SCOPE.md Sec 3 (Tech stack) does not declare a build
+ERROR: the 5 deliverable HTMLs Sec 3 (Tech stack) does not declare a build
 command. /verify-build cannot certify a project that cannot build.
 Add the build command and re-run.
 ```

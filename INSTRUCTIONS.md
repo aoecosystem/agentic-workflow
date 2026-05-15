@@ -28,7 +28,6 @@ agentic-workflow/                   ← you are here
 │   └── designs/                    ← UI screenshots / Figma exports
 ├── state/                          ← auto-state, rarely human-edited
 │   ├── SESSION-STATE.md            ← the brain — Stage + audit log
-│   ├── SCOPE.md                    ← parsed from the 5 HTMLs
 │   └── TASKS.md                    ← generated build tasks
 ├── memory/                         ← cross-session knowledge
 └── ../apps/                        ← generated source code lives at sibling level
@@ -68,8 +67,6 @@ which commands are valid next.
 10. `/parse-scope` — reads the 5 approved HTMLs directly and generates
     `state/TASKS.md`. Runs the coverage gate (every SoW Phase 4 endpoint,
     Phase 7 page, Phase 3 entity must map to ≥1 task) → `TASKS_GENERATED`.
-    (Optional pre-step: `/import-docs` extracts an intermediate
-    `state/SCOPE.md` if you want to inspect/edit it manually.)
 11. `/approve-tasks` — senior-style task graph audit (acceptance
     criteria, dependency order, file ownership, no orphan deps) →
     `TASKS_APPROVED`.
@@ -90,7 +87,7 @@ The interview is the only supported entry path.
 - `/status` — read-only, prints current stage + next valid commands.
 - `/show-status` — task progress table (Total / Done / In review / etc.).
 - `/reset` — archive current session, start over.
-- `/delta-scope` — re-plan when SCOPE.md changes.
+- `/delta-scope` — re-plan when TASKS.md changes.
 - `/figma-ingest` — fetch design context from a Figma URL.
 - `/refresh-mcp` — force re-fetch MCP cache.
 - `/api-contract` — generate OpenAPI / gRPC / GraphQL contracts.
@@ -124,8 +121,8 @@ The interview is the only supported entry path.
 3. Type `/start-project`.
 4. Answer the brief questions one at a time.
 5. Approve each artifact as it's generated (`/approve-<thing>`).
-6. After `INFRASTRUCTURE_APPROVED`, type `/import-docs` then
-   `/parse-scope` then `/approve-tasks` then `/start-build`.
+6. After `INFRASTRUCTURE_APPROVED`, run `/parse-scope` then
+   `/approve-tasks` then `/start-build`.
 7. Watch the build progress table fill in. When `VERIFIED`, your code
    is at `../apps/` ready to deploy.
 

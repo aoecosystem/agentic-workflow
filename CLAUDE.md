@@ -22,7 +22,7 @@ Before responding to any command, in this order:
 4. Read `state/SESSION-STATE.md` — its `Stage:` field tells you exactly
    where the project is. If mid-pipeline, offer to resume from the last
    checkpoint instead of restarting.
-5. If past `DOCS_COMPLETE`: read `state/SCOPE.md`.
+5. If past `DOCS_COMPLETE`: read `state/TASKS.md`.
 6. If `Stage: BUILDING` or later: read `state/TASKS.md`.
 7. Read `memory/ARCHITECTURE.md`, `PATTERNS.md`, `DECISIONS.md`,
    `STACK-GUIDANCE.md`, `PAGES.md`.
@@ -43,10 +43,9 @@ The repo runs as ONE pipeline that spans TWO phases sharing one state file:
 - Each phase has draft → approved transitions with quality gates
 
 **Build phase** (multi-agent: orchestrator + builders + QA):
-- `/import-docs` extracts SCOPE.md from the 5 approved HTMLs
 - `/parse-scope` generates TASKS.md
 - `/start-build` runs the parallel build loop
-- Pipeline: DOCS_COMPLETE → SCOPE_PARSED → TASKS_GENERATED → BUILDING → BUILD_COMPLETE → VERIFIED → READY_TO_DEPLOY
+- Pipeline: DOCS_COMPLETE → DOCS_COMPLETE → TASKS_GENERATED → BUILDING → BUILD_COMPLETE → VERIFIED → READY_TO_DEPLOY
 
 Every stage transition requires an explicit user command. The agent
 NEVER auto-advances. See `AGENTS.md` for the full state diagram and
@@ -115,8 +114,7 @@ DOCS PHASE — INFRASTRUCTURE
   /approve-infrastructure
 
 BUILD PHASE
-  /import-docs              (DOCS_COMPLETE → SCOPE_PARSED — optional: extract SCOPE.md from 5 HTMLs)
-  /parse-scope              (generates TASKS.md — reads 5 HTMLs directly or SCOPE.md if present)
+  /parse-scope              (generates TASKS.md — reads 5 HTMLs directly or TASKS.md if present)
   /approve-tasks            (TASKS_GENERATED → TASKS_APPROVED — task graph audit gate)
   /delta-scope              (re-plan when SCOPE changes)
   /reqops                   (derive per-feature requirements)
@@ -149,7 +147,6 @@ agentic-workflow/                          ← this repo
 ├── deliverables/designs/                        ← UI screenshots / Figma exports (human-uploaded)
 ├── state/                                 ← per-project auto-state
 │   ├── SESSION-STATE.md                   ← Stage + audit log + hashes (BOTH phases)
-│   ├── SCOPE.md                           ← parsed from foundations docs
 │   ├── TASKS.md                           ← generated task graph
 │   └── archived/                          ← snapshots on /reset
 ├── memory/                                ← curated cross-session knowledge
@@ -202,7 +199,6 @@ documentation + automation, not coding). Tone matters.
 | Docs interview | ✓ | ✓ (same skills, copied) |
 | 5 HTML deliverables | ✓ | ✓ |
 | Architecture styles | ✓ | ✓ |
-| `/import-docs` to extract SCOPE.md | — | ✓ |
 | `/parse-scope` to generate TASKS.md | — | ✓ |
 | Multi-agent build loop (orchestrator + builders + QA) | — | ✓ |
 | Code generation in `apps/` | — | ✓ |

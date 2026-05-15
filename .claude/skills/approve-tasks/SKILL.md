@@ -15,7 +15,7 @@ description: Run the tasks quality gate and lock TASKS.md before building. Verif
 ## Manual-edit detection (RUN FIRST)
 
 Before any operation, follow the **Manual Edit Protocol** in `AGENTS.md`:
-compute SHA-256 of `state/TASKS.md` and `state/SCOPE.md`, compare to
+compute SHA-256 of `state/TASKS.md` and the 5 deliverable HTMLs, compare to
 stored hashes. On drift, ask the user to accept (bump version + audit
 log) or cancel before proceeding.
 
@@ -27,7 +27,7 @@ log) or cancel before proceeding.
 2. If `Stage` is not `TASKS_GENERATED`, refuse:
    > "Approve is only valid from `TASKS_GENERATED`. Current: `<STAGE>`.
    > Run `/status` for next valid commands. To reach `TASKS_GENERATED`,
-   > run `/parse-scope` (after `/import-docs` populates state/SCOPE.md)."
+   > run `/parse-scope` (after `/parse-scope` populates the 5 deliverable HTMLs)."
    Leave Stage unchanged.
 
 ---

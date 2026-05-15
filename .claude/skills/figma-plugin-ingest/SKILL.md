@@ -14,8 +14,8 @@ description: Plugin-first Figma-to-code prep. Fetch full design context via the 
 ## Inputs
 
 - One or more UI tasks in `state/TASKS.md` with a Figma `MCP URL`
-- Optional feature metadata from `state/SCOPE.md` (node IDs, plugin export links, token source)
-- Target stack from `state/SCOPE.md` tech stack section
+- Optional feature metadata from the 5 deliverable HTMLs (node IDs, plugin export links, token source)
+- Target stack from the 5 deliverable HTMLs tech stack section
 - Optional selected task ID for targeted ingest
 
 ---
@@ -63,9 +63,9 @@ back to numeric node ID lookup.
 3. If found → use that frame as the implementation target. Record both
    the page ID and the resolved node ID in the cache file.
 4. If not found → fall back to the explicit `Figma node IDs` field
-   from `state/SCOPE.md`. If that is also missing, mark the task `blocked`
+   from the 5 deliverable HTMLs. If that is also missing, mark the task `blocked`
    with: "Figma frame for page-id `<page-id>` not found. Either rename
-   the frame in Figma to `<page-id>` or supply an explicit node ID in state/SCOPE.md."
+   the frame in Figma to `<page-id>` or supply an explicit node ID in the 5 deliverable HTMLs."
 
 Frame-name lookup is the canonical join key. Designers are encouraged
 to name their frames with page IDs so the workflow stays decoupled

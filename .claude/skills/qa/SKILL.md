@@ -32,7 +32,7 @@ Read the full task block from `state/TASKS.md`:
 
 ### Step 2 — Read relevant context
 
-- `state/SCOPE.md` — the relevant feature section (screens, endpoints, models, NFRs)
+- the 5 deliverable HTMLs — the relevant feature section (screens, endpoints, models, NFRs)
 - `memory/PATTERNS.md` — patterns that should have been followed
 - `memory/DECISIONS.md` — decisions that constrain this task
 - The MCP cache file for this feature if one exists (`memory/mcp-cache/{feature-slug}-*.md`)
@@ -76,7 +76,7 @@ Rules:
   native build is the dominant acceptance signal — see Step 6 sub-rule.
 
 If the project does not declare a build command, halt and ask the user
-to declare one in `state/SCOPE.md` Sec 3 (Tech stack) before proceeding.
+to declare one in the 5 deliverable HTMLs Sec 3 (Tech stack) before proceeding.
 Do NOT skip this gate silently.
 
 ### Step 5 — Run Gate 3: Tests
@@ -96,7 +96,7 @@ For every task, fan out **two Claude Code subagents in parallel** via the Task t
 | Subagent | When | What to pass |
 |---|---|---|
 | **`code-reviewer`** | Every task that writes code | List of files changed + diff scope + task's `User flow` + `Edge cases` + relevant entries from `memory/PATTERNS.md` |
-| **`security-reviewer`** | Every task touching auth, secrets, user input on API, payment, file uploads, external integrations | Same context + the security-relevant slice of `state/SCOPE.md` NFRs |
+| **`security-reviewer`** | Every task touching auth, secrets, user input on API, payment, file uploads, external integrations | Same context + the security-relevant slice of the 5 deliverable HTMLs NFRs |
 
 After both subagents return:
 
@@ -129,7 +129,7 @@ For each item:
 3. If not satisfied: note it in the rejection.
 
 Additional logic review:
-- Are error responses in the format specified by `state/SCOPE.md` NFRs?
+- Are error responses in the format specified by the 5 deliverable HTMLs NFRs?
 - Are auth-required routes actually protected?
 - Are there hardcoded values that should be config or env vars?
 - Is any required validation missing?

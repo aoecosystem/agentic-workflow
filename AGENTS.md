@@ -32,7 +32,6 @@ INIT
 ═══════ BUILD PHASE (engine work) ═══════
 
 DOCS_COMPLETE
-  └─ /import-docs    → SCOPE_PARSED         (populates state/SCOPE.md from 5 HTMLs)
   └─ /parse-scope    → TASKS_GENERATED ⇄ TASKS_APPROVED
   └─ /start-build    → BUILDING            (parallel orchestrator + builders + QA)
                        ↓ (all tasks done)
@@ -60,7 +59,7 @@ output: folder structure, tech stack defaults, database approach,
 communication style, Mermaid diagram patterns. Default = `monolith`.
 
 To change style mid-project: run `/review-brief 3` (in docs phase) or
-update `state/SCOPE.md` Architecture section (in build phase). Then
+update `state/TASKS.md` task fields. Then
 re-build downstream docs/tasks to pick up the change.
 
 ---
@@ -93,8 +92,6 @@ re-build downstream docs/tasks to pick up the change.
 
 | Command | Skill | Stage transition |
 |---------|-------|------------------|
-| `/import-docs` | import-docs | DOCS_COMPLETE → SCOPE_PARSED |
-| `/parse-scope` | parse-scope | SCOPE_PARSED → TASKS_GENERATED |
 | `/delta-scope` | delta-scope | (re-plan when SCOPE changes after tasks exist) |
 | `/reqops` | reqops | (derive per-feature requirements) |
 | `/api-contract` | api-contract | (generate OpenAPI / tRPC / GraphQL) |
@@ -127,7 +124,7 @@ Every artifact the agent writes records a SHA-256 hash in
 
 ```
 - [x] deliverables/brief/<slug>-brief.html  v1.1  sha256:a1b2c3...  approved 2026-05-02
-- [x] state/SCOPE.md  v1.0  sha256:d4e5f6...  parsed 2026-05-02
+- [x] state/TASKS.md  v1.0  sha256:d4e5f6...  parsed 2026-05-02
 - [x] ../apps/web/src/screens/auth-login.tsx  v1.0  sha256:g7h8i9...  in-review 2026-05-02
 ```
 
@@ -175,8 +172,7 @@ concrete values, not TBDs (e.g. infrastructure providers).
 2. `README.md` — what's in the repo.
 3. `INSTRUCTIONS.md` — step-by-step user guide.
 4. `state/SESSION-STATE.md` — read first to know current Stage.
-5. `state/SCOPE.md` — what's being built (only if past DOCS_COMPLETE).
-6. `state/TASKS.md` — task list and status (only during build phase).
+5. `state/TASKS.md` — task list and status (only if past DOCS_COMPLETE).
 7. `memory/ARCHITECTURE.md`, `PATTERNS.md`, `DECISIONS.md`,
    `STACK-GUIDANCE.md`, `PAGES.md` — curated cross-session knowledge.
 8. `deliverables/architecture/styles/<style>.md` — chosen architecture style rules.
@@ -272,7 +268,7 @@ gate (structured logging, error reporting, metrics, tracing).
 | `deliverables/architecture/<slug>-*.html` | YES — docs phase skills |
 | `deliverables/<slug>-*.html` | YES — docs phase skills |
 | `state/SESSION-STATE.md` | YES — every skill (read-modify-write) |
-| `state/SCOPE.md` | YES — `import-docs` skill only |
+| `state/TASKS.md` | YES — `import-docs` skill only |
 | `state/TASKS.md` | YES — `parse-scope` (sole writer) + status updates by Builders/QA |
 | `state/archived/*` | YES — write-once snapshots when /reset runs |
 | `memory/ARCHITECTURE.md`, `PATTERNS.md`, `DECISIONS.md`, `PAGES.md` | YES — QA after task `done` |
@@ -325,7 +321,7 @@ deliverables/scope-of-work/<slug>-sow.html
 deliverables/architecture/<slug>-architecture.html
 deliverables/database/<slug>-database.html
 deliverables/infrastructure/<slug>-infrastructure.html
-state/SCOPE.md (no slug — one project per repo)
+state/TASKS.md (no slug — one project per repo)
 state/TASKS.md (no slug)
 ```
 

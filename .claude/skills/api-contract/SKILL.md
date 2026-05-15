@@ -6,8 +6,8 @@ description: Generate or update a shared API contract artifact (OpenAPI YAML, tR
 ## Stage gate (RUN FIRST)
 
 1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
-2. Refuse unless Stage is `SCOPE_PARSED`, `TASKS_GENERATED`, `TASKS_APPROVED`, `BUILDING`, or later. Message:
-   > "api-contract requires SCOPE.md or TASKS.md to read endpoint specs. Current Stage: `<STAGE>`. Run `/parse-scope` first."
+2. Refuse unless Stage is `DOCS_COMPLETE`, `TASKS_GENERATED`, `TASKS_APPROVED`, `BUILDING`, or later. Message:
+   > "api-contract requires TASKS.md (and the 5 HTMLs) to read endpoint specs. Current Stage: `<STAGE>`. Run `/parse-scope` first."
 
 ---
 
@@ -26,7 +26,7 @@ drift between parallel chains.
 
 ## Inputs
 
-- `state/SCOPE.md` Section 5 (Feature Breakdown) — endpoint list and data
+- the 5 deliverable HTMLs Section 5 (Feature Breakdown) — endpoint list and data
   models per feature.
 - `memory/STACK-GUIDANCE.md` — declared API style (REST, tRPC, GraphQL).
 - `state/TASKS.md` — `Contract refs` field on each task, indicating which task
@@ -56,7 +56,7 @@ If the stack is ambiguous, default to OpenAPI 3.1.
 
 ### Step 1 — Read context
 
-1. Read `state/SCOPE.md` Section 5 entirely.
+1. Read the 5 deliverable HTMLs Section 5 entirely.
 2. Read `memory/STACK-GUIDANCE.md` (skip if placeholder).
 3. Read `state/TASKS.md` and collect all task blocks where `Contract refs`
    field has `Backend owner`, `Web owner`, or `Mobile owner`.
@@ -64,7 +64,7 @@ If the stack is ambiguous, default to OpenAPI 3.1.
 
 ### Step 2 — Group by feature
 
-For each feature in `state/SCOPE.md` Section 5:
+For each feature in the 5 deliverable HTMLs Section 5:
 
 - List its endpoints (REST verb + path, or tRPC procedure name).
 - Map each endpoint to its task ID via `state/TASKS.md`.
@@ -111,9 +111,9 @@ If `memory/contracts/<feature-slug>.<ext>` already exists:
 
 1. Read it.
 2. Identify any model or endpoint that exists in the file but no longer
-   exists in `state/SCOPE.md` — mark as deprecated with a header comment, do
+   exists in the 5 deliverable HTMLs — mark as deprecated with a header comment, do
    not delete. The user must run `delta scope` to formally remove.
-3. Identify new models or endpoints in `state/SCOPE.md` not yet in the file —
+3. Identify new models or endpoints in the 5 deliverable HTMLs not yet in the file —
    add them.
 4. For changed types: write the new shape and add a comment noting the
    change. Surface the change to the user in the run summary.
@@ -163,13 +163,13 @@ Stop. Do not auto-trigger build.
 - Contracts must be valid for their format. Run a syntax check before
   saving (e.g. `python3 -c "import yaml; yaml.safe_load(open(p))"` for
   OpenAPI; `tsc --noEmit` for tRPC if available).
-- Never invent endpoints not in `state/SCOPE.md`. If `state/SCOPE.md` is missing
+- Never invent endpoints not in the 5 deliverable HTMLs. If the 5 deliverable HTMLs is missing
   detail, surface a `GAP:` note in the contract header instead of
   guessing.
 - Auth defaults: any endpoint not explicitly marked public in
-  `state/SCOPE.md` is treated as authenticated.
+  the 5 deliverable HTMLs is treated as authenticated.
 - Error envelope defaults to `{ error: string, code: string }` unless
-  `state/SCOPE.md` Section 7 declares otherwise.
+  the 5 deliverable HTMLs Section 7 declares otherwise.
 - One file per feature. Do not collapse multiple features into a
   monolithic contract — that defeats parallel Builder isolation.
 

@@ -13,7 +13,7 @@ description: Detect scope changes after TASKS.md already has tasks and produce a
 
 # Skill: Delta Scope
 
-**Trigger:** User says `delta scope` / `rescope` (or uses the `/delta-scope` slash command), or `state/SCOPE.md` changes while `state/TASKS.md` already has tasks other than `pending`.
+**Trigger:** User says `delta scope` / `rescope` (or uses the `/delta-scope` slash command), or the 5 deliverable HTMLs changes while `state/TASKS.md` already has tasks other than `pending`.
 
 **Purpose:** Detect what changed in the scope of work after tasks have already been generated (or built), and produce a reviewable delta rather than silently re-planning. The workflow must never drop done work or duplicate active work because the spec moved.
 
@@ -23,10 +23,10 @@ description: Detect scope changes after TASKS.md already has tasks and produce a
 
 Run this skill when any of these is true:
 
-- `state/SCOPE.md` was edited after `parse scope` produced `state/TASKS.md`.
-- A new or updated document was added to `state/SCOPE.md` (manually or via /import-docs) after `import docs` was last run.
+- the 5 deliverable HTMLs was edited after `parse scope` produced `state/TASKS.md`.
+- A new or updated document was added to the 5 deliverable HTMLs (manually or via /parse-scope) after `import docs` was last run.
 - A user explicitly says `delta scope`, `rescope`, or "scope changed".
-- Orchestrator detects that `state/SCOPE.md`'s modification time is newer than the last `state/TASKS.md` generation timestamp.
+- Orchestrator detects that the 5 deliverable HTMLs's modification time is newer than the last `state/TASKS.md` generation timestamp.
 
 Do not run this skill on the first-ever pass. For the first pass use `parse scope` or `reqops`.
 
@@ -34,7 +34,7 @@ Do not run this skill on the first-ever pass. For the first pass use `parse scop
 
 ## Inputs
 
-- Current `state/SCOPE.md` (after change)
+- Current the 5 deliverable HTMLs (after change)
 - Current `state/TASKS.md` (with per-task statuses)
 - Last snapshot of SCOPE-derived requirements (if any) in `.pipeline/features/requirements/`
 - `memory/ARCHITECTURE.md`, `memory/PATTERNS.md`, `memory/DECISIONS.md` for reality check
@@ -49,7 +49,7 @@ Optional:
 
 ### Step 1 — Build the "before" and "after" requirement maps
 
-1. Read the current `state/SCOPE.md`. Extract a normalized feature map
+1. Read the current the 5 deliverable HTMLs. Extract a normalized feature map
    (name, screens, endpoints, data models, NFRs, dependencies, MCP URLs).
 2. Read existing per-feature requirement files under
    `.pipeline/features/requirements/` to reconstruct the last-known state.

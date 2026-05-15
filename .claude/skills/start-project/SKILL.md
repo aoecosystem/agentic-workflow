@@ -42,8 +42,7 @@ The actual work happens in the skill it routes to.
 
 | Current Stage | Next action / route |
 |---|---|
-| `DOCS_COMPLETE` | Tell user: run `/parse-scope` to generate `state/TASKS.md` directly from the 5 approved HTMLs. (Or `/import-docs` first if they want SCOPE.md extracted as an intermediate.) |
-| `SCOPE_PARSED` | Tell user: run `/parse-scope` to generate `state/TASKS.md`. |
+| `DOCS_COMPLETE` | Tell user: run `/parse-scope` to generate `state/TASKS.md` directly from the 5 approved HTMLs. |
 | `TASKS_GENERATED` | Tell user: run `/approve-tasks` to audit and lock the task graph. |
 | `TASKS_APPROVED` | Tell user: run `/start-build` to kick off the orchestrator + builders + QA loop. |
 | `BUILDING` | Tell user: build is in progress. Run `/show-status` for task progress; `/resume-build` to continue if interrupted; `/qa-only` to run QA on any `in-review` tasks. |
@@ -107,7 +106,7 @@ cancel options.
 - `INIT → INTERVIEW`  (when starting fresh interview)
 - `INTERVIEW → BRIEF_DRAFT`  (when interview saves successfully)
 - All others: this skill only **reports** next steps; the actual transition
-  happens in the destination skill (`/approve-brief`, `/import-docs`, etc.).
+  happens in the destination skill (`/approve-brief`, `/parse-scope`, etc.).
 
 ---
 

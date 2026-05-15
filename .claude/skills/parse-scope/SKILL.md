@@ -1,34 +1,34 @@
 ---
 name: parse-scope
-description: Generate (or regenerate) TASKS.md from a filled-in state/SCOPE.md, with one executable task block per unit of work grouped by feature, dependency edges, agent assignments, traceability refs, attempt budget, acceptance criteria, and optional design fields. Runs a ReqOps pre-pass when .pipeline/sow.md (rarely used) is present. Trigger when the user says "parse scope", "generate tasks", "break this scope into tasks", or asks for a task list from a completed SCOPE.md. This skill is the sole writer of TASKS.md.
+description: Generate (or regenerate) state/TASKS.md by reading the 5 approved HTML deliverables directly (brief, scope-of-work, architecture, database, infrastructure). Produces one executable task block per unit of work grouped by feature, with dependency edges, agent assignments, traceability refs, attempt budget, acceptance criteria, and optional design fields. Also emits memory/STACK-GUIDANCE.md and memory/PAGES.md as side effects. Trigger when the user says "parse scope", "generate tasks", "break the deliverables into tasks", or runs /parse-scope. This skill is the sole writer of TASKS.md.
 ---
 
 ## Stage gate (RUN FIRST)
 
 1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
-2. If `Stage` is not `SCOPE_PARSED`, refuse with:
-   > "Parse-scope is only valid from `SCOPE_PARSED`. Current: `<STAGE>`.
-   > Run `/import-docs` first to populate `state/SCOPE.md`."
-   Leave Stage unchanged.
-3. If `Stage` is `TASKS_GENERATED` and user wants to re-run, that's
-   allowed (regeneration); transition stays at `TASKS_GENERATED`.
+2. Refuse unless Stage is `DOCS_COMPLETE` or `TASKS_GENERATED` (re-run). Message:
+   > "parse-scope is only valid from `DOCS_COMPLETE` or `TASKS_GENERATED`. Current: `<STAGE>`. Complete the docs phase first (run `/status` to see the next required approval)."
+3. If `Stage` is `TASKS_GENERATED` and the user wants to re-run, that's allowed (regeneration); transition stays at `TASKS_GENERATED`.
 
 ---
 
 ## Manual-edit detection (RUN BEFORE FILE OPERATIONS)
 
-Compute SHA-256 of `state/SCOPE.md` and `memory/STACK-GUIDANCE.md`.
-Compare to stored hashes. On drift, ask user before proceeding.
+Compute SHA-256 of the 5 deliverable HTMLs and `memory/STACK-GUIDANCE.md` (if present). Compare to stored hashes in SESSION-STATE artifacts list. On drift, ask user before proceeding.
 
 ---
 
 # Skill: Parse Scope
 
-**Trigger:** User says `parse scope` (or uses the `/parse-scope` slash command)
+**Trigger:** User says `parse scope` (or uses the `/parse-scope` slash command).
 
-**Purpose:** Read `state/SCOPE.md` and generate a structured `state/TASKS.md` with one task block per unit of work, grouped by feature, with dependencies, agent assignments, MCP URLs, files, and acceptance criteria. When ReqOps requirement files exist (`.pipeline/features/requirements/*.md`), run a ReqOps pre-pass first so Builder/QA criteria inherit ReqOps grounding.
+**Purpose:** Read the 5 approved HTML deliverables and generate `state/TASKS.md` with one executable task block per unit of work, grouped by feature, with dependencies, agent assignments, MCP URLs, files, and acceptance criteria. **There is no intermediate SCOPE.md** — the 5 HTMLs are the source of truth, TASKS.md is the planning output.
 
-Primary objective: generate implementation-ready tasks that are traceable to `state/SCOPE.md` feature-by-feature and flow-by-flow, with zero invented scope and zero orphan requirements.
+Primary objective: generate implementation-ready tasks that are traceable to the 5 HTMLs feature-by-feature and flow-by-flow, with zero invented scope and zero orphan requirements.
+
+Side effects:
+- Writes `memory/STACK-GUIDANCE.md` (stack-specific architecture / state / UI / testing defaults derived from SoW Phase 6 + Phase 9).
+- Writes `memory/PAGES.md` (page inventory copied verbatim from SoW Phase 7).
 
 ---
 
@@ -36,9 +36,9 @@ Primary objective: generate implementation-ready tasks that are traceable to `st
 
 Before presenting a draft, all of the following must be true:
 
-1. **Scope fidelity:** Every generated task maps to a real feature, screen, endpoint, model, NFR, or dependency from source docs.
-2. **Traceability:** Every screen/page, endpoint, and data model listed in `state/SCOPE.md` section 5 appears in at least one task (directly or via shared contract task).
-3. **Flow integrity:** User flows in `state/SCOPE.md` are preserved in task ordering and dependencies (entry -> action -> outcome).
+1. **Scope fidelity:** Every generated task maps to a real feature, screen, endpoint, model, NFR, or dependency from the 5 HTMLs.
+2. **Traceability:** Every page (SoW Phase 7), endpoint (SoW Phase 4), and data model (Database HTML §2) appears in at least one task (directly or via shared contract task).
+3. **Flow integrity:** Business processes from SoW Phase 5.5 (if present) and User flows from brief §6 are preserved in task ordering and dependencies (entry → action → outcome).
 4. **No task bloat:** Do not create generic filler tasks ("refactor", "cleanup", "misc") unless explicitly required by source scope.
 5. **Execution realism:** Each task should represent a meaningful vertical unit a senior Builder can complete in one focused session.
 
@@ -48,55 +48,57 @@ If any gate fails, revise task decomposition before showing user.
 
 ## Steps
 
-### Step 1 — Read inputs
+### Step 1 — Read inputs (the 5 HTMLs are the source of truth)
 
-Read these files before generating anything:
-- `state/SESSION-STATE.md` — locate `Architecture style:` field (one of `monolith`, `hybrid`, `microservices`, `polyglot-microservices`, `serverless`). This is a **HARD CONTRACT** — every task's `Files to create/modify:` paths must conform to the matching style profile.
-- `deliverables/architecture/styles/<style>.md` — **HARD CONTRACT**. Read this profile's "Folder structure" section. Every file path you emit in TASKS.md must sit under a folder declared by this profile. Memorize:
+Read these files before generating anything. Resolve `<slug>` from `state/SESSION-STATE.md` → `Slug:`:
+
+**A. State + architecture profile (HARD CONTRACT):**
+
+- `state/SESSION-STATE.md` — locate `Architecture style:` field (one of `monolith`, `hybrid`, `microservices`, `polyglot-microservices`, `serverless`). Drives every task's folder placement.
+- `deliverables/architecture/styles/<style>.md` — **HARD CONTRACT** Folder structure section. Memorize:
   - The FE/BE split (e.g. `apps/api/` + `apps/web/` for monolith — never combined)
   - The ORM folder convention (Prisma → `prisma/`, Drizzle → `drizzle/`, TypeORM/Sequelize/Kysely/MikroORM → `database/`)
-  - **`infra/` location is STYLE-DEPENDENT** (do NOT use root `infra/` unconditionally):
+  - **`infra/` location is STYLE-DEPENDENT:**
     - `monolith` / `hybrid` → `apps/infra/` (inside `apps/`, next to `api/` and `web/`)
     - `microservices` / `polyglot-microservices` / `serverless` → root-level `infra/`
   - Role-based app naming (`apps/api/`, NOT `apps/<slug>-api/`)
-  - For component files: `components/<feature>/<Concern>.tsx` granularity (Header → HeaderNav.tsx + HeaderLogo.tsx + HeaderUserMenu.tsx; Footer → FooterLinks.tsx + FooterSocial.tsx; Profile page → ProfileAvatar.tsx + ProfilePersonalInfo.tsx + ProfileUpdatePassword.tsx)
-- `state/SCOPE.md` — full content. Read EVERY section, not just §5. Map each to TASKS.md:
-  - **§3 Tech Stack** → every task block records the resolved frontend / backend / ORM choices in its `Stack:` field.
-  - **§4 MCP URLs** → propagate each MCP URL into the relevant UI / API task's `MCP URL:` field.
-  - **§5 Feature Breakdown** including every Phase 4 API endpoint and Phase 7 Page Inventory row.
-  - **§6 Out of Scope** → tasks must NOT cover any item listed here; cite as rejection grounds during the coverage gate.
-  - **§7 NFRs** → derived AC items (auth required, validation, error format, rate limit, observability) attached to the relevant tasks.
-  - **§8 Page Inventory** → every page must appear in at least one UI task.
-  - **§9 Database Schemas** → every entity must appear in TASK-001 (schema task) or a feature-specific schema task.
-  - **§10 Architecture Style** → propagates into every task's `Architecture style:` field.
-  - **§11 Infrastructure** → env vars, secrets, integrations propagate into TASK-000 (scaffold) acceptance criteria.
-  - **§12 Design Language** → UI tasks reference this for visual style, palette, font pairing, component library, and component decomposition rules.
-  - **§13 AI Generation Instructions** (from brief §13) → execution rules applied to every generated task.
+  - Component decomposition (Header → HeaderNav.tsx + HeaderLogo.tsx + HeaderUserMenu.tsx; etc.)
+
+**B. The 5 approved HTML deliverables (source of truth — read each end-to-end):**
+
+| # | File | Extract |
+|---|---|---|
+| 1 | `deliverables/brief/<slug>-brief.html` | §1 vision, §2 target users, §3 platforms + architecture style, §4 multi-role flag, §5 features, §6 business processes, §8 integrations, §9 NFRs, §10 success metrics, §11 out of scope, §12 design preferences, **§13 AI Generation Instructions** (execution rules applied to every task) |
+| 2 | `deliverables/scope-of-work/<slug>-sow.html` | Phase 1 service inventory, Phase 2 module breakdown, Phase 3 database schemas, **Phase 4 API endpoints (every row → ≥1 task)**, Phase 5 events, Phase 5.5 business processes (when present), **Phase 6 tech stack** (resolves `Stack:` field in every task), **Phase 7 page inventory (every row → ≥1 UI task)**, Phase 8 quality criteria, **Phase 9 folder structure + design language** |
+| 3 | `deliverables/architecture/<slug>-architecture.html` | §1 overview, §2 service inventory, §3 layered architecture, §4 data flow, §5 module boundaries, §6 cross-cutting concerns, §7 Mermaid diagram (verbatim for ERD-aware tasks) |
+| 4 | `deliverables/database/<slug>-database.html` | §1 schema overview, **§2 entity definitions (every entity → TASK-001 or feature-specific schema task)**, §3 relationships, §4 indexes strategy, §5 migration & versioning, §6 ERD Mermaid (verbatim) |
+| 5 | `deliverables/infrastructure/<slug>-infrastructure.html` | §1 environments, §2 hosting & compute, §3 db/storage/cache, §4 network & domains, §5 external services & integrations, §6 security & secrets (env vars → TASK-000 AC), §7 backup & DR, §8 CI/CD pipeline, §9 topology Mermaid (verbatim) |
+
+**C. Supplemental (read if present, don't fail if missing):**
+
 - `state/TASKS.md` — check if tasks already exist (ask user before overwriting).
-- `memory/ARCHITECTURE.md` — if it exists, use its module map to assign file paths.
-- `memory/STACK-GUIDANCE.md` — if it exists, use it to keep tasks aligned with the chosen stack's architecture, UI, and testing conventions.
-- `memory/PAGES.md` — if it exists, the authoritative page inventory; cross-check against SCOPE §8.
-- (No external drop zone — `state/SCOPE.md` is the single source.)
-- `.pipeline/sow.md` — fallback ReqOps source if SCOPE.md is empty.
-- `.pipeline/requirements.md`, `.pipeline/features-list.md`, `.pipeline/system-design-provided.md`, `.pipeline/features/requirements/` — supplemental if present.
+- `memory/ARCHITECTURE.md`, `memory/PATTERNS.md`, `memory/DECISIONS.md` — cross-session knowledge.
+- `memory/STACK-GUIDANCE.md` — this skill REWRITES it (side effect).
+- `memory/PAGES.md` — this skill REWRITES it (side effect).
+- `.pipeline/features/requirements/*.md` — ReqOps output (run `reqops` first if you want this layer).
 
-**Failure modes:** if SESSION-STATE has no `Architecture style:` field, refuse with "Architecture style missing — re-run /build-scope-of-work to lock Phase 9". If `deliverables/architecture/styles/<style>.md` does not exist, halt — never improvise a folder structure.
+**Failure modes:**
+- If SESSION-STATE has no `Architecture style:` field → refuse with "Architecture style missing — re-run `/build-scope-of-work` to lock Phase 9".
+- If `deliverables/architecture/styles/<style>.md` does not exist → halt; never improvise a folder structure.
+- If any of the 5 HTMLs is missing → halt with the exact path. Stage `DOCS_COMPLETE` should guarantee all 5 exist; missing implies state inconsistency.
 
-### Step 2 — ReqOps pre-pass (when SOW sources exist)
+### Step 2 — ReqOps pre-pass (optional)
 
-If SOW sources exist in `state/SCOPE.md`, or `.pipeline/sow.md`:
-1. For each feature detected in `state/SCOPE.md` section 5, run ReqOps logic (see `reqops` skill) and create/update:
-   - `.pipeline/features/requirements/<feature-id>-<feature-slug>-requirements.md`
-2. Enforce ReqOps source precedence (`state/SCOPE.md` first, then `.pipeline/sow.md` fallback) over lower-precedence pipeline docs.
-3. Record contradictions as `GAP-XX` in the requirements file (never silently resolve).
-4. If no authoritative SOW source is found, continue with `state/SCOPE.md` generation only and note that ReqOps grounding was unavailable.
+If `.pipeline/features/requirements/*.md` files already exist (from a prior `/reqops` run):
+1. Read each one and use its per-feature ACs as the seed for generated task acceptance criteria.
+2. Record contradictions between requirements files and the 5 HTMLs as `GAP-XX` notes (never silently resolve).
 
 If no ReqOps output files exist:
-- Continue with standard `state/SCOPE.md`-driven task generation.
+- Continue with HTML-driven task generation. This is the default path.
 
 ### Step 3 — Identify feature groups
 
-From `state/SCOPE.md` section 5 (Feature Breakdown):
+From SoW Phase 2 (modules) + Phase 4 (endpoints) + Phase 7 (pages):
 - Extract each named feature as a group.
 - Note its dependencies on other features.
 - Note its MCP URL if provided.
@@ -192,7 +194,7 @@ Scaffold and schema tasks always use `orchestrator` or `builder-1`.
 
 For every UI task you generate:
 
-1. Read `memory/PAGES.md` (or `state/SCOPE.md` section 8 if PAGES.md is empty).
+1. Read `memory/PAGES.md` (or SoW Phase 7 (Page Inventory) if PAGES.md is empty).
 2. For each screen/page the task implements, attach the corresponding
    `Page ID` from the inventory.
 3. Add a `Page IDs:` field to the task block:
@@ -216,7 +218,7 @@ This keeps cross-source design lookup unambiguous.
 For each task, write 3–6 acceptance criteria items as checkboxes. Derive them from:
 - The feature's screen descriptions (UI renders correctly, user can do X)
 - The feature's API endpoints (correct inputs/outputs, error handling)
-- The project's NFRs in `state/SCOPE.md` (auth required, validation, error format)
+- The project's NFRs in `the 5 HTMLs` (auth required, validation, error format)
 - ReqOps requirements file for that feature if available in `.pipeline/features/requirements/`
 
 Every task must have at minimum:
@@ -228,7 +230,7 @@ Every task must have at minimum:
 
 **For API tasks (every task that adds or modifies an HTTP endpoint), the AC baseline tightens — vague "happy + one error" is not sufficient. Every endpoint MUST have explicit test cases for:**
 - `[ ]` `200`/`201` success path with a representative valid payload
-- `[ ]` `401` Unauthorized when the route is protected (omitted only if route is documented public in SCOPE.md)
+- `[ ]` `401` Unauthorized when the route is protected (omitted only if route is documented public in the 5 HTMLs)
 - `[ ]` `403` Forbidden when role-based authorization applies (e.g. tutor-only endpoint called by parent)
 - `[ ]` `4xx` validation failure (`400` or `422`) for each constrained input field
 - `[ ]` `404` Not Found when the resource is a path parameter (e.g. `/bookings/:id`)
@@ -262,7 +264,7 @@ Use these sections when the feature behavior is visible to end users or depends 
 - `Edge cases:` — explicit fallback/error/empty-state conditions the Builder and QA must account for.
 - `Test cases:` — concrete behaviors to verify, written as numbered functional checks. These should complement, not replace, checklist-style acceptance criteria.
 
-Keep the sections concise and grounded in `state/SCOPE.md` or ReqOps output. Do not invent product behavior that is not stated or strongly implied by the source material.
+Keep the sections concise and grounded in `the 5 HTMLs` or ReqOps output. Do not invent product behavior that is not stated or strongly implied by the source material.
 
 Flow-specific requirement:
 - `User flow` must include explicit step transitions (screen/action/outcome) and reference at least one edge case from source when provided.
@@ -294,7 +296,7 @@ Write the full `state/TASKS.md` in this format:
 - Feature group: Scaffold
 - Title: Initialize project structure
 - Architecture style: <monolith | hybrid | microservices | polyglot-microservices | serverless>     ← from SESSION-STATE
-- Stack: { frontend: <name>, backend: <name>, orm: <name>, db: <name> }                            ← from SoW Phase 6 / SCOPE §3
+- Stack: { frontend: <name>, backend: <name>, orm: <name>, db: <name> }                            ← from SoW Phase 6
 - Folder root: workspace                                                                            ← scaffold writes at repo root
 - Depends on: none
 - Assigned agent: orchestrator
@@ -354,8 +356,8 @@ Write the full `state/TASKS.md` in this format:
   - apps/api/prisma/schema.prisma              ← when ORM = Prisma; otherwise drizzle/schema.ts or database/entities/*
   - apps/api/prisma/migrations/                ← respect chosen ORM CLI conventions
 - Acceptance criteria:
-  - [ ] Every entity from SCOPE.md §9 Database Schemas exists with all columns + types + constraints
-  - [ ] Every relationship from SCOPE.md §9 is wired in the schema
+  - [ ] Every entity from the 5 HTMLs §9 Database Schemas exists with all columns + types + constraints
+  - [ ] Every relationship from the 5 HTMLs §9 is wired in the schema
   - [ ] Migrations run cleanly on a fresh database
   - [ ] TypeScript types generated/defined for all models (when ORM supports it)
   - [ ] ORM folder placed correctly (Prisma → `prisma/`, Drizzle → `drizzle/`, others → `database/`)
@@ -483,8 +485,8 @@ Before writing `state/TASKS.md`:
 
 5. **If the coverage gate failed, do not ask for write confirmation.** Tell the user exactly which items are unmapped and offer to:
    - (a) Add a task for each missing item, or
-   - (b) Mark the item explicitly out-of-scope (requires updating SCOPE.md), or
-   - (c) Re-run `import-docs` if the missing items reveal that SCOPE.md itself is incomplete.
+   - (b) Mark the item explicitly out-of-scope (requires updating the 5 HTMLs), or
+   - (c) Re-run `import-docs` if the missing items reveal that the 5 HTMLs itself is incomplete.
 
 6. **If the gate passed, ask:** "Coverage is 100% across all source-of-truth items. Reply 'yes' to write state/TASKS.md, or tell me what to adjust."
 
@@ -514,7 +516,7 @@ After writing `state/TASKS.md`:
    - Artifacts list: mark `state/TASKS.md` with task count + hash.
 2. Append audit log:
    ```
-   <ISO>  parse-scope  SCOPE_PARSED → TASKS_GENERATED  <N> tasks generated
+   <ISO>  parse-scope  DOCS_COMPLETE → TASKS_GENERATED  <N> tasks generated
    ```
 
 3. Tell user: *"<N> tasks generated. Next: run `/approve-tasks` to audit, then `/start-build` to begin parallel build."*

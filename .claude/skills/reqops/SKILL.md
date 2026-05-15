@@ -1,13 +1,13 @@
 ---
 name: reqops
-description: ReqOps requirements specialist. Reads scope from state/SCOPE.md (the canonical post-import-docs surface) with .pipeline/sow.md as fallback and produces dev-ready, SOW-traceable feature requirements under .pipeline/features/requirements/<feature-id>-<slug>-requirements.md with user stories, Given/When/Then acceptance criteria (MoSCoW-tagged), NFRs, edge cases, test cases, smart checklist, and change logs. Trigger when the user says "reqops", "derive requirements", "generate requirements from SCOPE.md", or runs parse-scope with the ReqOps pre-pass. Does NOT write state/TASKS.md — parse-scope owns that.
+description: ReqOps requirements specialist. Reads scope from the 5 deliverable HTMLs (the canonical post-import-docs surface) with .pipeline/sow.md as fallback and produces dev-ready, SOW-traceable feature requirements under .pipeline/features/requirements/<feature-id>-<slug>-requirements.md with user stories, Given/When/Then acceptance criteria (MoSCoW-tagged), NFRs, edge cases, test cases, smart checklist, and change logs. Trigger when the user says "reqops", "derive requirements", "generate requirements from SCOPE.md", or runs parse-scope with the ReqOps pre-pass. Does NOT write state/TASKS.md — parse-scope owns that.
 ---
 
 ## Stage gate (RUN FIRST)
 
 1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
-2. Refuse unless Stage is `SCOPE_PARSED`, `TASKS_GENERATED`, `TASKS_APPROVED`, or later. Message:
-   > "reqops requires a parsed scope. Current Stage: `<STAGE>`. Run `/parse-scope` (or `/import-docs` then `/parse-scope`) first."
+2. Refuse unless Stage is `DOCS_COMPLETE`, `TASKS_GENERATED`, `TASKS_APPROVED`, or later. Message:
+   > "reqops requires the 5 HTMLs to be approved. Current Stage: `<STAGE>`. Complete the docs phase first."
 
 ---
 
@@ -15,7 +15,7 @@ description: ReqOps requirements specialist. Reads scope from state/SCOPE.md (th
 
 **Trigger:** User says `reqops`, or `parse scope` runs with ReqOps pre-pass enabled.
 
-**Purpose:** Read scope from `state/SCOPE.md`, derive implementation-ready requirements, and generate/update `state/TASKS.md` so Builder/QA can execute against concrete user outcomes.
+**Purpose:** Read scope from the 5 deliverable HTMLs, derive implementation-ready requirements, and generate/update `state/TASKS.md` so Builder/QA can execute against concrete user outcomes.
 
 ---
 
@@ -23,8 +23,8 @@ description: ReqOps requirements specialist. Reads scope from state/SCOPE.md (th
 
 Read in this precedence order:
 
-1. `state/SCOPE.md` (authoritative — populated by /import-docs from the 5 HTMLs)
-2. `.pipeline/sow.md` (fallback when SCOPE.md is empty)
+1. the 5 deliverable HTMLs (authoritative — approved at Stage `DOCS_COMPLETE`)
+2. `.pipeline/sow.md` (rarely-used legacy fallback)
 3. `.pipeline/requirements.md` / `.pipeline/features-list.md` / `.pipeline/system-design-provided.md` (optional support context)
 4. `.pipeline/features/requirements/` files for other features (optional dependency context)
 
@@ -33,7 +33,7 @@ Conflict rule:
 - Record the conflict as `GAP-XX` with file path + contradiction summary.
 
 Hard stop:
-- If no usable SOW source exists in `state/SCOPE.md` or `.pipeline/sow.md`, stop and emit exactly:
+- If no usable SOW source exists in the 5 deliverable HTMLs or `.pipeline/sow.md`, stop and emit exactly:
   - `ERROR: Scope of work not found. ReqOps AI cannot proceed without an authoritative SOW source in SCOPE.md or .pipeline/sow.md.`
 
 ---
@@ -45,8 +45,8 @@ Hard stop:
 Read the chosen SOW source fully and isolate passages that define the target feature.
 Every requirement and acceptance criterion must be traceable back to SOW text.
 
-When sourcing from `state/SCOPE.md`:
-- Read `state/SCOPE.md` end-to-end.
+When sourcing from the 5 deliverable HTMLs:
+- Read the 5 deliverable HTMLs end-to-end.
 - Prioritize files with names like `scope-of-work`, `sow`, `requirements`, `prd`, or `spec`.
 - Build one normalized feature map before generating outputs.
 

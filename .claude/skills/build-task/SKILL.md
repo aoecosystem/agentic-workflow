@@ -28,7 +28,7 @@ Before writing any code:
    - `Stack:` — task-local stack choices `{ frontend, backend, orm, db }`
    - `Folder root:` — task-local folder root (e.g. `apps/api/prisma/`, `apps/web/src/features/booking/`)
    These fields are written by `parse-scope` and are the AUTHORITATIVE source. Only fall back to SESSION-STATE if a field is absent or `inherited`.
-2. Read `state/SCOPE.md` — the relevant feature section only.
+2. Read the 5 deliverable HTMLs — the relevant feature section only.
 3. Read `state/SESSION-STATE.md` — note the `Architecture style:` field (monolith / hybrid / microservices / polyglot-microservices / serverless). This is the FALLBACK only when the task block doesn't specify. Otherwise the task block wins.
 4. Read `deliverables/architecture/styles/<style>.md` — start with the **Quick reference card** at the top (everything you need for 95% of tasks); read deeper sections only if the task is scaffold or non-standard. The **Folder structure** section is a HARD CONTRACT. Every file you create or move must land at the path declared by this profile. If the file doesn't fit any declared folder, stop and surface a question — never invent a new top-level folder. Note especially:
    - **FE/BE split rules** (e.g. `apps/api/` vs `apps/web/` for monolith — never combined)
@@ -135,8 +135,8 @@ Build in this order (skip layers not applicable to the task):
     - **Anti-pattern (FAIL the gate):** `<Header items={navItems} />` where `navItems` is a static array defined in the page or a `data.ts` file. Correct: `<Header />` and the nav items are inside `Header.tsx` rendered as explicit JSX with `t()` calls.
 - Follow patterns from `memory/PATTERNS.md` exactly.
 - Follow `memory/STACK-GUIDANCE.md` when present; treat it as the stack-specific implementation playbook for this project.
-- Use the tech stack specified in `state/SCOPE.md` — do not introduce new dependencies without noting it.
-- Handle all error paths. See `state/SCOPE.md` NFR section for expected error shape.
+- Use the tech stack specified in the 5 deliverable HTMLs — do not introduce new dependencies without noting it.
+- Handle all error paths. See the 5 deliverable HTMLs NFR section for expected error shape.
 - No `TODO` comments. If something is incomplete, the task is not done.
 - No `any` types without a documented reason in a comment.
 - For Figma-driven mobile/app layouts, treat device chrome in design previews as non-app scaffolding. Implement the inner content layout only unless acceptance criteria explicitly require shell chrome.

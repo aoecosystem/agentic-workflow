@@ -6,7 +6,7 @@ idea → 5 polished documents → generated, verified code → ready to deploy.
 ```
 Step 1  Interview          →  5 polished HTML docs (Brief, SoW,
                               Architecture, Database, Infrastructure)
-Step 2  Import + Parse     →  state/SCOPE.md + state/TASKS.md
+Step 2  Parse              →  state/TASKS.md (reads the 5 HTMLs directly)
 Step 3  Build              →  generated code in ../apps/
 Step 4  Verify             →  lint + types + tests pass
                             ↓
@@ -85,9 +85,7 @@ INFRASTRUCTURE_DRAFT  ── /review-infrastructure (loop) ── /approve-infra
  │
  │  (continue to build phase, OR stop here if docs-only)
  │
- │  /import-docs
- ▼
-SCOPE_PARSED ── /parse-scope
+ │  /parse-scope
  ▼
 TASKS_GENERATED ── /approve-tasks (recommended audit) ── /start-build
  ▼
@@ -170,11 +168,11 @@ Each `/approve-*` runs a blocking quality gate. After
 `/approve-infrastructure`, you have all 5 HTML deliverables. Stop here
 if docs were your only goal.
 
-### Step 5 — Import + parse (Docs phase → Build phase)
+### Step 5 — Parse (Docs phase → Build phase)
 
 ```
-/import-docs    ← parses 5 HTMLs into state/SCOPE.md
-/parse-scope    ← generates state/TASKS.md from SCOPE.md
+/parse-scope    ← reads the 5 approved HTMLs directly and generates state/TASKS.md
+                  (also writes memory/STACK-GUIDANCE.md and memory/PAGES.md as side effects)
 ```
 
 Optional review:
@@ -290,7 +288,6 @@ agentic-workflow/                      ← this repo
 │   └── <page-id>.png/jpg/html
 ├── state/                             ← per-project auto-state
 │   ├── SESSION-STATE.md                    (Stage + audit log + hashes)
-│   ├── SCOPE.md                            (parsed from docs)
 │   ├── TASKS.md                            (generated)
 │   └── archived/                           (snapshots on /reset)
 ├── memory/                            ← QA-curated cross-session knowledge
@@ -348,7 +345,6 @@ DOCS PHASE — INFRASTRUCTURE
   /approve-infrastructure           (FINAL of docs phase → DOCS_COMPLETE)
 
 BUILD PHASE
-  /import-docs                      (DOCS_COMPLETE → SCOPE_PARSED)
   /parse-scope                      (generates state/TASKS.md)
   /delta-scope                      (re-plan when SCOPE changes)
   /reqops                           (per-feature requirements)

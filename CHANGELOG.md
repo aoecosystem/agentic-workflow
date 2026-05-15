@@ -6,6 +6,60 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.8.0] — Remove /import-docs + SCOPE.md (single intermediate path)
+
+Consolidation. /parse-scope now reads the 5 HTML deliverables directly.
+The SCOPE.md intermediate is gone.
+
+### Removed
+
+- `/import-docs` skill + command
+- `state/SCOPE.md` (the generated intermediate)
+- `SCOPE_PARSED` stage from the state machine (was: DOCS_COMPLETE → SCOPE_PARSED → TASKS_GENERATED; now: DOCS_COMPLETE → TASKS_GENERATED)
+
+### Changed
+
+- **`/parse-scope`** now reads the 5 approved HTMLs directly:
+  `brief`, `scope-of-work`, `architecture`, `database`, `infrastructure`.
+  Stage gate: refuses unless `DOCS_COMPLETE` or `TASKS_GENERATED`.
+  Side effects: writes `memory/STACK-GUIDANCE.md` and `memory/PAGES.md`.
+- **`reqops`**, **`delta-scope`**, **`build-task`**, **`qa`**,
+  **`api-contract`**, **`figma-plugin-ingest`**, **`verify-build`**,
+  **`package-release`**, **`approve-tasks`** all rebound from
+  `state/SCOPE.md` reads to the 5 HTMLs or `state/TASKS.md` task blocks.
+- **`start-project`** router: `DOCS_COMPLETE → /parse-scope`
+  (no longer routes through `/import-docs`).
+- **AGENTS.md** state diagram: pipeline collapses to
+  `DOCS_COMPLETE → /parse-scope → TASKS_GENERATED`.
+- **CLAUDE.md**, **README.md**, **INSTRUCTIONS.md**: removed all
+  `/import-docs`, `SCOPE.md`, and `SCOPE_PARSED` references.
+
+### Rationale
+
+The legacy `import-docs` step existed for migration — read raw PDFs/docx
+and emit `SCOPE.md`. After v2.7 removed `inputs/`, `import-docs` only
+read the 5 HTMLs and wrote SCOPE.md as a cache. `parse-scope` could
+already read the 5 HTMLs directly. Two ways to do the same thing.
+
+Now there's one path: **5 HTMLs → /parse-scope → state/TASKS.md**.
+SCOPE.md was a cache; the HTMLs are the source. Cache gone.
+
+### Migration note
+
+Existing projects with a `state/SCOPE.md` file: it can be deleted. The
+agent will re-read the 5 HTMLs on the next `/parse-scope` run.
+
+### Pipeline footprint
+
+```
+state/        SESSION-STATE.md + TASKS.md + archived/   (no SCOPE.md anymore)
+memory/       ARCHITECTURE, PATTERNS, DECISIONS, STACK-GUIDANCE, PAGES + mcp-cache
+deliverables/ 5 HTMLs + templates + architecture style profiles
+.claude/      31 skills (was 32) + 31 commands (was 32)
+```
+
+---
+
 ## [2.7.0] — Remove inputs/ + scope-interview (single entry point)
 
 Consolidation release. The engine had two entry points: `/start-project`

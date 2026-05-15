@@ -1,6 +1,6 @@
 ---
 name: package-release
-description: Final stage. Generate release notes from the verified build, bundle artifacts (optional), and transition Stage from VERIFIED to READY_TO_DEPLOY. Reads state/SCOPE.md, state/TASKS.md, deliverables/scope-of-work/<slug>-sow.html. Writes a polished release note. Trigger on `/package-release`.
+description: Final stage. Generate release notes from the verified build, bundle artifacts (optional), and transition Stage from VERIFIED to READY_TO_DEPLOY. Reads the 5 deliverable HTMLs, state/TASKS.md, deliverables/scope-of-work/<slug>-sow.html. Writes a polished release note. Trigger on `/package-release`.
 ---
 
 # Skill: package-release
@@ -31,7 +31,7 @@ halt before proceeding.
 ## Generate release notes
 
 Read:
-- `state/SCOPE.md` — feature list
+- the 5 deliverable HTMLs — feature list
 - `state/TASKS.md` — completed task summary
 - `deliverables/scope-of-work/<slug>-sow.html` — phases + acceptance criteria
 
@@ -96,7 +96,7 @@ Release packaged. Project is READY_TO_DEPLOY.
 Final artifacts:
   ✓ ../apps/<sub-app>/                      (verified code)
   ✓ deliverables/                            (5 HTMLs)
-  ✓ state/SCOPE.md, state/TASKS.md           (parsed)
+  ✓ the 5 deliverable HTMLs, state/TASKS.md           (parsed)
   ✓ state/RELEASE-NOTES-v<version>.md        (just generated)
 
 Deploy from ../apps/ using your platform of choice.
