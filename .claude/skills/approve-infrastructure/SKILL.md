@@ -1,6 +1,6 @@
 ---
 name: approve-infrastructure
-description: Final approval — lock the Infrastructure Diagram and transition Stage from INFRASTRUCTURE_DRAFT to INFRASTRUCTURE_APPROVED, then immediately to COMPLETE. Verifies Mermaid topology compiles, all brief Section 8 integrations appear, providers selected for critical fields, environments listed. Updates `state/SESSION-STATE.md`, appends audit log, prints completion summary. Trigger on `/approve-infrastructure`.
+description: Final docs-phase approval — lock the Infrastructure Diagram and transition Stage from INFRASTRUCTURE_DRAFT to INFRASTRUCTURE_APPROVED, then immediately to DOCS_COMPLETE so /import-docs can fire. Verifies Mermaid topology compiles, all brief Section 8 integrations appear, providers selected for critical fields, environments listed. Updates `state/SESSION-STATE.md`, appends audit log, prints completion summary. Trigger on `/approve-infrastructure`.
 ---
 
 # Skill: approve-infrastructure
@@ -8,7 +8,7 @@ description: Final approval — lock the Infrastructure Diagram and transition S
 **Trigger:** `/approve-infrastructure`
 
 **Purpose:** Run infrastructure quality gate, transition to
-`INFRASTRUCTURE_APPROVED`, then to `COMPLETE`. This is the final
+`INFRASTRUCTURE_APPROVED`, then to `DOCS_COMPLETE`. This is the final
 approval in the foundations pipeline.
 
 ---
@@ -80,16 +80,16 @@ This skill performs two transitions in sequence:
    <ISO>  approve-infrastructure  INFRASTRUCTURE_DRAFT → INFRASTRUCTURE_APPROVED  v<X> locked
    ```
 
-2. **Second transition (immediate):** `INFRASTRUCTURE_APPROVED` → `COMPLETE`.
+2. **Second transition (immediate):** `INFRASTRUCTURE_APPROVED` → `DOCS_COMPLETE`.
    Update `SESSION-STATE.md`:
-   - `Stage:` → `COMPLETE`
+   - `Stage:` → `DOCS_COMPLETE`
    - `Last skill:` → `approve-infrastructure`
    - `Last update:` → ISO timestamp
-   - `Resume hint:` → `Foundations complete. All 5 documents approved.`
+   - `Resume hint:` → `Docs phase complete. All 5 HTMLs approved. Run /parse-scope to generate the task graph from the 5 deliverables (or /import-docs first if you want to inspect the extracted SCOPE.md).`
    - Artifacts list: mark infrastructure as approved + final.
    Append audit log:
    ```
-   <ISO>  approve-infrastructure  INFRASTRUCTURE_APPROVED → COMPLETE  all 5 documents approved
+   <ISO>  approve-infrastructure  INFRASTRUCTURE_APPROVED → DOCS_COMPLETE  all 5 documents approved
    ```
 
 ---
@@ -117,14 +117,14 @@ Re-open any document with /review-<name>. Run /status anytime to see
 the current state.
 ```
 
-Stop. Do NOT auto-trigger anything. The project is done.
+The docs phase is finished. The build phase is now unlocked — the user can run `/parse-scope` (recommended path) or `/import-docs` to start generating TASKS.md from the 5 HTMLs.
 
 ---
 
 ## Rules
 
 - Read-only on infrastructure HTML during approval.
-- Two-step transition (APPROVED → COMPLETE) happens atomically in one
+- Two-step transition (APPROVED → DOCS_COMPLETE) happens atomically in one
   skill invocation.
 - Single source of truth = `SESSION-STATE.md`.
 - No file copies, no cross-repo writes.

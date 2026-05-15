@@ -105,6 +105,10 @@ re-build downstream docs/tasks to pick up the change.
 | `/show-status` | (inline) | Summarize TASKS.md status counts |
 | `/qa-only` | qa | (run QA on `in-review` tasks only) |
 | `/scope-interview` | scope-interview | (fallback Q&A when no foundations docs) |
+| `/approve-tasks` | approve-tasks | TASKS_GENERATED → TASKS_APPROVED |
+| `/approve-build` | approve-build | BUILD_COMPLETE → BUILD_APPROVED |
+| `/verify-build` | verify-build | BUILD_APPROVED → VERIFIED |
+| `/package-release` | package-release | VERIFIED → READY_TO_DEPLOY |
 
 After every command, the agent reminds the user of the next valid
 commands (or runs the `status` skill internally).
@@ -363,4 +367,3 @@ audit log.
 | **Audit log** | Every state transition appended (append-only). |
 | **Single source of truth** | `state/SESSION-STATE.md` for state; `memory/*` for curated knowledge. |
 | **No auto-advance** | Every transition needs an explicit user command. |
-| **Triple-mirror inline verification** | Agent verifies byte-equality on every skill edit. |

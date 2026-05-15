@@ -3,6 +3,14 @@ name: reqops
 description: ReqOps requirements specialist. Reads SOW sources (prefer inputs/, then SCOPE.md, then .pipeline/sow.md) and produces dev-ready, SOW-traceable feature requirements under .pipeline/features/requirements/<feature-id>-<slug>-requirements.md with user stories, Given/When/Then acceptance criteria (MoSCoW-tagged), NFRs, edge cases, test cases, smart checklist, and change logs. Trigger when the user says "reqops", "derive requirements", "generate requirements from inputs", or runs parse-scope with the ReqOps pre-pass. Does NOT write state/TASKS.md — parse-scope owns that.
 ---
 
+## Stage gate (RUN FIRST)
+
+1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+2. Refuse unless Stage is `SCOPE_PARSED`, `TASKS_GENERATED`, `TASKS_APPROVED`, or later. Message:
+   > "reqops requires a parsed scope. Current Stage: `<STAGE>`. Run `/parse-scope` (or `/import-docs` then `/parse-scope`) first."
+
+---
+
 # Skill: ReqOps
 
 **Trigger:** User says `reqops`, or `parse scope` runs with ReqOps pre-pass enabled.

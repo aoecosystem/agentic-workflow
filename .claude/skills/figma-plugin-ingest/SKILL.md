@@ -1,6 +1,6 @@
 ---
 name: figma-plugin-ingest
-description: Plugin-first Figma-to-code prep. Fetch full design context via the plugin-figma-figma MCP (tokens, assets, screens, states, variants, responsive behavior), merge any plugin-exported codegen artifacts, produce stack-mapped UI scaffolds, and auto-inject design fields on UI tasks in state/TASKS.md. Trigger when the user says "figma ingest", "design codegen", or when a UI task has a Figma MCP URL and needs design context before Builder can start. Never treat device-preview wrappers as implementation-ready context; fetch the concrete leaf content frame or mark the task blocked.
+description: Plugin-first Figma-to-code prep. Fetch full design context via the plugin-figma-figma MCP (tokens, assets, screens, states, variants, responsive behavior), merge any plugin-exported codegen artifacts, produce stack-mapped UI scaffolds, and auto-inject design fields on UI tasks in state/TASKS.md. Trigger when the user runs `/figma-ingest` or says "figma ingest", "design codegen", or when a UI task has a Figma MCP URL and needs design context before Builder can start. Never treat device-preview wrappers as implementation-ready context; fetch the concrete leaf content frame or mark the task blocked.
 ---
 
 # Skill: Figma Ingest (Unified)

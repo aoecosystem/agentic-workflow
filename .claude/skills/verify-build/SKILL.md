@@ -37,7 +37,13 @@ microservices architecture):
 
 ### 1. Lint
 
-- Tool: ESLint / Pylint / golangci-lint (per stack)
+- Tool detection (in order of preference per stack):
+  - **TS / JS:** **Biome** (`biome check`) is the default since v2.2. Fall back to ESLint + Prettier only if the SoW Phase 6 explicitly picked them OR `.eslintrc*` exists without `biome.json`.
+  - **Python:** Ruff (default) or Pylint / Flake8.
+  - **Go:** `golangci-lint`.
+  - **Rust:** `cargo clippy`.
+  - **Kotlin:** `ktlint`.
+  - **Swift:** `SwiftLint`.
 - Pass criteria: zero errors. Warnings only if pre-existing and
   unrelated to recent changes.
 - Failure: list every error with file + line.

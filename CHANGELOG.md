@@ -6,6 +6,50 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.6.0] — Engine integrity: stage machine + cross-skill contracts
+
+Critical reliability release. A 4-dimensional audit (command wiring,
+stage machine, cross-skill data flow, regression check) found the
+engine had structural bugs that explained the user's "confused"
+real-world runs. v2.6 fixes them.
+
+### Fixed — P0 (the docs→build handoff was broken)
+
+- **`approve-infrastructure` now transitions to `DOCS_COMPLETE`, not `COMPLETE`.** Previously the docs-phase final approval emitted `COMPLETE` but `import-docs` and `parse-scope` required `DOCS_COMPLETE` — meaning **the build phase could never start**. The two halves of the engine literally did not connect. This single bug explains every "I approved infrastructure but nothing happens" report.
+- **`import-docs` Tier 1 table cited wrong section numbers** for architecture/database/infrastructure HTMLs (claimed §3/§4/§5 etc., actual templates have §2/§3/§6/§7/§9). Rewrote with verified section addresses; added a 13th SCOPE row for brief §13 (AI Generation Instructions).
+- **`build-task` and `qa` now read task-block `Architecture style:` / `Stack:` / `Folder root:` fields** (v2.2 wrote them; the readers ignored them). `build-task` Step 1 now prefers task-block values over SESSION-STATE; `qa` Step 1 checks file paths conform to `Folder root:`.
+- **`build-architecture`, `build-database`, `build-infrastructure` now support `polyglot-microservices`** (the 5th style was added to `build-scope-of-work` in v2.0 but the 3 downstream skills still only listed 4). Polyglot SoWs no longer generate malformed downstream HTMLs.
+- **`verify-build` now knows Biome** (the v2.2 default linter). Previously only listed ESLint, causing Biome-clean codebases to fail the final gate spuriously.
+
+### Fixed — P1 (significant inconsistencies)
+
+- **AGENTS.md and CLAUDE.md command tables now include `/approve-tasks`, `/approve-build`, `/verify-build`, `/package-release`** — all 4 existed as files but were missing from the canonical command lists.
+- **CLAUDE.md command-list summary now also lists those 4 commands** and the stale "28 skills, 29 commands" header was already corrected to 33/33 in v2.2.
+- **4 skill descriptions gained slash-form triggers** (`figma-plugin-ingest`, `fetch-mcp`, `orchestrate`, `qa`) — auto-trigger from `/figma-ingest`, `/refresh-mcp`, `/start-build`, `/qa-only`, `/resume-build` now works.
+- **`start-project` smart router** now has explicit routing rows for every docs-phase AND build-phase stage (was only complete for docs phase).
+- **`INSTRUCTIONS.md` now includes `/approve-build`** between `/start-build` and `/verify-build` (was missing — user following the guide would hit `/verify-build` refusal).
+- **`parse-scope` Step 1** now explicitly reads SCOPE §3 / §4 / §5 / §6 / §7 / §8 / §9 / §10 / §11 / §12 / §13 (previously only §3/§5/§8/§9/§12 — dropping MCP URLs, NFRs, Out-of-Scope, Infrastructure).
+- **`parse-scope` Step 1** infra/ phrasing fixed: now style-dependent (apps/infra/ for monolith+hybrid; root infra/ for microservices+polyglot+serverless) instead of unconditional "root-level infra/".
+- **Stage gates added to 5 lax skills**: `build-task`, `qa`, `delta-scope`, `reqops`, `api-contract` previously had no stage gate and could run at INIT (which would have made them silently wrong). Each now refuses outside its valid stage window.
+- **`AGENTS.md` Triple-mirror verification row removed** (v2.3 deleted the mirror trees; the row described a contract that no longer existed).
+
+### Fixed — P2
+
+- `build-task` test convention now references `test/{unit, e2e?}/` (v2.2 standard) instead of stale plural `tests/`.
+- `.claude/settings.local.json` stale `.cursor/` / `.agent/` allowlist entries removed.
+- `review-infrastructure` no longer accepts the orphan `COMPLETE` stage as a workaround for the P0-1 bug — uses `DOCS_COMPLETE` correctly now.
+
+### Why this matters
+
+Three structural problems explained every "confused run" report:
+1. **Stage machine had a missing link** — `COMPLETE` vs `DOCS_COMPLETE` mismatch made the docs→build handoff fail silently.
+2. **Cross-skill fields were aspirational, not enforced** — v2.2 wrote `Stack:` / `Architecture style:` / `Folder root:` to every task block but build-task and qa never read them.
+3. **Import-docs Tier 1 was documented but didn't match template reality** — section numbers in the mapping table were wrong, so the v2.1 fix didn't actually extract everything.
+
+All three are fixed. The engine now does what the docs say it does.
+
+---
+
 ## [2.5.0] — Remove docs/ folder; inputs/ becomes single drop zone
 
 Tidy release. The `docs/` folder held reference material that duplicated

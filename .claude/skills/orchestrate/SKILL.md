@@ -1,6 +1,6 @@
 ---
 name: orchestrate
-description: Read TASKS.md, build a dependency graph, fan out independent feature groups to parallel Builder/QA runs, and run a continuous scheduler loop until all tasks are done or explicitly blocked on human input. Trigger when the user says "start build", "resume build", "run the build", "kick off orchestration", or asks to resume work after tasks are generated. Owns scheduling and transitions — does not write code itself; delegates to build-task and qa skills.
+description: Read TASKS.md, build a dependency graph, fan out independent feature groups to parallel Builder/QA runs, and run a continuous scheduler loop until all tasks are done or explicitly blocked on human input. Trigger when the user runs `/start-build` or `/resume-build`, or says "start build", "resume build", "run the build", "kick off orchestration", or asks to resume work after tasks are generated. Owns scheduling and transitions — does not write code itself; delegates to build-task and qa skills.
 ---
 
 ## Stage gate (RUN FIRST)

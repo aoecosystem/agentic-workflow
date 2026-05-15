@@ -3,6 +3,13 @@ name: build-task
 description: Implement exactly one task from TASKS.md end to end — consume Figma/codegen artifacts, fetch MCP context when needed, write the vertical slice, run local verification (lint, typecheck, tests, acceptance, design fidelity, security, observability), enforce attempt budget, and hand off to QA. Trigger when Orchestrator assigns a task to Builder, or when the user says "build this task", "build TASK-XX", or "continue the current task". One task per run; never spans features silently.
 ---
 
+## Stage gate (RUN FIRST)
+
+1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+2. Refuse unless Stage is `TASKS_APPROVED` or `BUILDING`. Message:
+   > "build-task is only valid from `TASKS_APPROVED` or `BUILDING`. Current: `<STAGE>`. Run `/approve-tasks` first, then `/start-build` to enter BUILDING."
+3. Refuse if the task ID provided does not exist in `state/TASKS.md`.
+
 # Skill: Build Task
 
 **Triggered by:** Orchestrator assigning a task to a Builder agent
@@ -16,9 +23,13 @@ description: Implement exactly one task from TASKS.md end to end — consume Fig
 ### Step 1 — Read context
 
 Before writing any code:
-1. Read the task block from `state/TASKS.md` (full block including acceptance criteria).
+1. Read the task block from `state/TASKS.md` (full block including acceptance criteria). **Extract these fields if present** — they OVERRIDE the SESSION-STATE defaults for this task:
+   - `Architecture style:` — task-local style (one of monolith / hybrid / microservices / polyglot-microservices / serverless)
+   - `Stack:` — task-local stack choices `{ frontend, backend, orm, db }`
+   - `Folder root:` — task-local folder root (e.g. `apps/api/prisma/`, `apps/web/src/features/booking/`)
+   These fields are written by `parse-scope` and are the AUTHORITATIVE source. Only fall back to SESSION-STATE if a field is absent or `inherited`.
 2. Read `state/SCOPE.md` — the relevant feature section only.
-3. Read `state/SESSION-STATE.md` — note the `Architecture style:` field (monolith / hybrid / microservices / serverless). This drives folder placement for every file you create.
+3. Read `state/SESSION-STATE.md` — note the `Architecture style:` field (monolith / hybrid / microservices / polyglot-microservices / serverless). This is the FALLBACK only when the task block doesn't specify. Otherwise the task block wins.
 4. Read `deliverables/architecture/styles/<style>.md` — start with the **Quick reference card** at the top (everything you need for 95% of tasks); read deeper sections only if the task is scaffold or non-standard. The **Folder structure** section is a HARD CONTRACT. Every file you create or move must land at the path declared by this profile. If the file doesn't fit any declared folder, stop and surface a question — never invent a new top-level folder. Note especially:
    - **FE/BE split rules** (e.g. `apps/api/` vs `apps/web/` for monolith — never combined)
    - **ORM folder convention** — for monolith with Prisma → `apps/api/prisma/`, with Drizzle → `apps/api/drizzle/`, with TypeORM/Sequelize/Kysely/MikroORM → `apps/api/database/`
@@ -102,7 +113,7 @@ Build in this order (skip layers not applicable to the task):
 3. **Service layer** — business logic with no HTTP or UI concerns.
 4. **API layer** — route handlers, input validation, error responses.
 5. **UI layer** — screens, components, hooks. If codegen artifact exists, implement scaffold first, then behavior wiring. Preserve token/state/breakpoint constraints from artifact.
-6. **Tests** — write tests for each layer touched. Happy path + error cases. Co-locate with code or in `tests/` per project convention.
+6. **Tests** — write tests for each layer touched. Happy path + error cases. Co-locate with code OR in `test/{unit, e2e?}/` for `apps/web/` (per v2.2 standard layout) OR in `test/{integration, e2e?, unit}/` for `apps/api/`. Use the style profile's standard, not arbitrary plural `tests/`.
 
 **Rules during implementation:**
 - Read any existing file before editing it.

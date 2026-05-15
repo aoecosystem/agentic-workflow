@@ -3,6 +3,14 @@ name: api-contract
 description: Generate or update a shared API contract artifact (OpenAPI YAML, tRPC schema, or GraphQL SDL) under memory/contracts/<feature>.<ext> so backend, web, and mobile Builders implement against a single source of truth and never desynchronize. Trigger when the user says "generate contract", "api contract", "sync contract", or when a full-stack feature task block has `Contract refs` with `Integration status: not-started`. Choice of contract format is auto-detected from SCOPE.md tech stack and feature endpoint syntax.
 ---
 
+## Stage gate (RUN FIRST)
+
+1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+2. Refuse unless Stage is `SCOPE_PARSED`, `TASKS_GENERATED`, `TASKS_APPROVED`, `BUILDING`, or later. Message:
+   > "api-contract requires SCOPE.md or TASKS.md to read endpoint specs. Current Stage: `<STAGE>`. Run `/parse-scope` first."
+
+---
+
 # Skill: API Contract
 
 **Trigger:** User says `generate contract`, `api contract`, or

@@ -55,15 +55,23 @@ Read these files before generating anything:
 - `deliverables/architecture/styles/<style>.md` — **HARD CONTRACT**. Read this profile's "Folder structure" section. Every file path you emit in TASKS.md must sit under a folder declared by this profile. Memorize:
   - The FE/BE split (e.g. `apps/api/` + `apps/web/` for monolith — never combined)
   - The ORM folder convention (Prisma → `prisma/`, Drizzle → `drizzle/`, TypeORM/Sequelize/Kysely/MikroORM → `database/`)
-  - Root-level `infra/` (compose, docker, scripts, environments)
+  - **`infra/` location is STYLE-DEPENDENT** (do NOT use root `infra/` unconditionally):
+    - `monolith` / `hybrid` → `apps/infra/` (inside `apps/`, next to `api/` and `web/`)
+    - `microservices` / `polyglot-microservices` / `serverless` → root-level `infra/`
   - Role-based app naming (`apps/api/`, NOT `apps/<slug>-api/`)
   - For component files: `components/<feature>/<Concern>.tsx` granularity (Header → HeaderNav.tsx + HeaderLogo.tsx + HeaderUserMenu.tsx; Footer → FooterLinks.tsx + FooterSocial.tsx; Profile page → ProfileAvatar.tsx + ProfilePersonalInfo.tsx + ProfileUpdatePassword.tsx)
-- `state/SCOPE.md` — full content. Pay special attention to:
-  - **Section 3 Tech Stack** — every task block must record the resolved frontend / backend / ORM choices in its `Stack:` field.
-  - **Section 5 Feature Breakdown** including every Phase 4 API endpoint and Phase 7 Page Inventory row.
-  - **Section 8 Page Inventory** — every page must appear in at least one UI task.
-  - **Section 9 Database Schemas** — every entity must appear in TASK-001 (schema task) or a feature-specific schema task.
-  - **Section 12 Design Language** — UI tasks reference this for visual style, palette, font pairing, component library, and component decomposition rules.
+- `state/SCOPE.md` — full content. Read EVERY section, not just §5. Map each to TASKS.md:
+  - **§3 Tech Stack** → every task block records the resolved frontend / backend / ORM choices in its `Stack:` field.
+  - **§4 MCP URLs** → propagate each MCP URL into the relevant UI / API task's `MCP URL:` field.
+  - **§5 Feature Breakdown** including every Phase 4 API endpoint and Phase 7 Page Inventory row.
+  - **§6 Out of Scope** → tasks must NOT cover any item listed here; cite as rejection grounds during the coverage gate.
+  - **§7 NFRs** → derived AC items (auth required, validation, error format, rate limit, observability) attached to the relevant tasks.
+  - **§8 Page Inventory** → every page must appear in at least one UI task.
+  - **§9 Database Schemas** → every entity must appear in TASK-001 (schema task) or a feature-specific schema task.
+  - **§10 Architecture Style** → propagates into every task's `Architecture style:` field.
+  - **§11 Infrastructure** → env vars, secrets, integrations propagate into TASK-000 (scaffold) acceptance criteria.
+  - **§12 Design Language** → UI tasks reference this for visual style, palette, font pairing, component library, and component decomposition rules.
+  - **§13 AI Generation Instructions** (from brief §13) → execution rules applied to every generated task.
 - `state/TASKS.md` — check if tasks already exist (ask user before overwriting).
 - `memory/ARCHITECTURE.md` — if it exists, use its module map to assign file paths.
 - `memory/STACK-GUIDANCE.md` — if it exists, use it to keep tasks aligned with the chosen stack's architecture, UI, and testing conventions.

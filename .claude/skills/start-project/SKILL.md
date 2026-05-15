@@ -25,23 +25,32 @@ The actual work happens in the skill it routes to.
 
 | Current Stage | Next action / route |
 |---|---|
-| `INIT` (or file missing) | Start **brief interview** — walk user through 13 sections, write `<slug>-project-brief.html`, transition to `BRIEF_DRAFT`. (Same behavior as project-foundations' start-project.) |
+| `INIT` (or file missing) | Start **brief interview** — walk user through 13 sections, write `<slug>-brief.html`, transition to `BRIEF_DRAFT`. |
 | `INTERVIEW` | Resume the interview from the last checkpoint (read Captured answers, jump to next unanswered question). |
 | `BRIEF_DRAFT` | Tell user: run `/review-brief <N>` to edit, or `/approve-brief` to lock. |
 | `BRIEF_APPROVED` | Tell user: run `/build-scope-of-work` to generate the SoW. |
-| `SOW_DRAFT` / `SOW_APPROVED` / `ARCHITECTURE_*` / `DATABASE_*` / `INFRASTRUCTURE_*` | Tell user the next valid command for that stage (use the `/status` skill internally). |
+| `SOW_DRAFT` | Tell user: run `/review-scope-of-work <phase>` to edit, or `/approve-scope-of-work` to lock. |
+| `SOW_APPROVED` | Tell user: run `/build-architecture` to generate the System Architecture HTML. |
+| `ARCHITECTURE_DRAFT` | Tell user: run `/review-architecture` to edit, or `/approve-architecture` to lock. |
+| `ARCHITECTURE_APPROVED` | Tell user: run `/build-database` to generate the Database Diagram HTML. |
+| `DATABASE_DRAFT` | Tell user: run `/review-database` to edit, or `/approve-database` to lock. |
+| `DATABASE_APPROVED` | Tell user: run `/build-infrastructure` to generate the Infrastructure Diagram HTML. |
+| `INFRASTRUCTURE_DRAFT` | Tell user: run `/review-infrastructure` to edit, or `/approve-infrastructure` to lock (this advances to DOCS_COMPLETE). |
+| `INFRASTRUCTURE_APPROVED` | Auto-transitioned to DOCS_COMPLETE by `/approve-infrastructure` — should not stay in this stage. If observed, tell user: run `/parse-scope` to start the build phase. |
 
 ### Branch B — Build phase (engine pipeline)
 
 | Current Stage | Next action / route |
 |---|---|
-| `DOCS_COMPLETE` | Tell user: run `/import-docs` to extract `state/SCOPE.md` from the 5 approved HTMLs. |
-| `SCOPE_PARSED` | Tell user: run `/parse-scope` (or `parse scope`) to generate `state/TASKS.md`. |
-| `TASKS_GENERATED` / `TASKS_APPROVED` | Tell user: run `/start-build` to begin building. Or `/audit-tasks` first if they want a sanity review. |
-| `BUILDING` | Tell user: build is in progress. Run `/show-status` to see task progress, `/resume-build` to continue if paused. |
-| `BUILD_COMPLETE` / `BUILD_APPROVED` | Tell user: run `/verify-build` for final QA gate. |
-| `VERIFIED` | Tell user: run `/package-release` (or skip if not used). |
-| `READY_TO_DEPLOY` | Tell user: project is complete. They can deploy from `../apps/`. |
+| `DOCS_COMPLETE` | Tell user: run `/parse-scope` to generate `state/TASKS.md` directly from the 5 approved HTMLs. (Or `/import-docs` first if they want SCOPE.md extracted as an intermediate.) |
+| `SCOPE_PARSED` | Tell user: run `/parse-scope` to generate `state/TASKS.md`. |
+| `TASKS_GENERATED` | Tell user: run `/approve-tasks` to audit and lock the task graph. |
+| `TASKS_APPROVED` | Tell user: run `/start-build` to kick off the orchestrator + builders + QA loop. |
+| `BUILDING` | Tell user: build is in progress. Run `/show-status` for task progress; `/resume-build` to continue if interrupted; `/qa-only` to run QA on any `in-review` tasks. |
+| `BUILD_COMPLETE` | Tell user: run `/approve-build` to lock the completed build (human approval gate). |
+| `BUILD_APPROVED` | Tell user: run `/verify-build` for the final automated gate (lint + types + tests + native runtime). |
+| `VERIFIED` | Tell user: run `/package-release` to produce release artifacts. |
+| `READY_TO_DEPLOY` | Tell user: project is complete. Code lives at `../apps/`. Deploy from there. |
 
 ---
 

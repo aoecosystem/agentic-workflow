@@ -1,7 +1,14 @@
 ---
 name: qa
-description: Verify a completed task against its acceptance criteria and verification gates (lint, typecheck, tests, acceptance parity, design fidelity for UI tasks, security, observability). Approve (mark done) or reject (mark needs-fix) with specific, actionable notes. Trigger when Orchestrator moves a task to in-review, when the user says "qa this task", "review TASK-XX", or "qa only". Never silently edits code; only writes verdicts and task status updates.
+description: Verify a completed task against its acceptance criteria and verification gates (lint, typecheck, tests, acceptance parity, design fidelity for UI tasks, security, observability). Approve (mark done) or reject (mark needs-fix) with specific, actionable notes. Trigger when Orchestrator moves a task to in-review, when the user runs `/qa-only`, or says "qa this task", "review TASK-XX", "qa only". Never silently edits code; only writes verdicts and task status updates.
 ---
+
+## Stage gate (RUN FIRST)
+
+1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+2. Refuse unless Stage is `BUILDING` or `BUILD_COMPLETE`. Message:
+   > "qa is only valid during BUILDING or BUILD_COMPLETE. Current: `<STAGE>`."
+3. Refuse if no task with status `in-review` exists in `state/TASKS.md` when invoked directly via `/qa-only`.
 
 # Skill: QA
 
@@ -17,6 +24,7 @@ description: Verify a completed task against its acceptance criteria and verific
 
 Read the full task block from `state/TASKS.md`:
 - Task ID, title, feature group
+- **`Architecture style:`, `Stack:`, `Folder root:`** — written by `parse-scope`. These are HARD CONTRACTS. Verify that every file the Builder wrote sits at a path conforming to `Folder root:` and the style's profile. Files outside that root are a rejection (cite the violation).
 - Files to create/modify
 - Acceptance criteria (all checklist items)
 - Product-context addendum when present: `User value`, `User flow`, `Functional notes`, `Edge cases`, `Test cases`

@@ -115,18 +115,22 @@ DOCS PHASE — INFRASTRUCTURE
   /approve-infrastructure
 
 BUILD PHASE
-  /import-docs              (DOCS_COMPLETE → SCOPE_PARSED)
-  /parse-scope              (generates TASKS.md from SCOPE.md)
+  /import-docs              (DOCS_COMPLETE → SCOPE_PARSED — optional: extract SCOPE.md from 5 HTMLs)
+  /parse-scope              (generates TASKS.md — reads 5 HTMLs directly or SCOPE.md if present)
+  /approve-tasks            (TASKS_GENERATED → TASKS_APPROVED — task graph audit gate)
   /delta-scope              (re-plan when SCOPE changes)
   /reqops                   (derive per-feature requirements)
   /api-contract             (generate API contracts)
   /figma-ingest             (fetch design context)
   /refresh-mcp              (force re-fetch MCP cache)
-  /start-build              (run orchestrator + builders + QA loop)
+  /start-build              (TASKS_APPROVED → BUILDING — orchestrator + builders + QA loop)
   /resume-build             (continue scheduler)
   /show-status              (TASKS.md status counts)
   /qa-only                  (run QA on in-review tasks)
   /scope-interview          (fallback Q&A when no foundations docs)
+  /approve-build            (BUILD_COMPLETE → BUILD_APPROVED — human lock of completed build)
+  /verify-build             (BUILD_APPROVED → VERIFIED — final lint + types + tests)
+  /package-release          (VERIFIED → READY_TO_DEPLOY)
 ```
 
 After every command finishes, Claude must remind the user of the

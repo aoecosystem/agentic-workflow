@@ -66,21 +66,24 @@ which commands are valid next.
 
 ### Phase 2 — Build phase (generated code)
 
-10. `/import-docs` — reads all 5 approved HTMLs and writes
-    `state/SCOPE.md` + `memory/STACK-GUIDANCE.md` → `SCOPE_PARSED`.
-11. `/parse-scope` — generates `state/TASKS.md` from SCOPE.md, runs the
-    coverage gate (every SoW Phase 4 endpoint, Phase 7 page, Phase 3
-    entity must map to ≥1 task) → `TASKS_GENERATED`.
-12. `/approve-tasks` — senior-style task graph audit (acceptance
+10. `/parse-scope` — reads the 5 approved HTMLs directly and generates
+    `state/TASKS.md`. Runs the coverage gate (every SoW Phase 4 endpoint,
+    Phase 7 page, Phase 3 entity must map to ≥1 task) → `TASKS_GENERATED`.
+    (Optional pre-step: `/import-docs` extracts an intermediate
+    `state/SCOPE.md` if you want to inspect/edit it manually.)
+11. `/approve-tasks` — senior-style task graph audit (acceptance
     criteria, dependency order, file ownership, no orphan deps) →
     `TASKS_APPROVED`.
-13. `/start-build` — runs the orchestrator + builder + QA loop in
+12. `/start-build` — runs the orchestrator + builder + QA loop in
     parallel until all tasks are `done` → `BUILD_COMPLETE`.
-14. `/verify-build` — final lint + typecheck + tests → `VERIFIED`.
+13. `/approve-build` — human lock of the completed build →
+    `BUILD_APPROVED`.
+14. `/verify-build` — final automated lint + typecheck + tests +
+    native runtime check → `VERIFIED`.
 15. `/package-release` → `READY_TO_DEPLOY`.
 
 If you have existing SoW docs and want to skip the interview, drop them
-in `inputs/` and run `/import-docs` directly (Tier 2 fallback path).
+in `inputs/` and run `/import-docs` to populate SCOPE.md first.
 
 ### Utility commands
 

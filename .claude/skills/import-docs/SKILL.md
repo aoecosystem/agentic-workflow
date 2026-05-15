@@ -71,13 +71,13 @@ and skip the rest):**
 **Tier 1 — Approved HTML deliverables (preferred path; expected at
 DOCS_COMPLETE).** Read all 5 in this exact order:
 
-| # | File pattern | What to extract |
+| # | File pattern | What to extract (with verified section numbers) |
 |---|---|---|
-| 1 | `deliverables/brief/<slug>-brief.html` | Sections 1-13: vision, users, features, business processes, multi-role flag, success metrics, integrations, NFRs |
-| 2 | `deliverables/scope-of-work/<slug>-sow.html` | Phase 1 service inventory, Phase 2 module breakdown, Phase 3 database schemas, **Phase 4 API endpoints (full table per module)**, Phase 5 events, Phase 5.5 business processes, **Phase 6 tech stack**, **Phase 7 page inventory**, Phase 8 quality criteria, **Phase 9 folder structure + design language** |
-| 3 | `deliverables/architecture/<slug>-architecture.html` | Section 2 service inventory diagram, Section 3 data flow, Section 4 deployment topology, Section 5 Mermaid `architecture` diagram (verbatim) |
-| 4 | `deliverables/database/<slug>-database.html` | Section 2 entity definitions (every column + type + constraints), Section 3 relationships, Section 5 Mermaid `erDiagram` (verbatim) |
-| 5 | `deliverables/infrastructure/<slug>-infrastructure.html` | Section 3 environments, Section 4 cloud providers, Section 5 deployment Mermaid topology, Section 6 secrets + env vars, Section 7 observability + scaling |
+| 1 | `deliverables/brief/<slug>-brief.html` | Sections 1-13: vision, users, features, business processes, multi-role flag, success metrics, integrations, NFRs, instructions for AI agent |
+| 2 | `deliverables/scope-of-work/<slug>-sow.html` | Phase 1 service inventory, Phase 2 module breakdown, Phase 3 database schemas, **Phase 4 API endpoints (full table per module)**, Phase 5 events, Phase 5.5 business processes (when present), **Phase 6 tech stack**, **Phase 7 page inventory**, Phase 8 quality criteria, **Phase 9 folder structure + design language** |
+| 3 | `deliverables/architecture/<slug>-architecture.html` | §1 Architecture Overview, **§2 Service Inventory**, **§3 Layered Architecture**, **§4 Data Flow**, §5 Module Boundaries & Contracts, §6 Cross-Cutting Concerns, **§7 Architecture Mermaid diagram (verbatim)** |
+| 4 | `deliverables/database/<slug>-database.html` | §1 Schema Overview, **§2 Entity Definitions (every column + type + constraints + indexes)**, **§3 Relationships (incl. junction tables)**, §4 Indexes Strategy, §5 Migration & Versioning, **§6 ERD Mermaid diagram (verbatim)** |
+| 5 | `deliverables/infrastructure/<slug>-infrastructure.html` | **§1 Environments**, **§2 Hosting & Compute**, **§3 Database/Storage/Cache**, **§4 Network & Domains**, **§5 External Services & Integrations**, **§6 Security & Secrets**, §7 Backup & DR, §8 CI/CD Pipeline, **§9 Topology Mermaid diagram (verbatim)** |
 
 Resolve `<slug>` from `state/SESSION-STATE.md` → `Slug:` field. If any
 of the 5 files is missing, halt with the exact missing path — do NOT
@@ -155,17 +155,18 @@ Map content to `state/SCOPE.md` sections and also build an internal `Flow Matrix
 | SCOPE section | Tier 1 source (5 HTMLs) | Tier 2 source (markdown fallback) |
 |---|---|---|
 | 1. Project Overview | brief §1 (vision) + §2 (target users) + §10 (success metrics) | inputs/project-brief.md §1-3 |
-| 2. System Architecture | sow Phase 1 (service inventory) + architecture §2-§4 + sow Phase 9 (folder structure verbatim) | inputs/scope-of-work.md "Architecture" + raw docs |
+| 2. System Architecture | sow Phase 1 (service inventory) + architecture §2 (service inventory) + §3 (layered) + §4 (data flow) + §7 (Mermaid) + sow Phase 9 (folder structure verbatim) | inputs/scope-of-work.md "Architecture" + raw docs |
 | 3. Tech Stack | **sow Phase 6 (frontend / backend / database / ORM / integrations)** — copy verbatim | inputs/scope-of-work.md "Tech Stack" |
 | 4. MCP URLs | brief §8 (integrations: Figma URL, OpenAPI URL, plugin links) | raw docs |
 | 5. Feature Breakdown | sow Phase 2 (modules) + **Phase 4 (every endpoint as a row)** + Phase 3 (data models for each feature) + Phase 5 (events) + Phase 5.5 (business processes) | inputs/scope-of-work.md feature list |
 | 6. Out of Scope | brief §11 + sow Phase 8 quality criteria exclusions | inputs/scope-of-work.md "Out of scope" |
-| 7. Non-Functional Requirements | brief §9 + infrastructure §7 (observability + scaling SLOs) + sow Phase 8 | inputs/scope-of-work.md "NFRs" |
+| 7. Non-Functional Requirements | brief §9 + infrastructure §6 (security/secrets) + §7 (backup/DR) + sow Phase 8 | inputs/scope-of-work.md "NFRs" |
 | 8. Page Inventory | **sow Phase 7 (full page table — Page ID / Page Name / Platform / Auth / Description)** — copy verbatim | derived at Step 7.6 |
-| 9. Database Schemas | **database §2 (every entity with every column + type + constraints)** + database §3 (relationships) + database §5 (Mermaid erDiagram verbatim) | sow Phase 3 |
-| 10. Architecture Style | sow Phase 9 architecture style + architecture §5 (Mermaid diagram verbatim) | SESSION-STATE.md Architecture style: |
-| 11. Infrastructure | infrastructure §3 (environments) + §4 (cloud providers) + §5 (Mermaid topology) + §6 (secrets/env vars) | sow Phase 9 + infrastructure HTML |
+| 9. Database Schemas | **database §2 (every entity with every column + type + constraints)** + database §3 (relationships) + database §4 (indexes) + database §6 (Mermaid erDiagram verbatim) | sow Phase 3 |
+| 10. Architecture Style | sow Phase 9 architecture style + architecture §7 (Mermaid diagram verbatim) | SESSION-STATE.md Architecture style: |
+| 11. Infrastructure | infrastructure §1 (environments) + §2 (hosting) + §3 (db/storage/cache) + §4 (network/domains) + §5 (external integrations) + §6 (secrets) + §8 (CI/CD) + §9 (Mermaid topology verbatim) | sow Phase 9 + infrastructure HTML |
 | 12. Design Language | **sow Phase 9 design language sub-section (visual style + color palette + font pairing + component library + chart types + component decomposition rules)** — copy verbatim | none (must be present in Tier 1) |
+| 13. AI Generation Instructions | brief §13 (Instructions for AI Agent) — passed through as execution rules to parse-scope and build-task | none |
 
 **Critical:** rows marked **bold** are the ones most often dropped in the
 old import-docs flow. Their absence is the root cause of "API partly

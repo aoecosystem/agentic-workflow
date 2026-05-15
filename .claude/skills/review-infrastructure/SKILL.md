@@ -1,6 +1,6 @@
 ---
 name: review-infrastructure
-description: Iterative section-by-section editor for the Infrastructure Diagram. Reads `state/SESSION-STATE.md`, refuses unless Stage is INFRASTRUCTURE_DRAFT, INFRASTRUCTURE_APPROVED, or COMPLETE, lets the user pick one of the 9 sections, applies the change, bumps version, writes audit log. If Stage is INFRASTRUCTURE_APPROVED or COMPLETE, this re-opens to INFRASTRUCTURE_DRAFT. Trigger on "/review-infrastructure", "review infrastructure", "edit infrastructure".
+description: Iterative section-by-section editor for the Infrastructure Diagram. Reads `state/SESSION-STATE.md`, refuses unless Stage is INFRASTRUCTURE_DRAFT, INFRASTRUCTURE_APPROVED, or DOCS_COMPLETE, lets the user pick one of the 9 sections, applies the change, bumps version, writes audit log. If Stage is INFRASTRUCTURE_APPROVED or DOCS_COMPLETE, this re-opens to INFRASTRUCTURE_DRAFT. Trigger on "/review-infrastructure", "review infrastructure", "edit infrastructure".
 ---
 
 # Skill: review-infrastructure
@@ -32,11 +32,11 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 
 1. Read `SESSION-STATE.md`.
 2. If `Stage` is not `INFRASTRUCTURE_DRAFT`, `INFRASTRUCTURE_APPROVED`,
-   or `COMPLETE`, refuse.
-3. If `INFRASTRUCTURE_APPROVED` or `COMPLETE`, warn re-open:
-   > "Infrastructure is currently approved (or project is COMPLETE).
+   or `DOCS_COMPLETE`, refuse.
+3. If `INFRASTRUCTURE_APPROVED` or `DOCS_COMPLETE`, warn re-open:
+   > "Infrastructure is currently approved (or project advanced to DOCS_COMPLETE).
    > Reviewing will re-open it (→ INFRASTRUCTURE_DRAFT). The project
-   > will leave COMPLETE state. Continue? (yes / no)"
+   > will leave DOCS_COMPLETE state. Continue? (yes / no)"
 
 ---
 
@@ -102,7 +102,7 @@ Section 5, offer to add a node in the topology block to match.
 Edit another section? (number 1-9 or name)
 
 Or move on:
-   /approve-infrastructure   Final approval — moves project to COMPLETE.
+   /approve-infrastructure   Final docs-phase approval — moves project to DOCS_COMPLETE.
    exit                      Finish review.
 ```
 

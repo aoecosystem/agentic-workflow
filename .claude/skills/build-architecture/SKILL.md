@@ -48,7 +48,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Architecture style awareness (READ THIS BEFORE GENERATING)
 
 The brief Section 3.2 contains an "Architecture style" choice (one of:
-`monolith` | `hybrid` | `microservices` | `serverless`). Before
+`monolith` | `hybrid` | `microservices` | `polyglot-microservices` | `serverless`). Before
 generating output, this skill MUST:
 
 1. Read the brief Section 3.2 to find the chosen style.

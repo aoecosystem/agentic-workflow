@@ -3,6 +3,14 @@ name: delta-scope
 description: Detect scope changes after TASKS.md already has tasks and produce a reviewable delta (TASK-DELTA-XX, pending-task edits, obsolete archive) instead of silently re-planning. Trigger when the user says "delta scope", "rescope", "SCOPE changed", or when SCOPE.md/inputs/ are edited while TASKS.md has tasks in any status other than all-pending. Never edit done or in-progress tasks silently.
 ---
 
+## Stage gate (RUN FIRST)
+
+1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+2. Refuse unless Stage is `TASKS_GENERATED`, `TASKS_APPROVED`, `BUILDING`, or `BUILD_COMPLETE`. Message:
+   > "delta-scope only applies after TASKS.md exists. Current Stage: `<STAGE>`. Run `/parse-scope` first."
+
+---
+
 # Skill: Delta Scope
 
 **Trigger:** User says `delta scope` / `rescope` (or uses the `/delta-scope` slash command), or `state/SCOPE.md` / `inputs/` changes while `state/TASKS.md` already has tasks other than `pending`.

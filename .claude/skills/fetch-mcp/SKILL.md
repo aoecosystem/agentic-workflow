@@ -1,6 +1,6 @@
 ---
 name: fetch-mcp
-description: Fetch machine-readable context from MCP URLs (Figma fallback, OpenAPI/Swagger, custom JSON/YAML/Markdown), normalize it for implementation, and cache concise artifacts under memory/mcp-cache/ with Fetched/TTL hours/Source hash headers. Trigger when Builder or figma-plugin-ingest needs a non-Figma-plugin source, when the user says "refresh mcp", "refetch mcp", or when a task's MCP URL cache has expired per TTL table. Always writes normalized artifacts — never raw dumps.
+description: Fetch machine-readable context from MCP URLs (Figma fallback, OpenAPI/Swagger, custom JSON/YAML/Markdown), normalize it for implementation, and cache concise artifacts under memory/mcp-cache/ with Fetched/TTL hours/Source hash headers. Trigger when Builder or figma-plugin-ingest needs a non-Figma-plugin source, when the user runs `/refresh-mcp` or says "refresh mcp", "refetch mcp", or when a task's MCP URL cache has expired per TTL table. Always writes normalized artifacts — never raw dumps.
 ---
 
 # Skill: Fetch MCP
