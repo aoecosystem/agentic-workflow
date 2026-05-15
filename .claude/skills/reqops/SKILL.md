@@ -1,13 +1,13 @@
 ---
 name: reqops
-description: ReqOps requirements specialist. Reads SOW sources (prefer docs/, then SCOPE.md, then .pipeline/sow.md) and produces dev-ready, SOW-traceable feature requirements under .pipeline/features/requirements/<feature-id>-<slug>-requirements.md with user stories, Given/When/Then acceptance criteria (MoSCoW-tagged), NFRs, edge cases, test cases, smart checklist, and change logs. Trigger when the user says "reqops", "derive requirements", "generate requirements from docs", or runs parse-scope with the ReqOps pre-pass. Does NOT write state/TASKS.md — parse-scope owns that.
+description: ReqOps requirements specialist. Reads SOW sources (prefer inputs/, then SCOPE.md, then .pipeline/sow.md) and produces dev-ready, SOW-traceable feature requirements under .pipeline/features/requirements/<feature-id>-<slug>-requirements.md with user stories, Given/When/Then acceptance criteria (MoSCoW-tagged), NFRs, edge cases, test cases, smart checklist, and change logs. Trigger when the user says "reqops", "derive requirements", "generate requirements from inputs", or runs parse-scope with the ReqOps pre-pass. Does NOT write state/TASKS.md — parse-scope owns that.
 ---
 
 # Skill: ReqOps
 
 **Trigger:** User says `reqops`, or `parse scope` runs with ReqOps pre-pass enabled.
 
-**Purpose:** Read scope-of-work sources (prefer `docs/`), derive implementation-ready requirements, and generate/update `state/TASKS.md` so Builder/QA can execute against concrete user outcomes.
+**Purpose:** Read scope-of-work sources (prefer `inputs/`), derive implementation-ready requirements, and generate/update `state/TASKS.md` so Builder/QA can execute against concrete user outcomes.
 
 ---
 
@@ -15,7 +15,7 @@ description: ReqOps requirements specialist. Reads SOW sources (prefer docs/, th
 
 Read in this precedence order:
 
-1. `docs/` scope-of-work and requirements documents (authoritative in standard workflow)
+1. `inputs/` scope-of-work and requirements documents (authoritative in standard workflow)
 2. `state/SCOPE.md` (if already populated)
 3. `.pipeline/sow.md` (fallback when docs SOW is unavailable)
 4. `.pipeline/requirements.md` / `.pipeline/features-list.md` / `.pipeline/system-design-provided.md` (optional support context)
@@ -26,8 +26,8 @@ Conflict rule:
 - Record the conflict as `GAP-XX` with file path + contradiction summary.
 
 Hard stop:
-- If no usable SOW source exists in `docs/`, `state/SCOPE.md`, or `.pipeline/sow.md`, stop and emit exactly:
-  - `ERROR: Scope of work not found. ReqOps AI cannot proceed without an authoritative SOW source in docs/, SCOPE.md, or .pipeline/sow.md.`
+- If no usable SOW source exists in `inputs/`, `state/SCOPE.md`, or `.pipeline/sow.md`, stop and emit exactly:
+  - `ERROR: Scope of work not found. ReqOps AI cannot proceed without an authoritative SOW source in inputs/, SCOPE.md, or .pipeline/sow.md.`
 
 ---
 
@@ -38,8 +38,8 @@ Hard stop:
 Read the chosen SOW source fully and isolate passages that define the target feature.
 Every requirement and acceptance criterion must be traceable back to SOW text.
 
-When sourcing from `docs/`:
-- Read all `.md`, `.txt`, `.pdf`, `.doc`, `.docx` files in `docs/`.
+When sourcing from `inputs/`:
+- Read all `.md`, `.txt`, `.pdf`, `.doc`, `.docx` files in `inputs/`.
 - Prioritize files with names like `scope-of-work`, `sow`, `requirements`, `prd`, or `spec`.
 - Build one normalized feature map before generating outputs.
 

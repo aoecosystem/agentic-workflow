@@ -1,11 +1,11 @@
 ---
 name: delta-scope
-description: Detect scope changes after TASKS.md already has tasks and produce a reviewable delta (TASK-DELTA-XX, pending-task edits, obsolete archive) instead of silently re-planning. Trigger when the user says "delta scope", "rescope", "SCOPE changed", or when SCOPE.md/docs/ are edited while TASKS.md has tasks in any status other than all-pending. Never edit done or in-progress tasks silently.
+description: Detect scope changes after TASKS.md already has tasks and produce a reviewable delta (TASK-DELTA-XX, pending-task edits, obsolete archive) instead of silently re-planning. Trigger when the user says "delta scope", "rescope", "SCOPE changed", or when SCOPE.md/inputs/ are edited while TASKS.md has tasks in any status other than all-pending. Never edit done or in-progress tasks silently.
 ---
 
 # Skill: Delta Scope
 
-**Trigger:** User says `delta scope` / `rescope` (or uses the `/delta-scope` slash command), or `state/SCOPE.md` / `docs/` changes while `state/TASKS.md` already has tasks other than `pending`.
+**Trigger:** User says `delta scope` / `rescope` (or uses the `/delta-scope` slash command), or `state/SCOPE.md` / `inputs/` changes while `state/TASKS.md` already has tasks other than `pending`.
 
 **Purpose:** Detect what changed in the scope of work after tasks have already been generated (or built), and produce a reviewable delta rather than silently re-planning. The workflow must never drop done work or duplicate active work because the spec moved.
 
@@ -16,7 +16,7 @@ description: Detect scope changes after TASKS.md already has tasks and produce a
 Run this skill when any of these is true:
 
 - `state/SCOPE.md` was edited after `parse scope` produced `state/TASKS.md`.
-- A new or updated document was added to `docs/` after `import docs` was last run.
+- A new or updated document was added to `inputs/` after `import docs` was last run.
 - A user explicitly says `delta scope`, `rescope`, or "scope changed".
 - Orchestrator detects that `state/SCOPE.md`'s modification time is newer than the last `state/TASKS.md` generation timestamp.
 

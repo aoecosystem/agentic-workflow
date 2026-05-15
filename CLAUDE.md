@@ -154,7 +154,6 @@ agentic-workflow/                          ← this repo
 │   ├── ARCHITECTURE.md / PATTERNS.md / DECISIONS.md / STACK-GUIDANCE.md / PAGES.md
 │   ├── contracts/                         ← API contracts (OpenAPI / gRPC / GraphQL)
 │   └── mcp-cache/                         ← cached design context
-├── docs/                                  ← framework docs + prompts/
 └── .claude/skills/, .claude/commands/     ← Claude Code skills + slash commands
 ```
 

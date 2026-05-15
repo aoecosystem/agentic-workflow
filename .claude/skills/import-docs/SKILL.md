@@ -1,6 +1,6 @@
 ---
 name: import-docs
-description: Read scope/system-design/requirements documents from docs/ (PDF, Word, Markdown, TXT), extract a high-fidelity app-flow-aware SCOPE.md, and generate memory/STACK-GUIDANCE.md. Trigger when the user says "import docs", "ingest my spec", drops PDFs/docx files into docs/ and wants SCOPE populated, or asks to extract project scope from uploaded documents. Do NOT trigger when SCOPE.md is already filled and the user wants to generate tasks (use parse-scope for that).
+description: Read scope/system-design/requirements documents from inputs/ (PDF, Word, Markdown, TXT), extract a high-fidelity app-flow-aware SCOPE.md, and generate memory/STACK-GUIDANCE.md. Trigger when the user says "import docs", "ingest my spec", drops PDFs/docx files into inputs/ and wants SCOPE populated, or asks to extract project scope from uploaded documents. Do NOT trigger when SCOPE.md is already filled and the user wants to generate tasks (use parse-scope for that).
 ---
 
 ## Stage gate (RUN FIRST)
@@ -26,7 +26,7 @@ hashes, ask user to accept on drift.
 
 **Trigger:** User says `import docs` (or uses the `/import-docs` slash command)
 
-**Purpose:** Read one or more requirement/design documents from `docs/`, extract high-fidelity project scope plus end-to-end app flow details, draft a production-ready `state/SCOPE.md`, and generate `memory/STACK-GUIDANCE.md` after user confirmation.
+**Purpose:** Read one or more requirement/design documents from `inputs/`, extract high-fidelity project scope plus end-to-end app flow details, draft a production-ready `state/SCOPE.md`, and generate `memory/STACK-GUIDANCE.md` after user confirmation.
 
 This skill must produce SOW quality that is execution-ready for `parse scope` and `start build`, not a vague summary.
 
@@ -122,16 +122,9 @@ everything else.
 
 ### Step 1 — Scan input sources and prepare readable files
 
-Resolve the input source in this order:
+Source: `inputs/` is the single drop zone for raw source documents.
 
-1. `inputs/` — preferred drop zone for new projects.
-2. `docs/` — legacy fallback for backwards compatibility.
-
-If both folders contain files, treat `inputs/` as authoritative; `docs/`
-files are read only when `inputs/` is empty. List the chosen source in the
-review draft so the user knows which folder was used.
-
-If both are empty:
+If `inputs/` is empty:
 - Tell user to place documents in `inputs/`, then rerun `import docs`.
 - Stop.
 

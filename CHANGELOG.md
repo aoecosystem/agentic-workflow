@@ -6,6 +6,45 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.5.0] — Remove docs/ folder; inputs/ becomes single drop zone
+
+Tidy release. The `docs/` folder held reference material that duplicated
+what skills already enforce. Removing it.
+
+### Removed
+
+- `docs/` folder (8 files, 36 KB):
+  - `TROUBLESHOOTING.md` — `/status` + `/reset` cover the same recovery paths
+  - `BLOCKER-PLAYBOOK.md` — already inlined in `build-task` "Blocked task protocol"
+  - `prompts/AUDIT-TASKS.md` — `/approve-tasks` runs this automatically
+  - `prompts/REFINE-SCOPE.md` — `/delta-scope` does this
+  - `prompts/DEBUG-BLOCKER.md` — duplicate of `BLOCKER-PLAYBOOK.md`
+  - `prompts/RELEASE-NOTES.md` — covered by `/package-release`
+  - 2 READMEs (just folder explainers)
+
+### Changed
+
+- **`inputs/` is now the single drop zone** for raw source documents. Previously
+  the workflow had two: `inputs/` (preferred) and `docs/` (legacy fallback).
+  Now there's just one.
+- `import-docs` skill + command: removed Tier 2 `docs/` fallback path.
+- `reqops` skill + command: SOW source precedence is now `inputs/` → `state/SCOPE.md`
+  → `.pipeline/sow.md`.
+- `parse-scope` skill: same precedence update.
+- `scope-interview` + `delta-scope`: removed `docs/` references.
+- `README.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `inputs/README.md`,
+  `memory/ARCHITECTURE.md`: removed references to the removed folder.
+
+### Rationale
+
+Every file in `docs/` was either (a) duplicated by an active skill, or
+(b) reference material for a manual workflow the agent automates. The
+folder added ~36 KB of cognitive load with zero runtime impact.
+`inputs/` already serves the legacy-migration drop-zone role, so the
+two-drop-zone model collapses to one.
+
+---
+
 ## [2.4.0] — Leverage Claude Code's built-in subagents
 
 Workflow native to Claude Code. The build + QA flow now delegates to

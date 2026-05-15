@@ -1,6 +1,6 @@
 ---
 name: parse-scope
-description: Generate (or regenerate) TASKS.md from a filled-in state/SCOPE.md, with one executable task block per unit of work grouped by feature, dependency edges, agent assignments, traceability refs, attempt budget, acceptance criteria, and optional design fields. Runs a ReqOps pre-pass when .pipeline/sow.md or docs/ SOW is present. Trigger when the user says "parse scope", "generate tasks", "break this scope into tasks", or asks for a task list from a completed SCOPE.md. This skill is the sole writer of TASKS.md.
+description: Generate (or regenerate) TASKS.md from a filled-in state/SCOPE.md, with one executable task block per unit of work grouped by feature, dependency edges, agent assignments, traceability refs, attempt budget, acceptance criteria, and optional design fields. Runs a ReqOps pre-pass when .pipeline/sow.md or inputs/ SOW is present. Trigger when the user says "parse scope", "generate tasks", "break this scope into tasks", or asks for a task list from a completed SCOPE.md. This skill is the sole writer of TASKS.md.
 ---
 
 ## Stage gate (RUN FIRST)
@@ -26,7 +26,7 @@ Compare to stored hashes. On drift, ask user before proceeding.
 
 **Trigger:** User says `parse scope` (or uses the `/parse-scope` slash command)
 
-**Purpose:** Read `state/SCOPE.md` and generate a structured `state/TASKS.md` with one task block per unit of work, grouped by feature, with dependencies, agent assignments, MCP URLs, files, and acceptance criteria. When SOW sources exist (prefer `docs/`), run a ReqOps requirements pass first so Builder/QA criteria are SOW-grounded and testable.
+**Purpose:** Read `state/SCOPE.md` and generate a structured `state/TASKS.md` with one task block per unit of work, grouped by feature, with dependencies, agent assignments, MCP URLs, files, and acceptance criteria. When SOW sources exist (prefer `inputs/`), run a ReqOps requirements pass first so Builder/QA criteria are SOW-grounded and testable.
 
 Primary objective: generate implementation-ready tasks that are traceable to `state/SCOPE.md` feature-by-feature and flow-by-flow, with zero invented scope and zero orphan requirements.
 
@@ -68,18 +68,18 @@ Read these files before generating anything:
 - `memory/ARCHITECTURE.md` — if it exists, use its module map to assign file paths.
 - `memory/STACK-GUIDANCE.md` — if it exists, use it to keep tasks aligned with the chosen stack's architecture, UI, and testing conventions.
 - `memory/PAGES.md` — if it exists, the authoritative page inventory; cross-check against SCOPE §8.
-- `docs/` SOW/requirements docs — supplemental ReqOps source only.
-- `.pipeline/sow.md` — fallback ReqOps source if docs/SCOPE SOW is unavailable.
+- `inputs/` SOW/requirements docs — supplemental ReqOps source only.
+- `.pipeline/sow.md` — fallback ReqOps source if inputs/SCOPE SOW is unavailable.
 - `.pipeline/requirements.md`, `.pipeline/features-list.md`, `.pipeline/system-design-provided.md`, `.pipeline/features/requirements/` — supplemental if present.
 
 **Failure modes:** if SESSION-STATE has no `Architecture style:` field, refuse with "Architecture style missing — re-run /build-scope-of-work to lock Phase 9". If `deliverables/architecture/styles/<style>.md` does not exist, halt — never improvise a folder structure.
 
 ### Step 2 — ReqOps pre-pass (when SOW sources exist)
 
-If SOW sources exist in `docs/`, `state/SCOPE.md`, or `.pipeline/sow.md`:
+If SOW sources exist in `inputs/`, `state/SCOPE.md`, or `.pipeline/sow.md`:
 1. For each feature detected in `state/SCOPE.md` section 5, run ReqOps logic (see `reqops` skill) and create/update:
    - `.pipeline/features/requirements/<feature-id>-<feature-slug>-requirements.md`
-2. Enforce ReqOps source precedence (`docs/` SOW first, then `state/SCOPE.md`, then `.pipeline/sow.md` fallback) over lower-precedence pipeline docs.
+2. Enforce ReqOps source precedence (`inputs/` SOW first, then `state/SCOPE.md`, then `.pipeline/sow.md` fallback) over lower-precedence pipeline docs.
 3. Record contradictions as `GAP-XX` in the requirements file (never silently resolve).
 4. If no authoritative SOW source is found, continue with `state/SCOPE.md` generation only and note that ReqOps grounding was unavailable.
 

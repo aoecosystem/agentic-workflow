@@ -14,7 +14,7 @@ module mentioned here is:
 
 Example: `src/api/` in this document means
 `<project-root>/apps/<sub-app>/src/api/` on disk. See
-`docs/guides/PROJECT-LAYOUT.md` for the full convention.
+`deliverables/architecture/styles/<style>.md` for the full convention.
 
 ---
 

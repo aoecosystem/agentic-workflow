@@ -1,6 +1,6 @@
 ---
 name: scope-interview
-description: Interview the user section-by-section to fill a Project Brief from scratch when no SOW or written documents exist, then auto-derive a Scope of Work in markdown into inputs/ ready for `import docs`. Trigger when the user says "interview me", "scope interview", "no docs", "let's start a new project", or otherwise indicates they have an idea but no written SOW. Do NOT trigger when inputs/ or docs/ already contains usable source documents — recommend `import docs` instead.
+description: Interview the user section-by-section to fill a Project Brief from scratch when no SOW or written documents exist, then auto-derive a Scope of Work in markdown into inputs/ ready for `import docs`. Trigger when the user says "interview me", "scope interview", "no docs", "let's start a new project", or otherwise indicates they have an idea but no written SOW. Do NOT trigger when inputs/ already contains usable source documents — recommend `import docs` instead.
 ---
 
 # Skill: Scope Interview
@@ -24,10 +24,10 @@ intent when no Scope of Work exists yet. Produce two markdown artifacts in
 Before starting the interview, verify:
 
 1. `inputs/` exists. If not, create it.
-2. List files in `inputs/` and `docs/`. If usable source documents are
+2. List files in `inputs/`. If usable source documents are
    already present (`.pdf`, `.docx`, `.md`, `.html`), STOP and tell the
    user:
-   > "I see existing documents in `inputs/` (or `docs/`). Did you want
+   > "I see existing documents in `inputs/`. Did you want
    > to run `import docs` instead? Reply 'yes' to import them, or
    > 'continue interview' to start a fresh interview."
 3. If `state/SCOPE.md` is already filled (Project Overview has a name and

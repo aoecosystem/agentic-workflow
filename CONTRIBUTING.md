@@ -36,8 +36,7 @@ parallel Builders, the QA gate, and the memory layer.
 
 ### Adding documentation
 
-- User-facing how-to → `docs/`
-- Agent operational playbook → `docs/prompts/`
+- User-facing how-to → `README.md` or `INSTRUCTIONS.md`
 - Architecture-style profiles → `deliverables/architecture/styles/`
 
 ---
@@ -55,12 +54,12 @@ parallel Builders, the QA gate, and the memory layer.
 
 ## What a "minor" PR looks like
 
-Adding a troubleshooting doc:
+Adding a new architecture style profile:
 
 ```
-docs/TROUBLESHOOTING-<topic>.md                # new file
-README.md                                      # add link in file map
-CHANGELOG.md                                   # entry under the new version
+deliverables/architecture/styles/<style>.md     # new file
+deliverables/architecture/styles/README.md      # update index
+CHANGELOG.md                                    # entry under the new version
 ```
 
 Three files, no behavior change, zero risk.
@@ -70,13 +69,12 @@ Three files, no behavior change, zero risk.
 Renaming `parse-scope` to `plan-tasks`:
 
 ```
-.claude/skills/parse-scope/                    # rename
-.claude/commands/parse-scope.md                # rename
-AGENTS.md                                      # update triggers + tables
-CLAUDE.md                                      # update triggers + tables
-README.md                                      # update everywhere
-docs/**                                        # update every reference
-CHANGELOG.md                                   # major version bump entry
+.claude/skills/parse-scope/                     # rename
+.claude/commands/parse-scope.md                 # rename
+AGENTS.md                                       # update triggers + tables
+CLAUDE.md                                       # update triggers + tables
+README.md / INSTRUCTIONS.md                     # update every reference
+CHANGELOG.md                                    # major version bump entry
 ```
 
 Always avoid major changes unless the new name materially clarifies the workflow.
@@ -94,8 +92,8 @@ ls .claude/skills/
 # 2. Verify trigger tables still align
 grep -A 1 'Trigger phrases' AGENTS.md CLAUDE.md
 
-# 3. Verify no broken doc links
-grep -rE 'docs/[A-Za-z0-9_/-]+\.md' README.md AGENTS.md CLAUDE.md docs/
+# 3. Verify no broken cross-references
+grep -rE '\.claude/skills/[a-z-]+' README.md AGENTS.md CLAUDE.md
 ```
 
 If any step surfaces a broken reference, fix it before merging.

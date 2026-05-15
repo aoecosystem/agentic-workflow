@@ -299,7 +299,6 @@ agentic-workflow/                      ← this repo
 │   ├── STACK-GUIDANCE.md PAGES.md
 │   ├── contracts/                          (API contracts)
 │   └── mcp-cache/                          (cached design context)
-├── docs/                              ← framework docs + prompts/
 ├── AGENTS.md / CLAUDE.md              ← agent bootstrap
 ├── README.md                          ← this file (overview + step-by-step)
 └── .claude/skills/, .claude/commands/ ← Claude Code skills + slash commands

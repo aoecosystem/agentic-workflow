@@ -35,8 +35,7 @@ inputs/scope-of-work.md                   inputs/scope-of-work.md
 "start build" runs the build
 ```
 
-This folder is the canonical user-input drop zone, separate from `docs/`
-which holds framework documentation only.
+This folder is the canonical user-input drop zone.
 
 ## Supported files
 
@@ -76,7 +75,6 @@ inputs/
    filled artifacts. If both exist, the importer reads them directly.
 2. Raw user files in `inputs/` — extracted into the two canonical
    artifacts above before populating `SCOPE.md`.
-3. `docs/` — legacy fallback (kept for backwards compatibility).
 
 ## After import
 
