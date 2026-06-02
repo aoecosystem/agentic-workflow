@@ -10,5 +10,5 @@ the requested change, bump the file version (v1.0 → v1.1), save, and
 append an audit log line in `SESSION-STATE.md`. Loop until the user
 runs `/approve-brief` or types `exit`.
 
-Templates are read-only. Only `deliverables/brief/<slug>-brief.html`
+Templates are read-only. Only `DOCMENTS/<slug>-brief.html`
 is editable.

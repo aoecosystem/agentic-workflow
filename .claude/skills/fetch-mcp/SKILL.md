@@ -1,13 +1,13 @@
 ---
 name: fetch-mcp
-description: Fetch machine-readable context from MCP URLs (Figma fallback, OpenAPI/Swagger, custom JSON/YAML/Markdown), normalize it for implementation, and cache concise artifacts under memory/mcp-cache/ with Fetched/TTL hours/Source hash headers. Trigger when Builder or figma-plugin-ingest needs a non-Figma-plugin source, when the user runs `/refresh-mcp` or says "refresh mcp", "refetch mcp", or when a task's MCP URL cache has expired per TTL table. Always writes normalized artifacts — never raw dumps.
+description: Fetch machine-readable context from MCP URLs (Figma fallback, OpenAPI/Swagger, custom JSON/YAML/Markdown), normalize it for implementation, and cache concise artifacts under MEMEORIES/mcp-cache/ with Fetched/TTL hours/Source hash headers. Trigger when Builder or figma-plugin-ingest needs a non-Figma-plugin source, when the user runs `/refresh-mcp` or says "refresh mcp", "refetch mcp", or when a task's MCP URL cache has expired per TTL table. Always writes normalized artifacts — never raw dumps.
 ---
 
 # Skill: Fetch MCP
 
 **Triggered by:** Builder (or `figma-plugin-ingest` fallback) when a task has a non-empty `MCP URL:` field
 
-**Purpose:** Fetch machine-readable context (Figma/OpenAPI/custom), normalize it for implementation, and cache concise artifacts in `memory/mcp-cache/` for Builders and QA.
+**Purpose:** Fetch machine-readable context (Figma/OpenAPI/custom), normalize it for implementation, and cache concise artifacts in `MEMEORIES/mcp-cache/` for Builders and QA.
 
 ---
 
@@ -17,8 +17,8 @@ description: Fetch machine-readable context from MCP URLs (Figma fallback, OpenA
 
 Before fetching anything:
 1. Determine cache filenames:
-   - Core cache: `memory/mcp-cache/{feature-slug}-{type}.md`
-   - Design artifact cache (if Figma): `memory/mcp-cache/{feature-slug}-design-artifacts.md`
+   - Core cache: `MEMEORIES/mcp-cache/{feature-slug}-{type}.md`
+   - Design artifact cache (if Figma): `MEMEORIES/mcp-cache/{feature-slug}-design-artifacts.md`
 2. If core cache exists and is non-empty:
    - Read the `Fetched:` header timestamp.
    - Compute age against the TTL table below.
@@ -115,14 +115,14 @@ Keep existing endpoint/type extraction with feature scoping.
 ### Step 5 — Write cache files
 
 Write normalized output to:
-- `memory/mcp-cache/{feature-slug}-{type}.md`
+- `MEMEORIES/mcp-cache/{feature-slug}-{type}.md`
 
 If Figma, also write:
-- `memory/mcp-cache/{feature-slug}-design-artifacts.md`
+- `MEMEORIES/mcp-cache/{feature-slug}-design-artifacts.md`
   - component hierarchy
   - token/state/breakpoint summaries
   - plugin artifact classification (if present)
-- `memory/mcp-cache/{feature-slug}-plugin-artifacts.md`
+- `MEMEORIES/mcp-cache/{feature-slug}-plugin-artifacts.md`
   - artifact sources
   - compatibility classification
   - merge recommendations for target stack

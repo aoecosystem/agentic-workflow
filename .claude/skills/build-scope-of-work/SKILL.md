@@ -10,7 +10,7 @@ description: Generate a filled Scope of Work HTML from a previously approved Pro
 **Purpose:** Read the approved Project Brief, expand it into a complete
 Scope of Work HTML matching the canonical Phase 1-10 structure, save
 it under `DOCMENTS/<slug>-scope-of-work.html`, and transition the
-pipeline stage to `SOW_DRAFT`.
+pipeline stage to `DOCS_DRAFT`.
 
 ---
 
@@ -101,7 +101,7 @@ through automatically.
 
 1. Read `DOCMENTS/<slug>-project-brief.html` end-to-end.
    Extract every section's values into memory.
-2. Read `deliverables/scope-of-work/template.html` for structure
+2. Read `DOCMENTS/scope-of-work.html` for structure
    (Phase 1-10).
 3. Note the brief version (e.g. `v1.2`) — it will be referenced in
    the SoW cover-meta as the source.
@@ -269,7 +269,7 @@ Iterate until the user replies `save`.
 1. Write the file to `DOCMENTS/<slug>-scope-of-work.html` at
    version `v1.0`.
 2. Update `SESSION-STATE.md`:
-   - `Stage:` → `SOW_DRAFT`
+   - `Stage:` → `DOCS_DRAFT`
    - `Last skill:` → `build-scope-of-work`
    - `Last update:` → ISO timestamp
    - `Resume hint:` → `Run /review-scope-of-work <N> to edit, or /approve-scope-of-work to lock.`

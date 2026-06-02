@@ -36,7 +36,7 @@ Do not run this skill on the first-ever pass. For the first pass use `parse scop
 
 - Current the 5 deliverable HTMLs (after change)
 - Current `SESSION-STATE/TASKS.md` (with per-task statuses)
-- Last snapshot of SCOPE-derived requirements (if any) in `.pipeline/features/requirements/`
+- Last snapshot of SCOPE-derived requirements (if any) in `CONTEXT/feature-specs/`
 - `memory/ARCHITECTURE.md`, `memory/PATTERNS.md`, `memory/DECISIONS.md` for reality check
 
 Optional:
@@ -52,7 +52,7 @@ Optional:
 1. Read the current the 5 deliverable HTMLs. Extract a normalized feature map
    (name, screens, endpoints, data models, NFRs, dependencies, MCP URLs).
 2. Read existing per-feature requirement files under
-   `.pipeline/features/requirements/` to reconstruct the last-known state.
+   `CONTEXT/feature-specs/` to reconstruct the last-known state.
    If those do not exist, derive the "before" map from `SESSION-STATE/TASKS.md` task
    blocks (feature group + screens/endpoints/models referenced).
 3. Produce two structured maps keyed by feature.
@@ -154,7 +154,7 @@ After user confirmation:
    clean.
 5. Re-run `scripts/update-task-counts.py` to refresh the progress table.
 6. Trigger `reqops` on any feature with a substantive requirement change so
-   `.pipeline/features/requirements/<feature>-requirements.md` is updated
+   `CONTEXT/feature-specs/<feature>-requirements.md` is updated
    with a new Change Log entry.
 
 ### Step 7 — Handoff

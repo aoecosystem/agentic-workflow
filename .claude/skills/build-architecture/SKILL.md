@@ -1,6 +1,6 @@
 ---
 name: build-architecture
-description: Generate the System Architecture HTML from the approved Scope of Work. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: SOW_APPROVED`. Reads `DOCMENTS/<slug>-scope-of-work.html` (especially Phase 2 Service Inventory and Phase 4 Data Flow) and the empty `DOCMENTS/architecture.html` template, then writes `DOCMENTS/<slug>-system-architecture.html` and transitions Stage to ARCHITECTURE_DRAFT. Trigger when the user says "/build-architecture", "build architecture", "generate architecture".
+description: Generate the System Architecture HTML from the approved Scope of Work. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: DOCS_DRAFT`. Reads `DOCMENTS/<slug>-scope-of-work.html` (especially Phase 2 Service Inventory and Phase 4 Data Flow) and the empty `DOCMENTS/architecture.html` template, then writes `DOCMENTS/<slug>-system-architecture.html` and transitions Stage to ARCHITECTURE_DRAFT. Trigger when the user says "/build-architecture", "build architecture", "generate architecture".
 ---
 
 # Skill: build-architecture
@@ -10,7 +10,7 @@ description: Generate the System Architecture HTML from the approved Scope of Wo
 **Purpose:** Read the approved Scope of Work, draft a complete System
 Architecture HTML matching the canonical 7-section structure, save it
 under `DOCMENTS/<slug>-system-architecture.html`, and
-transition the pipeline stage to `ARCHITECTURE_DRAFT`.
+transition the pipeline stage to `DOCS_DRAFT`.
 
 ---
 
@@ -36,8 +36,8 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Stage gate (BLOCKING)
 
 1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
-2. If `Stage` is not `SOW_APPROVED`, refuse:
-   > "Building architecture requires `Stage: SOW_APPROVED`. Current
+2. If `Stage` is not `DOCS_DRAFT`, refuse:
+   > "Building architecture requires `Stage: DOCS_DRAFT`. Current
    > stage: `<STAGE>`. Run `/approve-scope-of-work` first."
 3. If `<slug>-system-architecture.html` already exists, warn:
    > "Existing architecture file will be regenerated and overwritten.
@@ -171,7 +171,7 @@ Iterate until `save`.
 
 1. Write to `DOCMENTS/<slug>-system-architecture.html` v1.0.
 2. Update `SESSION-STATE.md`:
-   - `Stage:` → `ARCHITECTURE_DRAFT`
+   - `Stage:` → `DOCS_DRAFT`
    - `Last skill:` → `build-architecture`
    - `Last update:` → ISO timestamp
    - `Resume hint:` → `Run /review-architecture or /approve-architecture.`

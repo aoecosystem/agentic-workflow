@@ -205,7 +205,7 @@ If the user types `/approve-brief` or `exit` → stop. Do not auto-trigger.
 
 ## Rules
 
-- Templates (`deliverables/brief/template.html`) are
+- Templates (`DOCMENTS/project-brief.html`) are
   read-only. Only the filled `<slug>-project-brief.html` is editable.
 - One section per edit. Break it up if the user asks for changes in
   multiple sections.

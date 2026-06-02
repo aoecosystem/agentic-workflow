@@ -1,6 +1,6 @@
 ---
 name: reset
-description: Archive the current foundations session and reset Stage to INIT, ready to start a brand-new project. Asks the user to choose between soft reset (archive `SESSION-STATE.md` only, keep `<slug>-*.html` files on disk) or hard reset (also move all filled HTMLs into the archive folder). Always preserves audit trail in `state/archived/` — never permanently deletes data. Triggers: "/reset", "reset project", "start over", "clear state".
+description: Archive the current foundations session and reset Stage to INIT, ready to start a brand-new project. Asks the user to choose between soft reset (archive `SESSION-STATE.md` only, keep `<slug>-*.html` files on disk) or hard reset (also move all filled HTMLs into the archive folder). Always preserves audit trail in `SESSION-STATE/ARCHIVED/` — never permanently deletes data. Triggers: "/reset", "reset project", "start over", "clear state".
 ---
 
 # Skill: reset
@@ -9,7 +9,7 @@ description: Archive the current foundations session and reset Stage to INIT, re
 
 **Purpose:** Cleanly archive the current foundations session and reset
 `Stage:` to `INIT`, ready to start a brand-new project. Always preserves
-the audit trail by moving (never deleting) into `state/archived/`.
+the audit trail by moving (never deleting) into `SESSION-STATE/ARCHIVED/`.
 
 ---
 
@@ -32,7 +32,7 @@ prints a one-line note and archives the current on-disk content as-is.
    - Current `Stage:`
    - The Artifacts list (which `<slug>-*.html` files exist on disk).
 2. Compute SHA-256 of each existing artifact for the archive record.
-3. Ensure `state/archived/` exists. Create if missing.
+3. Ensure `SESSION-STATE/ARCHIVED/` exists. Create if missing.
 4. **If `Stage: INIT`** (nothing to reset), short-circuit:
    > "Already at INIT — nothing to reset. Run `/start-project` to begin."
    Then exit.
@@ -59,7 +59,7 @@ Choose:
   1. Soft reset — archive SESSION-STATE.md only; keep HTML files on disk
                   (good if you want to reference the project later)
   2. Hard reset — archive SESSION-STATE.md + move all <slug>-*.html files
-                  to state/archived/<slug>-files-<timestamp>/
+                  to SESSION-STATE/ARCHIVED/<slug>-files-<timestamp>/
   3. Cancel — no changes
 
 Reply: 1 / 2 / 3
@@ -70,7 +70,7 @@ Reply: 1 / 2 / 3
 ## Option 1 — Soft reset
 
 1. Copy `SESSION-STATE/SESSION-STATE.md` →
-   `state/archived/<slug>-<ISO-timestamp>.md`.
+   `SESSION-STATE/ARCHIVED/<slug>-<ISO-timestamp>.md`.
 2. Append a footer to the archive file:
    ```
    <!-- Archived by /reset (soft) at <ISO> -->
@@ -83,7 +83,7 @@ Reply: 1 / 2 / 3
    template (see "Empty INIT template" section below).
 4. Print:
    > "Soft reset complete.
-   >  Archive: `state/archived/<slug>-<timestamp>.md`
+   >  Archive: `SESSION-STATE/ARCHIVED/<slug>-<timestamp>.md`
    >  HTML files left on disk under their original folders.
    >  Run `/start-project` to begin a new project."
 
@@ -93,18 +93,18 @@ Reply: 1 / 2 / 3
 
 Steps 1-3 same as soft reset, plus:
 
-4. Create `state/archived/<slug>-files-<ISO-timestamp>/`.
+4. Create `SESSION-STATE/ARCHIVED/<slug>-files-<ISO-timestamp>/`.
 5. Move every `<slug>-*.html` that exists from:
    - `DOCMENTS/<slug>-project-brief.html`
    - `DOCMENTS/<slug>-scope-of-work.html`
    - `DOCMENTS/<slug>-system-architecture.html`
-   - `deliverables/database/<slug>-database.html`
-   - `deliverables/infrastructure/<slug>-infrastructure.html`
+   - `DOCMENTS/<slug>-database.html`
+   - `DOCMENTS/<slug>-infrastructure.html`
    into the new archive folder. Use `mv` (move, not copy).
 6. Print:
    > "Hard reset complete.
-   >  State archive:  `state/archived/<slug>-<timestamp>.md`
-   >  Files archive:  `state/archived/<slug>-files-<timestamp>/`
+   >  State archive:  `SESSION-STATE/ARCHIVED/<slug>-<timestamp>.md`
+   >  Files archive:  `SESSION-STATE/ARCHIVED/<slug>-files-<timestamp>/`
    >  Working folders cleaned.
    >  Run `/start-project` to begin a new project."
 
@@ -119,7 +119,7 @@ Print: *"Reset cancelled. State unchanged."* Exit. No file changes.
 ## Empty INIT template (used when overwriting SESSION-STATE.md)
 
 The fresh `SESSION-STATE.md` matches the canonical schema in
-`state/README.md`. Header / Stage machine block / Artifacts
+`SESSION-STATE/README.md`. Header / Stage machine block / Artifacts
 list / etc. all reset to empty.
 
 The new audit log gets exactly one line — the reset transition:
@@ -164,4 +164,4 @@ After printing the success message, stop. Do NOT auto-trigger
   plan and waiting for explicit yes.
 - The audit log of the previous session is preserved verbatim in
   the archive file — do not edit it.
-- Files in `state/archived/` are never deleted by any skill.
+- Files in `SESSION-STATE/ARCHIVED/` are never deleted by any skill.

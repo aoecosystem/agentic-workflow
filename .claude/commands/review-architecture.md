@@ -3,7 +3,7 @@ description: Edit a section of the System Architecture. Bumps version, writes au
 ---
 
 Run the `review-architecture` skill. Verify Stage is
-`ARCHITECTURE_DRAFT` or `ARCHITECTURE_APPROVED`; if APPROVED, warn
+`DOCS_DRAFT` or `DOCS_DRAFT`; if APPROVED, warn
 and confirm re-open. Show the 7-section menu (or jump to the section
 passed as argument), apply the change, bump version, save, append
 audit log. Universal services S1-S6 must remain in Section 2.

@@ -1,6 +1,6 @@
 ---
 name: api-contract
-description: Generate or update a shared API contract artifact (OpenAPI YAML, tRPC schema, or GraphQL SDL) under memory/contracts/<feature>.<ext> so backend, web, and mobile Builders implement against a single source of truth and never desynchronize. Trigger when the user says "generate contract", "api contract", "sync contract", or when a full-stack feature task block has `Contract refs` with `Integration status: not-started`. Choice of contract format is auto-detected from SCOPE.md tech stack and feature endpoint syntax.
+description: Generate or update a shared API contract artifact (OpenAPI YAML, tRPC schema, or GraphQL SDL) under MEMEORIES/contracts/<feature>.<ext> so backend, web, and mobile Builders implement against a single source of truth and never desynchronize. Trigger when the user says "generate contract", "api contract", "sync contract", or when a full-stack feature task block has `Contract refs` with `Integration status: not-started`. Choice of contract format is auto-detected from SCOPE.md tech stack and feature endpoint syntax.
 ---
 
 ## Stage gate (RUN FIRST)
@@ -31,7 +31,7 @@ drift between parallel chains.
 - `memory/STACK-GUIDANCE.md` — declared API style (REST, tRPC, GraphQL).
 - `SESSION-STATE/TASKS.md` — `Contract refs` field on each task, indicating which task
   owns the backend or client surface.
-- Optional: existing `memory/contracts/<feature>.<ext>` (will be merged,
+- Optional: existing `MEMEORIES/contracts/<feature>.<ext>` (will be merged,
   not overwritten).
 
 ---
@@ -75,7 +75,7 @@ Skip features with zero endpoints.
 
 ### Step 3 — Generate the contract
 
-For each feature, write `memory/contracts/<feature-slug>.<ext>`.
+For each feature, write `MEMEORIES/contracts/<feature-slug>.<ext>`.
 
 #### OpenAPI 3.1 (default REST)
 
@@ -92,7 +92,7 @@ Public endpoints must reference `security: []` explicitly.
 
 #### tRPC schema
 
-Output `memory/contracts/<feature-slug>.ts` with:
+Output `MEMEORIES/contracts/<feature-slug>.ts` with:
 - Zod schemas for every model.
 - Procedure input and output schemas.
 - A `<feature>Contract` exported object listing all procedures with
@@ -100,14 +100,14 @@ Output `memory/contracts/<feature-slug>.ts` with:
 
 #### GraphQL SDL
 
-Output `memory/contracts/<feature-slug>.graphql` with:
+Output `MEMEORIES/contracts/<feature-slug>.graphql` with:
 - One `type` declaration per data model.
 - Public + authenticated queries under `type Query`.
 - Mutations under `type Mutation` with `@auth` directive when needed.
 
 ### Step 4 — Reconcile with existing contract
 
-If `memory/contracts/<feature-slug>.<ext>` already exists:
+If `MEMEORIES/contracts/<feature-slug>.<ext>` already exists:
 
 1. Read it.
 2. Identify any model or endpoint that exists in the file but no longer
@@ -127,7 +127,7 @@ For every task referenced by this contract:
 - If its `Contract refs.Integration status` is `not-started`, change it
   to `partial` and add a comment in `QA notes:`:
   ```
-  Contract artifact ready: memory/contracts/<feature-slug>.<ext>
+  Contract artifact ready: MEMEORIES/contracts/<feature-slug>.<ext>
   ```
 - If `partial`, leave as-is.
 - Do NOT change to `complete` — that requires both backend and client
@@ -139,8 +139,8 @@ Print to chat:
 
 ```
 Generated contracts:
-  memory/contracts/<feature-1>.yaml  (3 endpoints, 2 models)
-  memory/contracts/<feature-2>.yaml  (1 endpoint, 1 model)
+  MEMEORIES/contracts/<feature-1>.yaml  (3 endpoints, 2 models)
+  MEMEORIES/contracts/<feature-2>.yaml  (1 endpoint, 1 model)
 
 Updated 5 task blocks (Integration status: not-started → partial).
 
@@ -159,7 +159,7 @@ Stop. Do not auto-trigger build.
 ## Rules
 
 - Contracts are agent-maintained. Builders read them. Builders never
-  edit `memory/contracts/*` by hand — the skill is the sole writer.
+  edit `MEMEORIES/contracts/*` by hand — the skill is the sole writer.
 - Contracts must be valid for their format. Run a syntax check before
   saving (e.g. `python3 -c "import yaml; yaml.safe_load(open(p))"` for
   OpenAPI; `tsc --noEmit` for tRPC if available).
@@ -177,6 +177,6 @@ Stop. Do not auto-trigger build.
 
 ## Output
 
-One contract artifact per feature in `memory/contracts/`, with task
+One contract artifact per feature in `MEMEORIES/contracts/`, with task
 blocks in `SESSION-STATE/TASKS.md` updated to reference them. Diff summary printed to
 the user.

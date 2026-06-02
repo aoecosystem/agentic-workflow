@@ -18,7 +18,7 @@ documents automatically — no further commands needed.
 
 ## Step 0 — Route by current Stage
 
-Read `MEMEORIES/SESSION-STATE.md`.
+Read `SESSION-STATE/SESSION-STATE.md`.
 
 | Stage | Action |
 |-------|--------|
@@ -36,7 +36,7 @@ Before asking the first question:
 
 1. Read `DOCMENTS/project-brief.html` end-to-end — know every section,
    placeholder, and table cell.
-2. Read `MEMEORIES/SESSION-STATE.md` — set `Stage: INTERVIEW`.
+2. Read `SESSION-STATE/SESSION-STATE.md` — set `Stage: INTERVIEW`.
 3. Greet the user in one sentence, then ask **Section 1 Question 1**.
 
 Opening message (friendly, concise):
@@ -56,7 +56,7 @@ Opening message (friendly, concise):
 - Restate the answer in one sentence before moving on.
 - Plain language — no engineering jargon unless the user uses it first.
 - Never invent details. If the user says "I don't know" → mark `TBD`.
-- After every confirmed answer, update `MEMEORIES/SESSION-STATE.md`
+- After every confirmed answer, update `SESSION-STATE/SESSION-STATE.md`
   (checkpoint — so resume works across sessions).
 
 **The 13 sections:**
@@ -155,7 +155,7 @@ Mark unknowns as `TBD`. Replace `{{PROJECT_NAME}}` with the slug.
 
 Save to `DOCMENTS/<slug>-project-brief.html` v1.0.
 
-Update `MEMEORIES/SESSION-STATE.md`:
+Update `SESSION-STATE/SESSION-STATE.md`:
 - `Stage:` → `BRIEF_APPROVED`
 - Artifacts: add brief as approved v1.0 + SHA-256 hash + today's date
 - Audit log: `<ISO>  start-interview  INTERVIEW → BRIEF_APPROVED  wrote <slug>-project-brief.html v1.0`
@@ -205,7 +205,7 @@ Generating your documents — this takes about a minute...
 
 ## Step 6 — Transition and hand off
 
-Update `MEMEORIES/SESSION-STATE.md`:
+Update `SESSION-STATE/SESSION-STATE.md`:
 - `Stage:` → `DOCS_DRAFT`
 - `Resume hint:` → `All 5 documents ready. Review in browser or run /approve-docs.`
 - Artifacts: add all 4 generated docs as draft v1.0 with hashes

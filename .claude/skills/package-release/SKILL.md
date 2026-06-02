@@ -35,7 +35,7 @@ Read:
 - `SESSION-STATE/TASKS.md` — completed task summary
 - `DOCMENTS/<slug>-scope-of-work.html` — phases + acceptance criteria
 
-Generate `state/RELEASE-NOTES-v<version>.md` with sections:
+Generate `SESSION-STATE/RELEASE-NOTES-v<version>.md` with sections:
 
 ```
 # Release v<version> — <project name>
@@ -75,7 +75,7 @@ Generate `state/RELEASE-NOTES-v<version>.md` with sections:
 Show the user the draft release notes inline. Ask: *"Save? (yes / edit / cancel)"*
 
 On `yes`:
-1. Write `state/RELEASE-NOTES-v<version>.md`
+1. Write `SESSION-STATE/RELEASE-NOTES-v<version>.md`
 2. Update `SESSION-STATE/SESSION-STATE.md`:
    - `Stage:` → `READY_TO_DEPLOY`
    - `Last skill:` → `package-release`
@@ -95,9 +95,9 @@ Release packaged. Project is READY_TO_DEPLOY.
 
 Final artifacts:
   ✓ ../apps/<sub-app>/                      (verified code)
-  ✓ deliverables/                            (5 HTMLs)
+  ✓ DOCMENTS/                                (5 HTMLs)
   ✓ the 5 deliverable HTMLs, SESSION-STATE/TASKS.md           (parsed)
-  ✓ state/RELEASE-NOTES-v<version>.md        (just generated)
+  ✓ SESSION-STATE/RELEASE-NOTES-v<version>.md        (just generated)
 
 Deploy from ../apps/ using your platform of choice.
 ```

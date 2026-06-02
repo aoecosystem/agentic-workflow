@@ -1,6 +1,6 @@
 ---
 name: build-database
-description: Generate the Database Diagram HTML from the approved Architecture + SoW. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: ARCHITECTURE_APPROVED`. Reads `DOCMENTS/<slug>-scope-of-work.html` (especially Phase 3 Database Schemas) plus `DOCMENTS/<slug>-system-architecture.html`, then writes `deliverables/database/<slug>-database.html` and transitions Stage to DATABASE_DRAFT. Trigger on "/build-database", "build database", "generate database diagram".
+description: Generate the Database Diagram HTML from the approved Architecture + SoW. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: DOCS_DRAFT`. Reads `DOCMENTS/<slug>-scope-of-work.html` (especially Phase 3 Database Schemas) plus `DOCMENTS/<slug>-system-architecture.html`, then writes `DOCMENTS/<slug>-database.html` and transitions Stage to DATABASE_DRAFT. Trigger on "/build-database", "build database", "generate database diagram".
 ---
 
 > **DEPRECATED** — This skill is no longer part of the pipeline.
@@ -15,8 +15,8 @@ description: Generate the Database Diagram HTML from the approved Architecture +
 
 **Purpose:** Read approved SoW + Architecture, draft the Database
 Diagram HTML matching the canonical 6-section structure, save it
-under `deliverables/database/<slug>-database.html`, transition
-Stage to `DATABASE_DRAFT`.
+under `DOCMENTS/<slug>-database.html`, transition
+Stage to `DOCS_DRAFT`.
 
 ---
 
@@ -42,8 +42,8 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Stage gate (BLOCKING)
 
 1. Read `SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
-2. If `Stage` is not `ARCHITECTURE_APPROVED`:
-   > "Building database requires `Stage: ARCHITECTURE_APPROVED`.
+2. If `Stage` is not `DOCS_DRAFT`:
+   > "Building database requires `Stage: DOCS_DRAFT`.
    > Current: `<STAGE>`. Run `/approve-architecture` first."
 3. If a `<slug>-database-diagram.html` already exists, warn before
    overwriting.
@@ -91,7 +91,7 @@ through automatically.
    - Phase 5 events (which entities are referenced).
 2. Read `DOCMENTS/<slug>-system-architecture.html` for
    service structure.
-3. Read `deliverables/database/template.html` for template structure.
+3. Read `DOCMENTS/database.html` for template structure.
 4. Read brief `<slug>-project-brief.html` Section 1 for project name.
 
 ---
@@ -162,9 +162,9 @@ Ask: *"Ready to save?"* Iterate until `save`.
 
 On save:
 
-1. Write `deliverables/database/<slug>-database.html` v1.0.
+1. Write `DOCMENTS/<slug>-database.html` v1.0.
 2. Update `SESSION-STATE.md`:
-   - `Stage:` → `DATABASE_DRAFT`
+   - `Stage:` → `DOCS_DRAFT`
    - `Last skill:` → `build-database`
    - `Last update:` → ISO timestamp
    - `Resume hint:` → `Run /review-database or /approve-database.`
@@ -179,7 +179,7 @@ On save:
 ## Hand off
 
 ```
-Saved: deliverables/database/<slug>-database.html (v1.0)
+Saved: DOCMENTS/<slug>-database.html (v1.0)
 
 What's next?
 

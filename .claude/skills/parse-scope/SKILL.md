@@ -71,8 +71,8 @@ Read these files before generating anything. Resolve `<slug>` from `SESSION-STAT
 | 1 | `DOCMENTS/<slug>-project-brief.html` | §1 vision, §2 target users, §3 platforms + architecture style, §4 multi-role flag, §5 features, §6 business processes, §8 integrations, §9 NFRs, §10 success metrics, §11 out of scope, §12 design preferences, **§13 AI Generation Instructions** (execution rules applied to every task) |
 | 2 | `DOCMENTS/<slug>-scope-of-work.html` | Phase 1 service inventory, Phase 2 module breakdown, Phase 3 database schemas, **Phase 4 API endpoints (every row → ≥1 task)**, Phase 5 events, Phase 5.5 business processes (when present), **Phase 6 tech stack** (resolves `Stack:` field in every task), **Phase 7 page inventory (every row → ≥1 UI task)**, Phase 8 quality criteria, **Phase 9 folder structure + design language** |
 | 3 | `DOCMENTS/<slug>-system-architecture.html` | §1 overview, §2 service inventory, §3 layered architecture, §4 data flow, §5 module boundaries, §6 cross-cutting concerns, §7 Mermaid diagram (verbatim for ERD-aware tasks) |
-| 4 | `deliverables/database/<slug>-database.html` | §1 schema overview, **§2 entity definitions (every entity → TASK-001 or feature-specific schema task)**, §3 relationships, §4 indexes strategy, §5 migration & versioning, §6 ERD Mermaid (verbatim) |
-| 5 | `deliverables/infrastructure/<slug>-infrastructure.html` | §1 environments, §2 hosting & compute, §3 db/storage/cache, §4 network & domains, §5 external services & integrations, §6 security & secrets (env vars → TASK-000 AC), §7 backup & DR, §8 CI/CD pipeline, §9 topology Mermaid (verbatim) |
+| 4 | `DOCMENTS/<slug>-database.html` | §1 schema overview, **§2 entity definitions (every entity → TASK-001 or feature-specific schema task)**, §3 relationships, §4 indexes strategy, §5 migration & versioning, §6 ERD Mermaid (verbatim) |
+| 5 | `DOCMENTS/<slug>-infrastructure.html` | §1 environments, §2 hosting & compute, §3 db/storage/cache, §4 network & domains, §5 external services & integrations, §6 security & secrets (env vars → TASK-000 AC), §7 backup & DR, §8 CI/CD pipeline, §9 topology Mermaid (verbatim) |
 
 **C. Supplemental (read if present, don't fail if missing):**
 
@@ -80,7 +80,7 @@ Read these files before generating anything. Resolve `<slug>` from `SESSION-STAT
 - `memory/ARCHITECTURE.md`, `memory/PATTERNS.md`, `memory/DECISIONS.md` — cross-session knowledge.
 - `memory/STACK-GUIDANCE.md` — this skill REWRITES it (side effect).
 - `memory/PAGES.md` — this skill REWRITES it (side effect).
-- `.pipeline/features/requirements/*.md` — ReqOps output (run `reqops` first if you want this layer).
+- `CONTEXT/feature-specs/*.md` — ReqOps output (run `reqops` first if you want this layer).
 
 **Failure modes:**
 - If SESSION-STATE has no `Architecture style:` field → refuse with "Architecture style missing — re-run `/build-scope-of-work` to lock Phase 9".
@@ -89,7 +89,7 @@ Read these files before generating anything. Resolve `<slug>` from `SESSION-STAT
 
 ### Step 2 — ReqOps pre-pass (optional)
 
-If `.pipeline/features/requirements/*.md` files already exist (from a prior `/reqops` run):
+If `CONTEXT/feature-specs/*.md` files already exist (from a prior `/reqops` run):
 1. Read each one and use its per-feature ACs as the seed for generated task acceptance criteria.
 2. Record contradictions between requirements files and the 5 HTMLs as `GAP-XX` notes (never silently resolve).
 
@@ -219,7 +219,7 @@ For each task, write 3–6 acceptance criteria items as checkboxes. Derive them 
 - The feature's screen descriptions (UI renders correctly, user can do X)
 - The feature's API endpoints (correct inputs/outputs, error handling)
 - The project's NFRs in `the 5 HTMLs` (auth required, validation, error format)
-- ReqOps requirements file for that feature if available in `.pipeline/features/requirements/`
+- ReqOps requirements file for that feature if available in `CONTEXT/feature-specs/`
 
 Every task must have at minimum:
 - `[ ]` The primary function works end-to-end

@@ -1,10 +1,10 @@
 ---
-description: Generate or update OpenAPI / tRPC / GraphQL contract artifacts under memory/contracts/ so backend and client Builders share a single source of truth.
+description: Generate or update OpenAPI / tRPC / GraphQL contract artifacts under MEMEORIES/contracts/ so backend and client Builders share a single source of truth.
 ---
 
 Run the `api-contract` skill. For every full-stack feature in
 `state/SCOPE.md`, generate a contract artifact in
-`memory/contracts/<feature-slug>.<ext>`. Format auto-detected from
+`MEMEORIES/contracts/<feature-slug>.<ext>`. Format auto-detected from
 `memory/STACK-GUIDANCE.md`:
 
 - REST → OpenAPI 3.1 YAML

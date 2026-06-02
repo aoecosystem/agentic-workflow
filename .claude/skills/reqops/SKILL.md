@@ -1,6 +1,6 @@
 ---
 name: reqops
-description: ReqOps requirements specialist. Reads scope from the 5 deliverable HTMLs (the canonical post-import-docs surface) with .pipeline/sow.md as fallback and produces dev-ready, SOW-traceable feature requirements under .pipeline/features/requirements/<feature-id>-<slug>-requirements.md with user stories, Given/When/Then acceptance criteria (MoSCoW-tagged), NFRs, edge cases, test cases, smart checklist, and change logs. Trigger when the user says "reqops", "derive requirements", "generate requirements from SCOPE.md", or runs parse-scope with the ReqOps pre-pass. Does NOT write SESSION-STATE/TASKS.md — parse-scope owns that.
+description: ReqOps requirements specialist. Reads scope from the 5 deliverable HTMLs (the canonical post-import-docs surface) with DOCMENTS/<slug>-scope-of-work.html as fallback and produces dev-ready, SOW-traceable feature requirements under CONTEXT/feature-specs/<feature-id>-<slug>-requirements.md with user stories, Given/When/Then acceptance criteria (MoSCoW-tagged), NFRs, edge cases, test cases, smart checklist, and change logs. Trigger when the user says "reqops", "derive requirements", "generate requirements from SCOPE.md", or runs parse-scope with the ReqOps pre-pass. Does NOT write SESSION-STATE/TASKS.md — parse-scope owns that.
 ---
 
 ## Stage gate (RUN FIRST)
@@ -24,17 +24,17 @@ description: ReqOps requirements specialist. Reads scope from the 5 deliverable 
 Read in this precedence order:
 
 1. the 5 deliverable HTMLs (authoritative — approved at Stage `DOCS_COMPLETE`)
-2. `.pipeline/sow.md` (rarely-used legacy fallback)
-3. `.pipeline/requirements.md` / `.pipeline/features-list.md` / `.pipeline/system-design-provided.md` (optional support context)
-4. `.pipeline/features/requirements/` files for other features (optional dependency context)
+2. `DOCMENTS/<slug>-scope-of-work.html` (rarely-used legacy fallback)
+3. `CONTEXT/feature-specs/` / `DOCMENTS/<slug>-scope-of-work.html` / `DOCMENTS/<slug>-system-architecture.html` (optional support context)
+4. `CONTEXT/feature-specs/` files for other features (optional dependency context)
 
 Conflict rule:
 - If any lower-precedence file conflicts with the selected SOW source, SOW wins.
 - Record the conflict as `GAP-XX` with file path + contradiction summary.
 
 Hard stop:
-- If no usable SOW source exists in the 5 deliverable HTMLs or `.pipeline/sow.md`, stop and emit exactly:
-  - `ERROR: Scope of work not found. ReqOps AI cannot proceed without an authoritative SOW source in SCOPE.md or .pipeline/sow.md.`
+- If no usable SOW source exists in the 5 deliverable HTMLs or `DOCMENTS/<slug>-scope-of-work.html`, stop and emit exactly:
+  - `ERROR: Scope of work not found. ReqOps AI cannot proceed without an authoritative SOW source in SCOPE.md or DOCMENTS/<slug>-scope-of-work.html.`
 
 ---
 
@@ -99,7 +99,7 @@ keeps task-file ownership unambiguous when a user chains `reqops` and
 What ReqOps does in this step:
 
 1. Write / update one requirement file per feature in
-   `.pipeline/features/requirements/<feature-id>-<feature-slug>-requirements.md`.
+   `CONTEXT/feature-specs/<feature-id>-<feature-slug>-requirements.md`.
 2. Populate the sections listed in the Template (User Story, Description,
    Out of Scope, Feature Dependencies, ACs, NFRs, Functional Notes, Smart
    Checklist, DoD, Change Log).
@@ -132,7 +132,7 @@ Do not save until these checks pass:
 ## Output file rules
 
 Save only to:
-- `.pipeline/features/requirements/<feature-id>-<feature-slug>-requirements.md`
+- `CONTEXT/feature-specs/<feature-id>-<feature-slug>-requirements.md`
 
 `SESSION-STATE/TASKS.md` is owned by `parse-scope` and is not written by ReqOps.
 

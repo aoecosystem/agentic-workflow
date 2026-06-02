@@ -35,10 +35,10 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Stage gate
 
 1. Read `SESSION-STATE/SESSION-STATE.md`. Locate the `Stage:` value.
-2. If `Stage:` is not one of `SOW_DRAFT` or `SOW_APPROVED`, refuse:
+2. If `Stage:` is not one of `DOCS_DRAFT` or `DOCS_DRAFT`, refuse:
    > "SoW review is only valid in stages SOW_DRAFT or SOW_APPROVED.
    > Current stage: `<STAGE>`. Run `/status` for next steps."
-3. If `Stage: SOW_APPROVED`, warn:
+3. If `Stage: DOCS_DRAFT`, warn:
    > "The Scope of Work is currently approved. Reviewing will re-open
    > it (SOW_APPROVED → SOW_DRAFT). Downstream documents (architecture,
    > database, infrastructure) stay on disk but should be re-built
@@ -107,7 +107,7 @@ On confirmation:
 1. Write updated HTML back to `DOCMENTS/<slug>-scope-of-work.html`.
 2. Bump the version (`v1.0` → `v1.1`).
 3. Update `SESSION-STATE.md`:
-   - `Stage:` → `SOW_DRAFT` (re-opens if it was approved).
+   - `Stage:` → `DOCS_DRAFT` (re-opens if it was approved).
    - `Last skill:` → `review-scope-of-work`
    - `Last update:` → ISO timestamp.
    - Artifacts list: mark scope-of-work as draft with new version.

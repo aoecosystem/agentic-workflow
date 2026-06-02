@@ -35,7 +35,7 @@ Read the full task block from `SESSION-STATE/TASKS.md`:
 - the 5 deliverable HTMLs — the relevant feature section (screens, endpoints, models, NFRs)
 - `memory/PATTERNS.md` — patterns that should have been followed
 - `memory/DECISIONS.md` — decisions that constrain this task
-- The MCP cache file for this feature if one exists (`memory/mcp-cache/{feature-slug}-*.md`)
+- The MCP cache file for this feature if one exists (`MEMEORIES/mcp-cache/{feature-slug}-*.md`)
 - If task has `Design source: Figma`, `Codegen artifact`, `Visual baseline refs`, or `Plugin artifact refs`, also read those fields and linked artifacts.
 
 ### Step 3 — Run Gate 1: Lint

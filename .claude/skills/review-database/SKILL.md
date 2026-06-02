@@ -37,15 +37,15 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Stage gate
 
 1. Read `SESSION-STATE.md`.
-2. If `Stage` is not `DATABASE_DRAFT` or `DATABASE_APPROVED`, refuse.
-3. If `DATABASE_APPROVED`, warn re-open will revert to DATABASE_DRAFT.
+2. If `Stage` is not `DOCS_DRAFT` or `DOCS_DRAFT`, refuse.
+3. If `DOCS_DRAFT`, warn re-open will revert to DATABASE_DRAFT.
    Downstream (infrastructure) should be re-built afterward.
 
 ---
 
 ## Pre-flight
 
-1. Read `deliverables/database/<slug>-database.html`.
+1. Read `DOCMENTS/<slug>-database.html`.
 
 ---
 
@@ -86,7 +86,7 @@ Section 2, also offer to update the ERD block to match.
 1. Write updated HTML.
 2. Bump version (`v1.0` → `v1.1`).
 3. Update `SESSION-STATE.md`:
-   - `Stage:` → `DATABASE_DRAFT`
+   - `Stage:` → `DOCS_DRAFT`
    - `Last skill:` → `review-database`
    - `Last update:` → ISO timestamp
 4. Append audit log:

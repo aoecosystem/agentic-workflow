@@ -141,10 +141,10 @@ The scaffold must prioritize Figma parity and reuse accepted plugin-codegen frag
 ### Step 6 — Write cache artifacts
 
 Write:
-- `memory/mcp-cache/{feature-slug}-figma.md`
-- `memory/mcp-cache/{feature-slug}-codegen.md`
-- `memory/mcp-cache/{feature-slug}-plugin-artifacts.md`
-- `memory/mcp-cache/{feature-slug}-assets.md`
+- `MEMEORIES/mcp-cache/{feature-slug}-figma.md`
+- `MEMEORIES/mcp-cache/{feature-slug}-codegen.md`
+- `MEMEORIES/mcp-cache/{feature-slug}-plugin-artifacts.md`
+- `MEMEORIES/mcp-cache/{feature-slug}-assets.md`
 
 Each file must include:
 - source URL
@@ -156,7 +156,7 @@ Each file must include:
 
 For each processed UI task, update or append these fields:
 - `Design source: Figma (plugin-figma-figma)`
-- `Codegen artifact: memory/mcp-cache/{feature-slug}-codegen.md`
+- `Codegen artifact: MEMEORIES/mcp-cache/{feature-slug}-codegen.md`
 - `Visual baseline refs: fileKey=..., nodeId=..., frame=...`
 - `Screen MCP URLs:`
   - `ScreenName: https://www.figma.com/design/{fileKey}/...?...node-id={node-id}`
@@ -168,8 +168,8 @@ For each processed UI task, update or append these fields:
   - responsive parity
   - accessibility parity
   - no duplicate device chrome (status bar, notch, home indicator)
-- `Plugin artifact refs: memory/mcp-cache/{feature-slug}-plugin-artifacts.md (compatible|partial|rejected)`
-- `Asset refs: memory/mcp-cache/{feature-slug}-assets.md`
+- `Plugin artifact refs: MEMEORIES/mcp-cache/{feature-slug}-plugin-artifacts.md (compatible|partial|rejected)`
+- `Asset refs: MEMEORIES/mcp-cache/{feature-slug}-assets.md`
 
 Field updates must be merge-only for design fields. Do not overwrite task title, dependency, assignee, or status.
 

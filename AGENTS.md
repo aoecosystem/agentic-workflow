@@ -8,8 +8,7 @@ session start.
 
 > **Scope:** agentic-workflow is the **full project engine**. It runs the
 > complete lifecycle from initial idea → 5 documents → generated code →
-> verified, ready to deploy. It is a **superset** of project-foundations
-> (which only does the docs phase).
+> verified, ready to deploy.
 
 ---
 
@@ -46,7 +45,7 @@ DOCS_COMPLETE
 Every transition requires an **explicit user command**. The agent NEVER
 auto-advances. `⇄` = re-openable via matching `/review-*` command.
 
-**One state file** (`state/SESSION-STATE.md`) tracks both phases. Hash
+**One state file** (`SESSION-STATE/SESSION-STATE.md`) tracks both phases. Hash
 tracking + audit log spans the whole journey.
 
 ---
@@ -79,7 +78,7 @@ docs/tasks to pick up the change.
 | `/approve-brief` | BRIEF_DRAFT → BRIEF_APPROVED |
 | `/build-scope-of-work` | BRIEF_APPROVED → SOW_DRAFT |
 | `/review-scope-of-work <N>` | SOW_DRAFT/APPROVED → SOW_DRAFT |
-| `/approve-scope-of-work` | SOW_DRAFT → SOW_APPROVED |
+| `/approve-scope-of-work` | DOCS_DRAFT |
 | `/start-interview` | INIT → INTERVIEW → *(auto-build 5 docs)* → DOCS_DRAFT |
 | `/import-docs` | INIT → *(read DOCMENTS/ files → auto-build 5 docs)* → DOCS_DRAFT |
 | `/status` | (read-only) |
@@ -134,7 +133,7 @@ Every artifact the agent writes records a SHA-256 hash in
 ### Detection step (FIRST step of every artifact-touching skill)
 
 1. Compute SHA-256 of the file currently on disk.
-2. Read the stored hash from `state/SESSION-STATE.md`.
+2. Read the stored hash from `SESSION-STATE/SESSION-STATE.md`.
 3. Branch:
    - **Stored empty + file missing** → first save. Proceed; record hash after writing.
    - **Stored empty + file exists** → user-created. Treat as drift; ask accept/cancel.
@@ -147,13 +146,12 @@ Every artifact the agent writes records a SHA-256 hash in
 Detect drift but only **report** — never bump version, never write,
 never append audit log.
 
-### Direct edits to `state/SESSION-STATE.md`
+### Direct edits to `SESSION-STATE/SESSION-STATE.md`
 
 Meta-state, not an artifact. Hash protocol does NOT cover it. Skills
 validate on read: `Stage:` must be in valid enum; slug must be
 kebab-case; stored hashes must parse as `sha256:<hex>`. If invalid,
-refuse with a clear error. Recommended manual reset: delete
-`SESSION-STATE/SESSION-STATE.md` and run `/start-project` (or use `/reset`).
+refuse with a clear error. Recommended manual reset: delete `SESSION-STATE/SESSION-STATE.md` and run `/start-interview` (or use `/reset`).
 
 ### Placeholder vs TBD convention
 
@@ -179,8 +177,6 @@ concrete values, not TBDs (e.g. infrastructure providers).
    `STACK-GUIDANCE.md`, `PAGES.md` — curated cross-session knowledge.
 6. `CONTEXT/architecture-styles/<style>.md` — chosen architecture style rules.
 7. Any filled `<slug>-*.html` if mid-docs-phase.
-
-Skip files that don't exist yet.
 
 Skip files that don't exist yet.
 
@@ -226,13 +222,13 @@ For each shared file, exactly one agent type writes a given section.
 
 | File / Section | Writer |
 |----------------|--------|
-| `state/TASKS.md` task block body | Builder owning task (in-progress / needs-fix) |
-| `state/TASKS.md` `Status:` field | Builder (to in-progress/in-review/blocked), QA (to done/needs-fix) |
-| `state/TASKS.md` `QA notes:` | Builder handoff + QA rejection (append-only within task) |
+| `SESSION-STATE/TASKS.md` task block body | Builder owning task (in-progress / needs-fix) |
+| `SESSION-STATE/TASKS.md` `Status:` field | Builder (to in-progress/in-review/blocked), QA (to done/needs-fix) |
+| `SESSION-STATE/TASKS.md` `QA notes:` | Builder handoff + QA rejection (append-only within task) |
 | `memory/ARCHITECTURE.md`, `PATTERNS.md`, `DECISIONS.md` | QA after `done` |
 | `memory/STACK-GUIDANCE.md` | `import-docs` skill only |
-| `memory/mcp-cache/*` | `fetch-mcp` / `figma-plugin-ingest` only |
-| `state/SESSION-STATE.md` | Read-modify-write by every skill (each skill re-reads before writing) |
+| `MEMEORIES/mcp-cache/*` | `fetch-mcp` / `figma-plugin-ingest` only |
+| `SESSION-STATE/SESSION-STATE.md` | Read-modify-write by every skill (each skill re-reads before writing) |
 
 ---
 
@@ -269,19 +265,19 @@ gate (structured logging, error reporting, metrics, tracing).
 |------|-------------------|
 | Empty templates (`*-template.html`, `system-architecture.html`, etc.) | NO — read-only scaffolds |
 | `scope-of-work/<slug>-*.html` | YES — docs phase skills |
-| `deliverables/architecture/<slug>-*.html` | YES — docs phase skills |
-| `deliverables/<slug>-*.html` | YES — docs phase skills |
-| `state/SESSION-STATE.md` | YES — every skill (read-modify-write) |
-| `state/TASKS.md` | YES — `import-docs` skill only |
-| `state/TASKS.md` | YES — `parse-scope` (sole writer) + status updates by Builders/QA |
-| `state/archived/*` | YES — write-once snapshots when /reset runs |
+| `DOCMENTS/<slug>-*.html` | YES — docs phase skills |
+| `DOCMENTS/<slug>-*.html` | YES — docs phase skills |
+| `SESSION-STATE/SESSION-STATE.md` | YES — every skill (read-modify-write) |
+| `SESSION-STATE/TASKS.md` | YES — `import-docs` skill only |
+| `SESSION-STATE/TASKS.md` | YES — `parse-scope` (sole writer) + status updates by Builders/QA |
+| `SESSION-STATE/ARCHIVED/*` | YES — write-once snapshots when /reset runs |
 | `memory/ARCHITECTURE.md`, `PATTERNS.md`, `DECISIONS.md`, `PAGES.md` | YES — QA after task `done` |
 | `memory/STACK-GUIDANCE.md` | YES — `import-docs` only |
-| `memory/contracts/*` | YES — `api-contract` skill only |
-| `memory/mcp-cache/*` | YES — `fetch-mcp` / `figma-plugin-ingest` only |
+| `MEMEORIES/contracts/*` | YES — `api-contract` skill only |
+| `MEMEORIES/mcp-cache/*` | YES — `fetch-mcp` / `figma-plugin-ingest` only |
 | `../apps/<sub-app>/` | YES — Builders write here |
-| `deliverables/architecture/styles/*.md` | NO — snapshot from foundations, read-only |
-| `deliverables/designs/<page-id>.png/jpg/html` | NO — humans drop UI screenshots |
+| `CONTEXT/architecture-styles/*.md` | NO — read-only style profiles |
+| `DOCMENTS/designs/<page-id>.png/jpg/html` | NO — humans drop UI screenshots |
 | `INSTRUCTIONS.md`, `README.md`, `CLAUDE.md`, `AGENTS.md` | NO — repo documentation |
 | `CHANGELOG.md`, `CONTRIBUTING.md`, `LICENSE` | NO — repo governance |
 
@@ -320,13 +316,13 @@ Kebab-case identifier for the project. Examples: `bron-go`, `acme-crm`,
 filled artifacts:
 
 ```
-deliverables/brief/<slug>-brief.html
-deliverables/scope-of-work/<slug>-sow.html
-deliverables/architecture/<slug>-architecture.html
-deliverables/database/<slug>-database.html
-deliverables/infrastructure/<slug>-infrastructure.html
-state/TASKS.md (no slug — one project per repo)
-state/TASKS.md (no slug)
+DOCMENTS/<slug>-brief.html
+DOCMENTS/<slug>-sow.html
+DOCMENTS/<slug>-architecture.html
+DOCMENTS/<slug>-database.html
+DOCMENTS/<slug>-infrastructure.html
+SESSION-STATE/TASKS.md (no slug — one project per repo)
+SESSION-STATE/TASKS.md (no slug)
 ```
 
 If user provides a name with spaces or capitals, agent auto-converts
@@ -359,10 +355,10 @@ audit log.
 
 | Lever | How it works here |
 |---|---|
-| **Stage gates** | Every skill refuses if `state/SESSION-STATE.md` Stage doesn't match expected. |
+| **Stage gates** | Every skill refuses if `SESSION-STATE/SESSION-STATE.md` Stage doesn't match expected. |
 | **Quality gates** | Every `/approve-*` runs blocking checks. |
 | **Manual edit detection** | SHA-256 hash drift caught before any operation. |
 | **Reversibility** | Re-open any approved stage with `/review-*`. |
 | **Audit log** | Every state transition appended (append-only). |
-| **Single source of truth** | `state/SESSION-STATE.md` for state; `memory/*` for curated knowledge. |
+| **Single source of truth** | `SESSION-STATE/SESSION-STATE.md` for state; `memory/*` for curated knowledge. |
 | **No auto-advance** | Every transition needs an explicit user command. |

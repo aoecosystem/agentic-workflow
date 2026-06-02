@@ -35,10 +35,10 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Stage gate
 
 1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
-2. If `Stage` is not `ARCHITECTURE_DRAFT` or `ARCHITECTURE_APPROVED`:
+2. If `Stage` is not `DOCS_DRAFT` or `DOCS_DRAFT`:
    > "Architecture review is only valid in stages ARCHITECTURE_DRAFT
    > or ARCHITECTURE_APPROVED. Current stage: `<STAGE>`."
-3. If `Stage: ARCHITECTURE_APPROVED`, warn and confirm re-open:
+3. If `Stage: DOCS_DRAFT`, warn and confirm re-open:
    > "Architecture is currently approved. Reviewing will re-open it
    > (ARCHITECTURE_APPROVED → ARCHITECTURE_DRAFT). Downstream documents
    > (database, infrastructure) stay on disk but should be re-built
@@ -98,7 +98,7 @@ On confirmation:
    `DOCMENTS/<slug>-system-architecture.html`.
 2. Bump version (`v1.0` → `v1.1`).
 3. Update `SESSION-STATE.md`:
-   - `Stage:` → `ARCHITECTURE_DRAFT`
+   - `Stage:` → `DOCS_DRAFT`
    - `Last skill:` → `review-architecture`
    - `Last update:` → ISO timestamp
    - Artifacts list: mark architecture as draft with new version.

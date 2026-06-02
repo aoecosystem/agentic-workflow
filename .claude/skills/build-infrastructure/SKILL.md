@@ -1,6 +1,6 @@
 ---
 name: build-infrastructure
-description: Generate the Infrastructure Diagram HTML from the approved Database + Architecture + SoW. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: DATABASE_APPROVED`. Reads `DOCMENTS/<slug>-scope-of-work.html` (especially Phase 6 Tech Stack and Phase 9 Folder Structures) plus brief Section 8 Integrations, then writes `deliverables/infrastructure/<slug>-infrastructure.html` and transitions Stage to INFRASTRUCTURE_DRAFT. Trigger on "/build-infrastructure", "build infrastructure", "generate infrastructure diagram".
+description: Generate the Infrastructure Diagram HTML from the approved Database + Architecture + SoW. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: DOCS_DRAFT`. Reads `DOCMENTS/<slug>-scope-of-work.html` (especially Phase 6 Tech Stack and Phase 9 Folder Structures) plus brief Section 8 Integrations, then writes `DOCMENTS/<slug>-infrastructure.html` and transitions Stage to INFRASTRUCTURE_DRAFT. Trigger on "/build-infrastructure", "build infrastructure", "generate infrastructure diagram".
 ---
 
 > **DEPRECATED** — This skill is no longer part of the pipeline.
@@ -16,8 +16,8 @@ description: Generate the Infrastructure Diagram HTML from the approved Database
 **Purpose:** Read approved SoW + Architecture + Database, draft the
 Infrastructure Diagram HTML matching the canonical 9-section
 structure, save it under
-`deliverables/infrastructure/<slug>-infrastructure.html`, transition
-Stage to `INFRASTRUCTURE_DRAFT`.
+`DOCMENTS/<slug>-infrastructure.html`, transition
+Stage to `DOCS_DRAFT`.
 
 ---
 
@@ -43,8 +43,8 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Stage gate (BLOCKING)
 
 1. Read `SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
-2. If `Stage` is not `DATABASE_APPROVED`:
-   > "Building infrastructure requires `Stage: DATABASE_APPROVED`.
+2. If `Stage` is not `DOCS_DRAFT`:
+   > "Building infrastructure requires `Stage: DOCS_DRAFT`.
    > Current: `<STAGE>`. Run `/approve-database` first."
 3. If file already exists, warn before overwriting.
 
@@ -96,7 +96,7 @@ through automatically.
    Section 11 (Domain).
 3. Read `<slug>-system-architecture.html` for service list.
 4. Read `<slug>-database-diagram.html` for storage type (Postgres, etc.)
-5. Read `deliverables/infrastructure/template.html` for template.
+5. Read `DOCMENTS/infrastructure.html` for template.
 
 ---
 
@@ -176,9 +176,9 @@ Ask: *"Ready to save?"* Iterate until `save`.
 
 On save:
 
-1. Write `deliverables/infrastructure/<slug>-infrastructure.html` v1.0.
+1. Write `DOCMENTS/<slug>-infrastructure.html` v1.0.
 2. Update `SESSION-STATE.md`:
-   - `Stage:` → `INFRASTRUCTURE_DRAFT`
+   - `Stage:` → `DOCS_DRAFT`
    - `Last skill:` → `build-infrastructure`
    - `Last update:` → ISO timestamp
    - `Resume hint:` → `Run /review-infrastructure or /approve-infrastructure.`
@@ -193,7 +193,7 @@ On save:
 ## Hand off
 
 ```
-Saved: deliverables/infrastructure/<slug>-infrastructure.html (v1.0)
+Saved: DOCMENTS/<slug>-infrastructure.html (v1.0)
 
 What's next?
 

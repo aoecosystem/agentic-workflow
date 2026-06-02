@@ -73,7 +73,7 @@ Then update the task block:
 ### Step 3 — Fetch MCP context (if MCP URL present)
 
 If the task block has a non-empty `MCP URL:` field:
-1. Check `memory/mcp-cache/` for an existing cache file for this feature (naming: `{feature-slug}-{type}.md`).
+1. Check `MEMEORIES/mcp-cache/` for an existing cache file for this feature (naming: `{feature-slug}-{type}.md`).
 2. If cache exists → read it. Skip fetching.
 3. If no cache → run the `fetch-mcp` skill with the URL. Wait for it to write the cache file.
 4. Read the cache file before implementing UI or API work.
@@ -81,7 +81,7 @@ If the task block has a non-empty `MCP URL:` field:
 ### Step 4 — Resolve Figma ingest/codegen input (UI tasks)
 
 If the task is a UI task and includes `Codegen artifact:`:
-1. Read the artifact file in `memory/mcp-cache/`.
+1. Read the artifact file in `MEMEORIES/mcp-cache/`.
 2. Treat artifact file map and component tree as the source implementation skeleton.
 3. Do not replace scaffold structure unless artifact conflicts with explicit acceptance criteria.
 4. Track any intentional divergence from the file map as `GAP-XX` in `QA notes:` with the missing scaffold file/widget and reason.

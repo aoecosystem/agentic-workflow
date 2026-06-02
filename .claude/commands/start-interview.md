@@ -4,7 +4,7 @@ description: Start the project interview. Ask 13 sections of questions one at a 
 
 Run the `start-interview` skill.
 
-Check `MEMEORIES/SESSION-STATE.md` first:
+Check `SESSION-STATE/SESSION-STATE.md` first:
 - INIT or missing → start the interview from Section 1
 - INTERVIEW → offer to resume or restart
 - BRIEF_DRAFT → offer to generate documents or review brief
