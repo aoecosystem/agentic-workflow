@@ -1,11 +1,11 @@
 ---
 name: status
-description: Read state/SESSION-STATE.md and print the current pipeline stage, what artifacts exist, and the next valid commands. Pure read-only — never modifies any file. Use whenever the user asks "where am I", "what's next", or runs the `/status` slash command.
+description: Read SESSION-STATE/SESSION-STATE.md and print the current pipeline stage, what artifacts exist, and the next valid commands. Pure read-only — never modifies any file. Use whenever the user asks "where am I", "what's next", or runs the `/status` slash command.
 ---
 
 # Status — Pipeline Stage Reporter
 
-A read-only skill. Reads `state/SESSION-STATE.md`, prints a
+A read-only skill. Reads `SESSION-STATE/SESSION-STATE.md`, prints a
 clean summary of where the project is in the foundations pipeline,
 what's been done, and what command the user can run next.
 
@@ -40,7 +40,7 @@ write-skill the user runs.
 
 ## Inputs
 
-- `state/SESSION-STATE.md` (read-only)
+- `SESSION-STATE/SESSION-STATE.md` (read-only)
 
 ## Outputs
 
@@ -106,6 +106,6 @@ A chat message in this format:
 ## Edge cases
 
 - **`SESSION-STATE.md` exists but is malformed** (missing `Stage:` line):
-  print "Session file is corrupted. Reset by deleting `state/SESSION-STATE.md` and running `/start-project`."
+  print "Session file is corrupted. Reset by deleting `SESSION-STATE/SESSION-STATE.md` and running `/start-project`."
 - **Stage value not in the valid enum:** treat as malformed.
 - **Audit log empty:** still proceed; just omit "Last action" line.

@@ -1,6 +1,6 @@
 ---
 name: review-scope-of-work
-description: Iterative section-by-section editor for a previously generated Scope of Work. Reads `state/SESSION-STATE.md`, refuses unless Stage is SOW_DRAFT or SOW_APPROVED, lets the user pick a phase, applies the change, bumps version, writes audit log. If Stage is SOW_APPROVED, this re-opens it back to SOW_DRAFT. Trigger when the user says "/review-scope-of-work", "review sow", "edit sow", "update scope of work". Do NOT trigger if no filled SoW exists.
+description: Iterative section-by-section editor for a previously generated Scope of Work. Reads `SESSION-STATE/SESSION-STATE.md`, refuses unless Stage is SOW_DRAFT or SOW_APPROVED, lets the user pick a phase, applies the change, bumps version, writes audit log. If Stage is SOW_APPROVED, this re-opens it back to SOW_DRAFT. Trigger when the user says "/review-scope-of-work", "review sow", "edit sow", "update scope of work". Do NOT trigger if no filled SoW exists.
 ---
 
 # Skill: review-scope-of-work
@@ -34,7 +34,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 
 ## Stage gate
 
-1. Read `state/SESSION-STATE.md`. Locate the `Stage:` value.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate the `Stage:` value.
 2. If `Stage:` is not one of `SOW_DRAFT` or `SOW_APPROVED`, refuse:
    > "SoW review is only valid in stages SOW_DRAFT or SOW_APPROVED.
    > Current stage: `<STAGE>`. Run `/status` for next steps."
@@ -50,7 +50,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Pre-flight
 
 1. From `SESSION-STATE.md` Header, get the active `Slug:`.
-2. Open `deliverables/scope-of-work/<slug>-sow.html` and read it.
+2. Open `DOCMENTS/<slug>-scope-of-work.html` and read it.
 3. If the file does not exist, halt and tell the user to run
    `/build-scope-of-work` first.
 
@@ -104,7 +104,7 @@ skip the menu and jump straight to that phase.
 
 On confirmation:
 
-1. Write updated HTML back to `deliverables/scope-of-work/<slug>-sow.html`.
+1. Write updated HTML back to `DOCMENTS/<slug>-scope-of-work.html`.
 2. Bump the version (`v1.0` → `v1.1`).
 3. Update `SESSION-STATE.md`:
    - `Stage:` → `SOW_DRAFT` (re-opens if it was approved).

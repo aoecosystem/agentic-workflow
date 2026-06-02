@@ -5,7 +5,7 @@ description: Detect scope changes after TASKS.md already has tasks and produce a
 
 ## Stage gate (RUN FIRST)
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. Refuse unless Stage is `TASKS_GENERATED`, `TASKS_APPROVED`, `BUILDING`, or `BUILD_COMPLETE`. Message:
    > "delta-scope only applies after TASKS.md exists. Current Stage: `<STAGE>`. Run `/parse-scope` first."
 
@@ -13,7 +13,7 @@ description: Detect scope changes after TASKS.md already has tasks and produce a
 
 # Skill: Delta Scope
 
-**Trigger:** User says `delta scope` / `rescope` (or uses the `/delta-scope` slash command), or the 5 deliverable HTMLs changes while `state/TASKS.md` already has tasks other than `pending`.
+**Trigger:** User says `delta scope` / `rescope` (or uses the `/delta-scope` slash command), or the 5 deliverable HTMLs changes while `SESSION-STATE/TASKS.md` already has tasks other than `pending`.
 
 **Purpose:** Detect what changed in the scope of work after tasks have already been generated (or built), and produce a reviewable delta rather than silently re-planning. The workflow must never drop done work or duplicate active work because the spec moved.
 
@@ -23,10 +23,10 @@ description: Detect scope changes after TASKS.md already has tasks and produce a
 
 Run this skill when any of these is true:
 
-- the 5 deliverable HTMLs was edited after `parse scope` produced `state/TASKS.md`.
+- the 5 deliverable HTMLs was edited after `parse scope` produced `SESSION-STATE/TASKS.md`.
 - A new or updated document was added to the 5 deliverable HTMLs (manually or via /parse-scope) after `import docs` was last run.
 - A user explicitly says `delta scope`, `rescope`, or "scope changed".
-- Orchestrator detects that the 5 deliverable HTMLs's modification time is newer than the last `state/TASKS.md` generation timestamp.
+- Orchestrator detects that the 5 deliverable HTMLs's modification time is newer than the last `SESSION-STATE/TASKS.md` generation timestamp.
 
 Do not run this skill on the first-ever pass. For the first pass use `parse scope` or `reqops`.
 
@@ -35,7 +35,7 @@ Do not run this skill on the first-ever pass. For the first pass use `parse scop
 ## Inputs
 
 - Current the 5 deliverable HTMLs (after change)
-- Current `state/TASKS.md` (with per-task statuses)
+- Current `SESSION-STATE/TASKS.md` (with per-task statuses)
 - Last snapshot of SCOPE-derived requirements (if any) in `.pipeline/features/requirements/`
 - `memory/ARCHITECTURE.md`, `memory/PATTERNS.md`, `memory/DECISIONS.md` for reality check
 
@@ -53,7 +53,7 @@ Optional:
    (name, screens, endpoints, data models, NFRs, dependencies, MCP URLs).
 2. Read existing per-feature requirement files under
    `.pipeline/features/requirements/` to reconstruct the last-known state.
-   If those do not exist, derive the "before" map from `state/TASKS.md` task
+   If those do not exist, derive the "before" map from `SESSION-STATE/TASKS.md` task
    blocks (feature group + screens/endpoints/models referenced).
 3. Produce two structured maps keyed by feature.
 
@@ -78,7 +78,7 @@ Diff at the level of:
 ### Step 3 — Map the diff to existing tasks
 
 For each `ADDED`, `REMOVED`, `CHANGED` item, locate affected tasks in
-`state/TASKS.md` using:
+`SESSION-STATE/TASKS.md` using:
 
 - traceability refs (`TR-SCR-XX`, `TR-API-XX`, `TR-MOD-XX`, `TR-FLOW-XX`,
   `TR-NFR-XX`)
@@ -108,7 +108,7 @@ Combine impact class with current status to decide the safe action:
 
 ### Step 5 — Produce a human-reviewable delta report
 
-Before writing anything to `state/TASKS.md`, emit a report in chat:
+Before writing anything to `SESSION-STATE/TASKS.md`, emit a report in chat:
 
 ```
 Delta report (SCOPE.md change at <timestamp>)
@@ -135,7 +135,7 @@ Outstanding (blocked on user):
 - TASK-018 is in-progress but its spec changed. Pause the builder?
 ```
 
-Do not edit `state/TASKS.md` until the user confirms.
+Do not edit `SESSION-STATE/TASKS.md` until the user confirms.
 
 ### Step 6 — Apply the delta (after confirmation)
 
@@ -148,7 +148,7 @@ After user confirmation:
    - `Depends on:` — updated dependencies
 2. Edit `pending` task blocks in place for `IMPACT-MODIFY`.
 3. Mark `IMPACT-OBSOLETE` pending tasks with status `obsolete` and move them
-   to an `## Archive` section at the bottom of `state/TASKS.md`.
+   to an `## Archive` section at the bottom of `SESSION-STATE/TASKS.md`.
 4. For `done` tasks impacted by a change, never edit them. Link them from
    the corresponding `TASK-DELTA-XX` via `Origin task:` so history remains
    clean.
@@ -161,7 +161,7 @@ After user confirmation:
 
 After applying the delta:
 
-- Orchestrator re-reads `state/TASKS.md` and rebuilds the dependency graph.
+- Orchestrator re-reads `SESSION-STATE/TASKS.md` and rebuilds the dependency graph.
 - Any `in-progress` or `in-review` task flagged in Step 5 as "outstanding"
   stays paused until the user resolves its disposition (continue / pause /
   cancel).
@@ -170,7 +170,7 @@ After applying the delta:
 
 ## Output
 
-A reviewed, user-confirmed delta applied to `state/TASKS.md`:
+A reviewed, user-confirmed delta applied to `SESSION-STATE/TASKS.md`:
 - new `TASK-DELTA-XX` blocks for added / modified-after-done work
 - in-place edits for pending tasks
 - `obsolete` archive for removed pending tasks

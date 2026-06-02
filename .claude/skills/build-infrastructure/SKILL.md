@@ -1,7 +1,13 @@
 ---
 name: build-infrastructure
-description: Generate the Infrastructure Diagram HTML from the approved Database + Architecture + SoW. Reads `state/SESSION-STATE.md` and refuses unless `Stage: DATABASE_APPROVED`. Reads `deliverables/scope-of-work/<slug>-sow.html` (especially Phase 6 Tech Stack and Phase 9 Folder Structures) plus brief Section 8 Integrations, then writes `deliverables/infrastructure/<slug>-infrastructure.html` and transitions Stage to INFRASTRUCTURE_DRAFT. Trigger on "/build-infrastructure", "build infrastructure", "generate infrastructure diagram".
+description: Generate the Infrastructure Diagram HTML from the approved Database + Architecture + SoW. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: DATABASE_APPROVED`. Reads `DOCMENTS/<slug>-scope-of-work.html` (especially Phase 6 Tech Stack and Phase 9 Folder Structures) plus brief Section 8 Integrations, then writes `deliverables/infrastructure/<slug>-infrastructure.html` and transitions Stage to INFRASTRUCTURE_DRAFT. Trigger on "/build-infrastructure", "build infrastructure", "generate infrastructure diagram".
 ---
+
+> **DEPRECATED** — This skill is no longer part of the pipeline.
+> Database schema and infrastructure are now Section 8 and Section 9 of
+> the System Architecture document (`/build-architecture`).
+> This file is kept for reference only and will not execute.
+
 
 # Skill: build-infrastructure
 
@@ -51,7 +57,7 @@ The brief Section 3.2 contains an "Architecture style" choice (one of:
 generating output, this skill MUST:
 
 1. Read the brief Section 3.2 to find the chosen style.
-2. Read `deliverables/architecture/styles/<style>.md` end-to-end.
+2. Read `CONTEXT/architecture-styles/<style>.md` end-to-end.
 3. Apply the style's rules to the generated output in the relevant
    phases / sections (see "Style application points" below).
 
@@ -80,7 +86,7 @@ through automatically.
 
 ## Pre-flight
 
-1. Read `deliverables/scope-of-work/<slug>-sow.html`. Extract:
+1. Read `DOCMENTS/<slug>-scope-of-work.html`. Extract:
    - Phase 6 Tech Stack — Frontend, Backend, Database, Integrations,
      Infrastructure rows.
    - Phase 8 Development Approach — environments table.

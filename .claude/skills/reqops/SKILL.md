@@ -1,11 +1,11 @@
 ---
 name: reqops
-description: ReqOps requirements specialist. Reads scope from the 5 deliverable HTMLs (the canonical post-import-docs surface) with .pipeline/sow.md as fallback and produces dev-ready, SOW-traceable feature requirements under .pipeline/features/requirements/<feature-id>-<slug>-requirements.md with user stories, Given/When/Then acceptance criteria (MoSCoW-tagged), NFRs, edge cases, test cases, smart checklist, and change logs. Trigger when the user says "reqops", "derive requirements", "generate requirements from SCOPE.md", or runs parse-scope with the ReqOps pre-pass. Does NOT write state/TASKS.md — parse-scope owns that.
+description: ReqOps requirements specialist. Reads scope from the 5 deliverable HTMLs (the canonical post-import-docs surface) with .pipeline/sow.md as fallback and produces dev-ready, SOW-traceable feature requirements under .pipeline/features/requirements/<feature-id>-<slug>-requirements.md with user stories, Given/When/Then acceptance criteria (MoSCoW-tagged), NFRs, edge cases, test cases, smart checklist, and change logs. Trigger when the user says "reqops", "derive requirements", "generate requirements from SCOPE.md", or runs parse-scope with the ReqOps pre-pass. Does NOT write SESSION-STATE/TASKS.md — parse-scope owns that.
 ---
 
 ## Stage gate (RUN FIRST)
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. Refuse unless Stage is `DOCS_COMPLETE`, `TASKS_GENERATED`, `TASKS_APPROVED`, or later. Message:
    > "reqops requires the 5 HTMLs to be approved. Current Stage: `<STAGE>`. Complete the docs phase first."
 
@@ -15,7 +15,7 @@ description: ReqOps requirements specialist. Reads scope from the 5 deliverable 
 
 **Trigger:** User says `reqops`, or `parse scope` runs with ReqOps pre-pass enabled.
 
-**Purpose:** Read scope from the 5 deliverable HTMLs, derive implementation-ready requirements, and generate/update `state/TASKS.md` so Builder/QA can execute against concrete user outcomes.
+**Purpose:** Read scope from the 5 deliverable HTMLs, derive implementation-ready requirements, and generate/update `SESSION-STATE/TASKS.md` so Builder/QA can execute against concrete user outcomes.
 
 ---
 
@@ -90,9 +90,9 @@ Write feature requirements with:
 
 ### Step 6 — Produce requirements (TASKS.md is owned by parse-scope)
 
-ReqOps writes only requirement files, not `state/TASKS.md`.
+ReqOps writes only requirement files, not `SESSION-STATE/TASKS.md`.
 
-`state/TASKS.md` generation is owned exclusively by the `parse-scope` skill. This
+`SESSION-STATE/TASKS.md` generation is owned exclusively by the `parse-scope` skill. This
 keeps task-file ownership unambiguous when a user chains `reqops` and
 `parse scope`.
 
@@ -112,7 +112,7 @@ If a requirement file already exists:
 - Increment the version, append a Change Log entry, preserve history.
 - Do not overwrite silently.
 
-ReqOps does not touch `state/TASKS.md`.
+ReqOps does not touch `SESSION-STATE/TASKS.md`.
 
 ### Step 7 — Validate before save
 
@@ -124,8 +124,8 @@ Do not save until these checks pass:
 - unresolved ambiguity is flagged as `GAP-XX` or `A-XX`
 - no implementation-level HOW decisions unless SOW explicitly mandates them
 - dependency and downstream impact sections are populated (or explicitly "None identified.")
-- generated/updated `state/TASKS.md` includes product-context addendum for user-facing tasks
-- generated/updated `state/TASKS.md` includes files, dependencies, and acceptance criteria that are executable by Builder/QA
+- generated/updated `SESSION-STATE/TASKS.md` includes product-context addendum for user-facing tasks
+- generated/updated `SESSION-STATE/TASKS.md` includes files, dependencies, and acceptance criteria that are executable by Builder/QA
 
 ---
 
@@ -134,7 +134,7 @@ Do not save until these checks pass:
 Save only to:
 - `.pipeline/features/requirements/<feature-id>-<feature-slug>-requirements.md`
 
-`state/TASKS.md` is owned by `parse-scope` and is not written by ReqOps.
+`SESSION-STATE/TASKS.md` is owned by `parse-scope` and is not written by ReqOps.
 
 Update behavior:
 - If the requirements file exists, do not overwrite silently.
@@ -142,7 +142,7 @@ Update behavior:
 - Update only changed sections and preserve history.
 
 Requirements output is one file per feature. Running `parse scope` after
-`reqops` will generate / update `state/TASKS.md` from those requirements.
+`reqops` will generate / update `SESSION-STATE/TASKS.md` from those requirements.
 
 ---
 
@@ -180,5 +180,5 @@ Use this exact section order:
 - Always record open ambiguity as `GAP-XX` (not silent defaults).
 - Use exact SOW terminology for roles/entities/states/actions.
 - ReqOps is complete when the per-feature requirement files are written and
-  validated. `state/TASKS.md` generation is a separate step performed by
+  validated. `SESSION-STATE/TASKS.md` generation is a separate step performed by
   `parse-scope`.

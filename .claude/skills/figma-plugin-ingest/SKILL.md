@@ -1,19 +1,19 @@
 ---
 name: figma-plugin-ingest
-description: Plugin-first Figma-to-code prep. Fetch full design context via the plugin-figma-figma MCP (tokens, assets, screens, states, variants, responsive behavior), merge any plugin-exported codegen artifacts, produce stack-mapped UI scaffolds, and auto-inject design fields on UI tasks in state/TASKS.md. Trigger when the user runs `/figma-ingest` or says "figma ingest", "design codegen", or when a UI task has a Figma MCP URL and needs design context before Builder can start. Never treat device-preview wrappers as implementation-ready context; fetch the concrete leaf content frame or mark the task blocked.
+description: Plugin-first Figma-to-code prep. Fetch full design context via the plugin-figma-figma MCP (tokens, assets, screens, states, variants, responsive behavior), merge any plugin-exported codegen artifacts, produce stack-mapped UI scaffolds, and auto-inject design fields on UI tasks in SESSION-STATE/TASKS.md. Trigger when the user runs `/figma-ingest` or says "figma ingest", "design codegen", or when a UI task has a Figma MCP URL and needs design context before Builder can start. Never treat device-preview wrappers as implementation-ready context; fetch the concrete leaf content frame or mark the task blocked.
 ---
 
 # Skill: Figma Ingest (Unified)
 
 **Trigger:** User says `figma ingest` (or legacy alias `design codegen`)
 
-**Purpose:** Single source of truth for Figma-to-code prep. Fetch full design context from `plugin-figma-figma`, extract tokens/assets/screens/states, merge plugin codegen artifacts, generate implementation-ready UI scaffolds, and populate task design fields in `state/TASKS.md`.
+**Purpose:** Single source of truth for Figma-to-code prep. Fetch full design context from `plugin-figma-figma`, extract tokens/assets/screens/states, merge plugin codegen artifacts, generate implementation-ready UI scaffolds, and populate task design fields in `SESSION-STATE/TASKS.md`.
 
 ---
 
 ## Inputs
 
-- One or more UI tasks in `state/TASKS.md` with a Figma `MCP URL`
+- One or more UI tasks in `SESSION-STATE/TASKS.md` with a Figma `MCP URL`
 - Optional feature metadata from the 5 deliverable HTMLs (node IDs, plugin export links, token source)
 - Target stack from the 5 deliverable HTMLs tech stack section
 - Optional selected task ID for targeted ingest
@@ -35,7 +35,7 @@ If `node-id` is missing for screen-level tasks, mark task `blocked` and request 
 
 ### Step 1 — Select tasks to ingest
 
-1. Read `state/TASKS.md`.
+1. Read `SESSION-STATE/TASKS.md`.
 2. Select UI tasks with a Figma MCP URL (or explicit task requested by user).
 3. Skip tasks already containing fresh artifact fields unless forced refresh requested.
 

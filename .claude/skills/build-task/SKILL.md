@@ -5,16 +5,16 @@ description: Implement exactly one task from TASKS.md end to end — consume Fig
 
 ## Stage gate (RUN FIRST)
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. Refuse unless Stage is `TASKS_APPROVED` or `BUILDING`. Message:
    > "build-task is only valid from `TASKS_APPROVED` or `BUILDING`. Current: `<STAGE>`. Run `/approve-tasks` first, then `/start-build` to enter BUILDING."
-3. Refuse if the task ID provided does not exist in `state/TASKS.md`.
+3. Refuse if the task ID provided does not exist in `SESSION-STATE/TASKS.md`.
 
 # Skill: Build Task
 
 **Triggered by:** Orchestrator assigning a task to a Builder agent
 
-**Purpose:** Implement one task from `state/TASKS.md` completely — consume unified Figma ingest/codegen artifacts when present, fetch MCP context if needed, implement the vertical slice, run verification, and hand off to QA.
+**Purpose:** Implement one task from `SESSION-STATE/TASKS.md` completely — consume unified Figma ingest/codegen artifacts when present, fetch MCP context if needed, implement the vertical slice, run verification, and hand off to QA.
 
 ---
 
@@ -23,14 +23,14 @@ description: Implement exactly one task from TASKS.md end to end — consume Fig
 ### Step 1 — Read context
 
 Before writing any code:
-1. Read the task block from `state/TASKS.md` (full block including acceptance criteria). **Extract these fields if present** — they OVERRIDE the SESSION-STATE defaults for this task:
+1. Read the task block from `SESSION-STATE/TASKS.md` (full block including acceptance criteria). **Extract these fields if present** — they OVERRIDE the SESSION-STATE defaults for this task:
    - `Architecture style:` — task-local style (one of monolith / hybrid / microservices / polyglot-microservices / serverless)
    - `Stack:` — task-local stack choices `{ frontend, backend, orm, db }`
    - `Folder root:` — task-local folder root (e.g. `apps/api/prisma/`, `apps/web/src/features/booking/`)
    These fields are written by `parse-scope` and are the AUTHORITATIVE source. Only fall back to SESSION-STATE if a field is absent or `inherited`.
 2. Read the 5 deliverable HTMLs — the relevant feature section only.
-3. Read `state/SESSION-STATE.md` — note the `Architecture style:` field (monolith / hybrid / microservices / polyglot-microservices / serverless). This is the FALLBACK only when the task block doesn't specify. Otherwise the task block wins.
-4. Read `deliverables/architecture/styles/<style>.md` — start with the **Quick reference card** at the top (everything you need for 95% of tasks); read deeper sections only if the task is scaffold or non-standard. The **Folder structure** section is a HARD CONTRACT. Every file you create or move must land at the path declared by this profile. If the file doesn't fit any declared folder, stop and surface a question — never invent a new top-level folder. Note especially:
+3. Read `SESSION-STATE/SESSION-STATE.md` — note the `Architecture style:` field (monolith / hybrid / microservices / polyglot-microservices / serverless). This is the FALLBACK only when the task block doesn't specify. Otherwise the task block wins.
+4. Read `CONTEXT/architecture-styles/<style>.md` — start with the **Quick reference card** at the top (everything you need for 95% of tasks); read deeper sections only if the task is scaffold or non-standard. The **Folder structure** section is a HARD CONTRACT. Every file you create or move must land at the path declared by this profile. If the file doesn't fit any declared folder, stop and surface a question — never invent a new top-level folder. Note especially:
    - **FE/BE split rules** (e.g. `apps/api/` vs `apps/web/` for monolith — never combined)
    - **ORM folder convention** — for monolith with Prisma → `apps/api/prisma/`, with Drizzle → `apps/api/drizzle/`, with TypeORM/Sequelize/Kysely/MikroORM → `apps/api/database/`
    - **`infra/` location is style-dependent:**
@@ -117,7 +117,7 @@ Build in this order (skip layers not applicable to the task):
 
 **Rules during implementation:**
 - Read any existing file before editing it.
-- **Folder placement is non-negotiable** — every new file MUST sit at a path declared by `deliverables/architecture/styles/<style>.md` → Folder structure. If unsure, re-read that section. Never dump everything into a single combined folder (e.g. `apps/<slug>/`) when the style requires a FE/BE split.
+- **Folder placement is non-negotiable** — every new file MUST sit at a path declared by `CONTEXT/architecture-styles/<style>.md` → Folder structure. If unsure, re-read that section. Never dump everything into a single combined folder (e.g. `apps/<slug>/`) when the style requires a FE/BE split.
 - **ORM folder respects the chosen ORM** — Prisma → `prisma/`, Drizzle → `drizzle/`, TypeORM/Sequelize/Kysely/MikroORM → `database/`. Do not hardcode `prisma/` if the project uses a different ORM.
 - **First task of the build phase** scaffolds the workspace: root `package.json`, `pnpm-workspace.yaml` (or equivalent), `tsconfig.base.json`, shared `biome.json` (or `eslint.config.mjs`), and the style-correct `infra/` skeleton (`apps/infra/` for monolith+hybrid; root `infra/` for microservices+polyglot+serverless) — so subsequent tasks have somewhere to land.
 - **UI tasks follow `ui-ux-pro-max` HARD RULES** — these are not suggestions:
@@ -188,7 +188,7 @@ In the task block under `QA notes:`, write a brief note:
 
 ### Step 9 — Mark task in-review
 
-Update the task block in `state/TASKS.md`:
+Update the task block in `SESSION-STATE/TASKS.md`:
 ```
 - Status: in-review
 ```
@@ -197,7 +197,7 @@ Update the progress table counts.
 
 ### Step 10 — Pick up next task
 
-After marking `in-review`, immediately check the Builder's assigned chain in `state/TASKS.md` for the next `pending` task with all dependencies met. If found, start Step 1 for it without waiting for QA to finish the current task.
+After marking `in-review`, immediately check the Builder's assigned chain in `SESSION-STATE/TASKS.md` for the next `pending` task with all dependencies met. If found, start Step 1 for it without waiting for QA to finish the current task.
 
 ---
 

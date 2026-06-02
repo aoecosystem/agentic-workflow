@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Brief — Universal Template</title>
+<style>
+@page { size: A4; margin: 15mm 14mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  font-size: 10pt; line-height: 1.6; color: #1F2937; background: #F3F4F6;
+}
+/* ── Top bar ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: #fff; border-bottom: 1px solid #E5E7EB;
+  padding: 10px 24px; display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.topbar-title { font-size: 11pt; font-weight: 700; color: #1A56DB; flex: 1; }
+.topbar button {
+  background: none; border: 1px solid #D1D5DB; color: #374151;
+  padding: 5px 14px; border-radius: 6px; cursor: pointer; font-size: 9pt;
+  font-family: inherit; transition: all 0.15s;
+}
+.topbar button:hover { border-color: #1A56DB; color: #1A56DB; }
+/* ── Page wrapper ── */
+.page { max-width: 820px; margin: 24px auto; padding: 0 20px 60px; }
+/* ── Collapsible section ── */
+.doc-section { background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+.section-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; cursor: pointer; user-select: none;
+  border-bottom: 1px solid transparent; transition: background 0.15s;
+}
+.section-toggle:hover { background: #F9FAFB; }
+.section-toggle.open { border-bottom-color: #E5E7EB; }
+.section-toggle h1 {
+  font-size: 12pt; font-weight: 700; color: #1A56DB;
+  border: none; padding: 0; margin: 0;
+}
+.section-toggle h1:first-of-type { margin: 0; }
+.chevron { font-size: 11pt; color: #9CA3AF; transition: transform 0.2s; flex-shrink: 0; }
+.chevron.open { transform: rotate(180deg); }
+.section-body { padding: 18px 20px; display: none; }
+.section-body.open { display: block; }
+/* ── Typography ── */
+h2 { font-size: 11pt; font-weight: 700; color: #0E3A99; margin: 18px 0 7px; }
+h3 { font-size: 10pt; font-weight: 700; color: #1F2937; margin: 13px 0 5px; }
+p { margin: 5px 0 9px; }
+p.note { font-style: italic; color: #6B7280; font-size: 9pt; margin: 3px 0 9px; }
+p.lbl { font-weight: 700; color: #0E3A99; font-size: 9pt; margin: 11px 0 3px; text-transform: uppercase; letter-spacing: 0.4px; }
+ul, ol { margin: 3px 0 9px 18px; }
+li { margin: 2px 0; }
+code { font-family: 'Courier New', Consolas, monospace; font-size: 9pt; background: #F3F4F6; padding: 1px 5px; border-radius: 3px; color: #0E3A99; }
+/* ── Placeholder chips ── */
+.ph { display: inline-block; padding: 1px 6px; background: #FEF3C722; border: 1px dashed #F59E0B; color: #92400E; font-weight: 600; font-size: 8.5pt; border-radius: 3px; font-family: 'Courier New', monospace; }
+/* ── Table ── */
+table { width: 100%; border-collapse: collapse; margin: 5px 0 11px; font-size: 9pt; }
+thead { display: table-header-group; }
+th { background: #1A56DB; color: #fff; font-weight: 600; padding: 7px 10px; border: 1px solid #1A56DB; text-align: left; }
+td { padding: 6px 10px; border: 1px solid #D1D5DB; vertical-align: top; }
+tbody tr:nth-child(even) td { background: #F9FAFB; }
+/* ── Callout ── */
+.callout { background: #EFF4FE; border-left: 3px solid #1A56DB; padding: 11px 15px; margin: 9px 0 14px; border-radius: 0 4px 4px 0; }
+.callout-title { font-weight: 700; color: #0E3A99; font-size: 10pt; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+/* ── Mermaid ── */
+.mermaid-host { border: 1px solid #1A56DB33; background: #fff; padding: 14px; margin: 9px 0; border-radius: 6px; overflow-x: auto; text-align: center; }
+.mermaid-host svg { max-width: 100%; height: auto; }
+/* ── Entity blocks ── */
+.entity { margin: 11px 0; border: 1px solid #1A56DB; border-radius: 4px; overflow: hidden; }
+.entity-header { background: #1A56DB; color: #fff; padding: 7px 12px; font-weight: 700; font-size: 10pt; font-family: 'Courier New', monospace; }
+.entity-table { margin: 0; border: none; }
+.entity-table th { background: #0E3A99; font-size: 8.5pt; padding: 5px 10px; }
+.entity-table td { font-size: 8.5pt; padding: 4px 10px; }
+.entity-table code { background: transparent; color: #0E3A99; font-weight: 600; padding: 0; }
+/* ── Print ── */
+@media print {
+  body { background: #fff; }
+  .topbar { display: none; }
+  .page { margin: 0; padding: 0; max-width: 100%; }
+  .doc-section { border: none; border-radius: 0; margin: 0; break-inside: avoid; }
+  .section-toggle { display: none; }
+  .section-body { display: block !important; padding: 0; }
+  .section-toggle h1 { font-size: 14pt; color: #1A56DB; border-bottom: 2px solid #1A56DB; padding-bottom: 6px; margin-bottom: 10px; display: block; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="topbar-title">Project Brief</span>
+  <button onclick="window.print()">Print / PDF</button>
+</div>
+<div class="page">
+
+
+<div class="doc-section">
+  <div class="section-toggle" id="how-to-use-this-brief">
+    <h1>How to Use This Brief</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="lead">This is a structured input form for any new AO Ecosystem project. Fill in every section. The output is consumed by an AI agent to generate a complete Scope of Work, matching the universal SoW template.</p>
+
+<div class="callout">
+  <div class="callout-title">Workflow</div>
+  <ol class="workflow">
+    <li><strong>Fill</strong> this brief — replace every <span class="ph">{{PLACEHOLDER}}</span> with real values</li>
+    <li><strong>Send</strong> the completed brief to AI (chat, agentic-workflow repo, or self-edit)</li>
+    <li><strong>Receive</strong> a project-specific Scope of Work HTML — same design, BRON GO style</li>
+    <li><strong>Use</strong> the SoW: print to PDF, share with client, drop into <code>docs/</code> folder</li>
+  </ol>
+</div>
+
+<h2>Rules for Filling</h2>
+<ul>
+  <li>Be specific — vague briefs produce vague SoWs</li>
+  <li>List 10–20 core features minimum</li>
+  <li>Capture <strong>1–3 core processes</strong> in Section 6 (Business Process) — list the phases in order with role × system actions. Features alone don't tell the AI agent how the project actually flows.</li>
+  <li>Always specify languages, market, and currency</li>
+  <li>Be explicit about what is OUT OF SCOPE — protects you commercially</li>
+  <li>Mark unknowns clearly as <code>TBD</code> rather than guessing</li>
+</ul>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="1-project-basics">
+    <h1>1. Project Basics</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">High-level identity of the product. Fill all fields.</p>
+
+<table class="brief">
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td class="lbl-cell">Project Name</td><td><span class="ph">{{e.g. AscendLMS, BRON GO, MedBook}}</span></td></tr>
+    <tr><td class="lbl-cell">Project Type</td><td><span class="ph">{{LMS / CRM / E-commerce / Booking / Streaming / Marketplace / Other}}</span></td></tr>
+    <tr><td class="lbl-cell">One-line Description</td><td><span class="ph">{{What does this product do in 1 sentence}}</span></td></tr>
+    <tr><td class="lbl-cell">Target Market</td><td><span class="ph">{{Country, region, or city — e.g. Uzbekistan / Tashkent / Global}}</span></td></tr>
+    <tr><td class="lbl-cell">Primary Language</td><td><span class="ph">{{e.g. Uzbek (Latin)}}</span></td></tr>
+    <tr><td class="lbl-cell">Additional Languages</td><td><span class="ph">{{e.g. Russian, English}}</span></td></tr>
+    <tr><td class="lbl-cell">Tagline (optional)</td><td><span class="ph">{{Short brand tagline}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="2-problem-and-solution">
+    <h1>2. Problem and Solution</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">The "why" behind the project. Drives Phase 1 of the SoW.</p>
+
+<h3>2.1 Problem Statement</h3>
+<div class="fillbox">
+  <p class="placeholder-text"><span class="ph">{{Describe the pain point in 1-2 sentences. What inefficiency, gap, or frustration does the target market experience today?}}</span></p>
+</div>
+
+<h3>2.2 Solution Statement</h3>
+<div class="fillbox">
+  <p class="placeholder-text"><span class="ph">{{Describe how your product solves the problem in 1-2 sentences. What does the user do differently with this product?}}</span></p>
+</div>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="3-platform-architecture">
+    <h1>3. Platform &amp; Architecture</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Which platforms will be built and which architecture style. Drives the entire SoW + diagrams downstream — every <code>build-*</code> skill reads <strong>Architecture style</strong> below to decide folder layout, tech stack defaults, database approach, and diagram patterns. See <code>system-architecture/styles/&lt;style&gt;.md</code> for the full implications of each choice.</p>
+
+<h2>3.1 Platform surfaces</h2>
+<table class="brief">
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td class="lbl-cell">Mobile App</td><td><span class="ph">{{iOS / Android / Both / None}}</span></td></tr>
+    <tr><td class="lbl-cell">Web Public Site</td><td><span class="ph">{{yes / no}}</span> — discovery, SEO, browser users</td></tr>
+    <tr><td class="lbl-cell">Web Admin Panel</td><td><span class="ph">{{yes / no}}</span> — internal management</td></tr>
+    <tr><td class="lbl-cell">Public API</td><td><span class="ph">{{yes / no / Phase 2}}</span> — partner integrations</td></tr>
+    <tr><td class="lbl-cell">Mobile-first or Web-first?</td><td><span class="ph">{{mobile-first / web-first / equal}}</span></td></tr>
+  </tbody>
+</table>
+
+<h2>3.2 Architecture style</h2>
+<table class="brief">
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td class="lbl-cell">Architecture style</td><td><span class="ph">{{monolith / hybrid / microservices / serverless}}</span> — see options below</td></tr>
+    <tr><td class="lbl-cell">Communication style</td><td><span class="ph">{{REST / gRPC / GraphQL / Events-only / mixed}}</span></td></tr>
+    <tr><td class="lbl-cell">Style reference</td><td>The chosen style maps to <code>system-architecture/styles/&lt;style&gt;.md</code> in the repo, which drives all downstream generation.</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <div class="callout-title">Architecture style — quick guide</div>
+  <ul>
+    <li><strong>monolith</strong> (default, recommended for &lt;5 person teams): one app, one deploy, one database. Modules import each other directly. Fastest to ship, easiest to operate. Most projects start (and stay) here.</li>
+    <li><strong>hybrid</strong> (recommended for ~70% of "we want microservices someday" projects): modular monolith with extraction-ready boundaries. One deploy + one DB today, BUT each service has strict interfaces (<code>ports.ts</code>) and owns its own tables (no cross-service FKs). Tomorrow you can lift any service out without rewriting business logic.</li>
+    <li><strong>microservices</strong> (only when you have multiple teams + real distributed-system needs): independent services, DB per service, Kafka required, gateway in front. Real distributed-systems pain — pick this only when monolith / hybrid genuinely won't scale.</li>
+    <li><strong>serverless</strong> (Lambda / Cloudflare Workers / Vercel Functions): pay-per-request, auto-scaling, stateless. Best for spiky traffic, JAMstack apps, edge-distributed APIs.</li>
+  </ul>
+  <p>Pick what fits the project's scale and team — not what sounds impressive. You can change this later via <code>/review-brief 3</code>; downstream documents will need to be re-generated to pick up the change.</p>
+</div>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="4-roles-beyond-default">
+    <h1>4. Roles (Beyond Default)</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Default roles already included: <code>USER</code>, <code>ADMIN</code>, <code>SUPER_ADMIN</code>. List custom roles needed for this project.</p>
+
+<table class="brief brief-roles">
+  <thead>
+    <tr><th style="width:22%">Role Code</th><th style="width:38%">What They Do</th><th style="width:25%">Reports To</th><th style="width:15%">Special?</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="ph">{{CUSTOM_ROLE_1}}</span></td><td><span class="ph">{{1-line description}}</span></td><td><span class="ph">{{hierarchy}}</span></td><td><span class="ph">{{verification?}}</span></td></tr>
+    <tr><td><span class="ph">{{CUSTOM_ROLE_2}}</span></td><td><span class="ph">{{1-line description}}</span></td><td><span class="ph">{{hierarchy}}</span></td><td><span class="ph">{{verification?}}</span></td></tr>
+    <tr><td><span class="ph">{{CUSTOM_ROLE_3}}</span></td><td><span class="ph">{{1-line description}}</span></td><td><span class="ph">{{hierarchy}}</span></td><td><span class="ph">{{verification?}}</span></td></tr>
+    <tr><td><span class="ph">{{CUSTOM_ROLE_4}}</span></td><td><span class="ph">{{1-line description}}</span></td><td><span class="ph">{{hierarchy}}</span></td><td><span class="ph">{{verification?}}</span></td></tr>
+  </tbody>
+</table>
+
+<h3>Multi-Role Support</h3>
+<p>Can one user account hold multiple roles? <span class="ph">{{yes / no}}</span> — e.g. a USER who also operates as a PROVIDER</p>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="5-business-features">
+    <h1>5. Business Features</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">The most important section. Aim for <strong>10–20 features</strong>. Each feature should describe what a specific role does. AI uses this to generate modules in Phase 2 of the SoW.</p>
+
+<h3>5.1 Features for Default User</h3>
+<ol class="featlist">
+  <li><span class="ph">{{Feature 1 — what users can do}}</span></li>
+  <li><span class="ph">{{Feature 2}}</span></li>
+  <li><span class="ph">{{Feature 3}}</span></li>
+  <li><span class="ph">{{Feature 4}}</span></li>
+  <li><span class="ph">{{Feature 5}}</span></li>
+  <li><span class="ph">{{Add as many as needed}}</span></li>
+</ol>
+
+<h3>5.2 Features for <span class="ph">{{CUSTOM_ROLE_1}}</span></h3>
+<ol class="featlist">
+  <li><span class="ph">{{Feature 1 for this role}}</span></li>
+  <li><span class="ph">{{Feature 2}}</span></li>
+  <li><span class="ph">{{Feature 3}}</span></li>
+  <li><span class="ph">{{Add as many as needed}}</span></li>
+</ol>
+
+<h3>5.3 Features for <span class="ph">{{CUSTOM_ROLE_2}}</span></h3>
+<ol class="featlist">
+  <li><span class="ph">{{Feature 1 for this role}}</span></li>
+  <li><span class="ph">{{Feature 2}}</span></li>
+  <li><span class="ph">{{Add as many as needed}}</span></li>
+</ol>
+
+<h3>5.4 Platform-Wide / Admin Features</h3>
+<ol class="featlist">
+  <li><span class="ph">{{Admin can manage X}}</span></li>
+  <li><span class="ph">{{Admin can moderate Y}}</span></li>
+  <li><span class="ph">{{Add as many as needed}}</span></li>
+</ol>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="6-business-process">
+    <h1>6. Business Process</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Features describe <em>what</em> users can do. <strong>Business Process</strong> describes <em>how the project actually works</em> — what each role does, what the system does, and in what order. Capture <strong>1–3 main processes</strong> below. The AI agent expands these into the SoW Phase 5.5 (Critical Flows), connects them to the Page Inventory (Phase 7), and uses them to derive task ordering.</p>
+
+<h3>Process: <span class="ph">{{PROCESS_NAME — e.g. "Book a service"}}</span></h3>
+
+<table class="brief brief-roles">
+  <thead>
+    <tr><th style="width:16%">Phase</th><th style="width:26%"><span class="ph">{{ROLE_A}}</span></th><th style="width:26%"><span class="ph">{{ROLE_B}}</span></th><th style="width:32%">SYSTEM</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong><span class="ph">{{Phase 1 — e.g. SETUP}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+    <tr><td><strong><span class="ph">{{Phase 2 — e.g. BOOKING}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+    <tr><td><strong><span class="ph">{{Phase 3 — e.g. APPOINTMENT}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+    <tr><td><strong><span class="ph">{{Phase 4 — e.g. PAYMENT}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+    <tr><td><strong><span class="ph">{{Phase 5 — e.g. FINISH}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+    <tr><td><strong><span class="ph">{{Phase 6 — e.g. SKIP (alt)}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+    <tr><td><strong><span class="ph">{{Phase 7 — e.g. CANCEL (alt)}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+  </tbody>
+</table>
+
+<p class="note"><strong>Optional — vertical variants:</strong> <span class="ph">{{If your project has different business types that share this process but with different timers/fees (e.g. salon 10-min no-show vs car-wash 25-min no-show), name them here. Otherwise: none.}}</span></p>
+
+<h3>Process: <span class="ph">{{PROCESS_2_NAME — e.g. "Provider onboarding"}}</span></h3>
+
+<table class="brief brief-roles">
+  <thead>
+    <tr><th style="width:16%">Phase</th><th style="width:26%"><span class="ph">{{ROLE_A}}</span></th><th style="width:26%"><span class="ph">{{ROLE_B}}</span></th><th style="width:32%">SYSTEM</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong><span class="ph">{{Phase 1}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+    <tr><td><strong><span class="ph">{{Phase 2}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+    <tr><td><strong><span class="ph">{{Phase 3}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+  </tbody>
+</table>
+
+<p class="note"><strong>Optional — vertical variants:</strong> <span class="ph">{{none, or list per-vertical differences}}</span></p>
+
+<h3>Process: <span class="ph">{{PROCESS_3_NAME (optional)}}</span></h3>
+
+<p class="note">Add only if a third critical process exists. Otherwise delete this block. Common third-process types: subscription / payout flow, content publishing, support / dispute handling.</p>
+
+<table class="brief brief-roles">
+  <thead>
+    <tr><th style="width:16%">Phase</th><th style="width:26%"><span class="ph">{{ROLE_A}}</span></th><th style="width:26%"><span class="ph">{{ROLE_B}}</span></th><th style="width:32%">SYSTEM</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong><span class="ph">{{Phase 1}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+    <tr><td><strong><span class="ph">{{Phase 2}}</span></strong></td><td><span class="ph">{{role_a}}</span></td><td><span class="ph">{{role_b}}</span></td><td><span class="ph">{{role_system}}</span></td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <div class="callout-title">Rules for filling Section 6</div>
+  <ul>
+    <li><strong>1-3 processes only.</strong> Critical flows only. Side flows (password reset, settings update) live under Section 5 features, not here.</li>
+    <li><strong>Phase names are stable.</strong> Whatever you write here (SETUP, BOOKING, APPOINTMENT, etc.) is reused identically in the SoW Phase 5.5 Critical Flows and the Page Inventory — that's the universal join key.</li>
+    <li><strong>Add roles as columns when needed.</strong> Two-role projects use ROLE_A + ROLE_B + SYSTEM. If your project has 3+ active roles in a process (e.g. CUSTOMER + PROVIDER + BUSINESS_OWNER + SYSTEM), add another column.</li>
+    <li><strong>Always include SKIP and CANCEL alt rows</strong> when there's a meaningful failure path (no-show, manual cancel, refund, dispute). The agent uses these to design proper error handling.</li>
+    <li><strong>Vertical variants are optional.</strong> Mention them only if your project has different business types sharing the same process with different rules.</li>
+  </ul>
+</div>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="7-business-model">
+    <h1>7. Business Model</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">How the project makes money. Drives Phase 1 commercialization model in the SoW.</p>
+
+<table class="brief">
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td class="lbl-cell">Model Type</td><td><span class="ph">{{B2C / B2B / B2B2C / SaaS / Marketplace / Transactional}}</span></td></tr>
+    <tr><td class="lbl-cell">Revenue Stream 1</td><td><span class="ph">{{e.g. Fixed fee per booking — 2,500 UZS}}</span></td></tr>
+    <tr><td class="lbl-cell">Revenue Stream 2</td><td><span class="ph">{{e.g. Pro Subscription — 199,000 UZS / month}}</span></td></tr>
+    <tr><td class="lbl-cell">Revenue Stream 3 (optional)</td><td><span class="ph">{{e.g. Commission, ads, premium features}}</span></td></tr>
+    <tr><td class="lbl-cell">Free Tier Includes</td><td><span class="ph">{{What users get for free}}</span></td></tr>
+    <tr><td class="lbl-cell">Pro / Paid Tier Name</td><td><span class="ph">{{e.g. Pro / Business / Enterprise}}</span></td></tr>
+    <tr><td class="lbl-cell">Pro Tier Price</td><td><span class="ph">{{e.g. 199,000 UZS / month}}</span></td></tr>
+    <tr><td class="lbl-cell">Pro Tier Includes</td><td><span class="ph">{{What paid users get extra}}</span></td></tr>
+    <tr><td class="lbl-cell">Currency</td><td><span class="ph">{{UZS / USD / EUR}}</span></td></tr>
+    <tr><td class="lbl-cell">Transaction Fees</td><td><span class="ph">{{Fixed amount or percentage}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="8-integrations">
+    <h1>8. Integrations</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Third-party services. Drives Phase 6 tech stack in the SoW.</p>
+
+<table class="brief">
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td class="lbl-cell">Payment Gateways</td><td><span class="ph">{{Stripe / Payme / Uzum / Click / PayPal / others}}</span></td></tr>
+    <tr><td class="lbl-cell">Email Provider</td><td><span class="ph">{{SendGrid / Mailgun / SES / default}}</span></td></tr>
+    <tr><td class="lbl-cell">SMS / OTP</td><td><span class="ph">{{Eskiz.uz / Twilio / none}}</span></td></tr>
+    <tr><td class="lbl-cell">Push Notifications</td><td><span class="ph">{{FCM / OneSignal / APNs}}</span></td></tr>
+    <tr><td class="lbl-cell">Maps / Location</td><td><span class="ph">{{Yandex.Maps / Google Maps / OpenStreetMap / none}}</span></td></tr>
+    <tr><td class="lbl-cell">Video / Streaming</td><td><span class="ph">{{Bunny.net / Mux / Cloudflare Stream / none}}</span></td></tr>
+    <tr><td class="lbl-cell">OAuth / Social Login</td><td><span class="ph">{{Google / Apple / Facebook / Telegram}}</span></td></tr>
+    <tr><td class="lbl-cell">Analytics</td><td><span class="ph">{{Internal / Mixpanel / GA4 / Amplitude}}</span></td></tr>
+    <tr><td class="lbl-cell">Other Integrations</td><td><span class="ph">{{Telegram bot, WhatsApp Business API, ERP, etc.}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="9-special-requirements">
+    <h1>9. Special Requirements</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Constraints, compliance, scale, and unique technical needs.</p>
+
+<table class="brief">
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td class="lbl-cell">File Uploads</td><td><span class="ph">{{Type and max size — e.g. video up to 2GB, images up to 10MB}}</span></td></tr>
+    <tr><td class="lbl-cell">Real-time Features</td><td><span class="ph">{{Chat / live notifications / live streaming / none}}</span></td></tr>
+    <tr><td class="lbl-cell">Offline Mode</td><td><span class="ph">{{yes / no — what should work offline}}</span></td></tr>
+    <tr><td class="lbl-cell">Multi-language UI</td><td><span class="ph">{{yes / no — list languages}}</span></td></tr>
+    <tr><td class="lbl-cell">Compliance</td><td><span class="ph">{{GDPR / HIPAA / PCI / COPPA / local UZ regulations}}</span></td></tr>
+    <tr><td class="lbl-cell">Year 1 Scale Target — Users</td><td><span class="ph">{{e.g. 50,000 active users}}</span></td></tr>
+    <tr><td class="lbl-cell">Year 1 Scale Target — Providers/Other</td><td><span class="ph">{{e.g. 5,000 providers}}</span></td></tr>
+    <tr><td class="lbl-cell">Year 1 Scale Target — Transactions</td><td><span class="ph">{{e.g. 200,000 confirmed bookings}}</span></td></tr>
+    <tr><td class="lbl-cell">Performance Constraint</td><td><span class="ph">{{Low-data mode? Slow networks? Older devices?}}</span></td></tr>
+    <tr><td class="lbl-cell">Other Constraints</td><td><span class="ph">{{Anything unusual the AI should know about}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="10-out-of-scope-phase-1-mvp">
+    <h1>10. Out of Scope (Phase 1 / MVP)</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Critical for commercial protection. Explicitly state what is NOT included in MVP. Anything missing from this list could become a free addition demanded by client later.</p>
+
+<h3>Not Included in MVP</h3>
+<ul class="featlist">
+  <li><span class="ph">{{e.g. AI tutoring / recommendations beyond rule-based}}</span></li>
+  <li><span class="ph">{{e.g. Native iOS/Android features beyond core flows}}</span></li>
+  <li><span class="ph">{{e.g. Public partner API for third-parties}}</span></li>
+  <li><span class="ph">{{e.g. Loyalty program / referral rewards}}</span></li>
+  <li><span class="ph">{{e.g. Calendar sync / advanced exports}}</span></li>
+  <li><span class="ph">{{e.g. Multi-tenant white-label deployment}}</span></li>
+  <li><span class="ph">{{Add as many as needed}}</span></li>
+</ul>
+
+<h3>Phase 2 Roadmap (post-MVP)</h3>
+<ul class="featlist">
+  <li><span class="ph">{{What comes after launch}}</span></li>
+  <li><span class="ph">{{Add as many as needed}}</span></li>
+</ul>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="11-design-branding">
+    <h1>11. Design &amp; Branding</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Two parts: the <strong>design source</strong> (where do screen designs come from?) and the <strong>brand tokens</strong> (colors, fonts, logo). Both feed the SoW Phase 7 (UI/UX Foundation) and the Page Inventory. If branding is not finalized, mark fields as TBD — they become placeholders in the SoW.</p>
+
+<h2>11.1 Design Source</h2>
+<p class="note">How will UI designs be delivered to the engineering team / AI agent? Pick one path. The chosen source determines how the engine fetches design context for each page in the Page Inventory.</p>
+
+<table class="brief">
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td class="lbl-cell">Primary Design Source</td><td><span class="ph">{{Figma | Screenshots / images | Claude Design | None — generate scaffold | TBD}}</span></td></tr>
+    <tr><td class="lbl-cell">Figma File URL (if Figma)</td><td><span class="ph">{{https://www.figma.com/design/&lt;fileKey&gt;/...   or  N/A}}</span></td></tr>
+    <tr><td class="lbl-cell">Frame naming convention</td><td><span class="ph">{{Frames are named with the page ID — e.g. auth-login, dashboard-home  |  N/A}}</span></td></tr>
+    <tr><td class="lbl-cell">Screenshot folder (if images)</td><td><span class="ph">{{e.g. inputs/designs/   filename = &lt;page-id&gt;.png  |  N/A}}</span></td></tr>
+    <tr><td class="lbl-cell">Claude Design bundle (if any)</td><td><span class="ph">{{Path to exported handoff bundle  |  N/A}}</span></td></tr>
+    <tr><td class="lbl-cell">Reference / mood</td><td><span class="ph">{{Pinterest, dribbble, competitor URLs — optional}}</span></td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <div class="callout-title">Page IDs as the universal join key</div>
+  <p>Whatever design source you pick, the workflow uses the <strong>page ID</strong> from the Page Inventory (SoW Phase 7) to find the matching design artifact:</p>
+  <ul>
+    <li>Figma → frame name = page ID (e.g. frame named <code>auth-login</code>)</li>
+    <li>Screenshots → file named <code>&lt;page-id&gt;.png</code></li>
+    <li>Claude Design → exported file <code>&lt;page-id&gt;.html</code></li>
+  </ul>
+  <p>This means designers must commit to stable page IDs once defined. Renames go through the engine's <code>delta scope</code> flow.</p>
+</div>
+
+<h2>11.2 Brand Tokens</h2>
+<p class="note">Visual identity — colors, fonts, logo, voice. AI uses these for the SoW Phase 7 branding tokens table. Mark unknowns as TBD.</p>
+
+<table class="brief">
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td class="lbl-cell">Final App Name</td><td><span class="ph">{{Confirmed name or TBD}}</span></td></tr>
+    <tr><td class="lbl-cell">Domain</td><td><span class="ph">{{e.g. brongo.uz or TBD}}</span></td></tr>
+    <tr><td class="lbl-cell">Primary Color (hex)</td><td><span class="ph">{{#HEX or TBD}}</span></td></tr>
+    <tr><td class="lbl-cell">Accent Color (hex)</td><td><span class="ph">{{#HEX or TBD}}</span></td></tr>
+    <tr><td class="lbl-cell">Neutral / Background</td><td><span class="ph">{{#HEX or TBD — typically a warm/cool gray scale}}</span></td></tr>
+    <tr><td class="lbl-cell">Font Family</td><td><span class="ph">{{e.g. Inter, Manrope, DM Sans or TBD}}</span></td></tr>
+    <tr><td class="lbl-cell">Logo URL or Reference</td><td><span class="ph">{{URL / file / TBD}}</span></td></tr>
+    <tr><td class="lbl-cell">Brand Tone</td><td><span class="ph">{{Premium / playful / professional / minimal / bold}}</span></td></tr>
+    <tr><td class="lbl-cell">Dark Mode</td><td><span class="ph">{{yes — system preference + manual toggle  |  no  |  TBD}}</span></td></tr>
+    <tr><td class="lbl-cell">Accessibility Target</td><td><span class="ph">{{e.g. WCAG 2.1 AA — keyboard, ARIA, contrast}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="12-timeline-team-optional">
+    <h1>12. Timeline &amp; Team (Optional)</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">If known, fill in. Otherwise AI will use universal defaults.</p>
+
+<table class="brief">
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td class="lbl-cell">Target Launch Date</td><td><span class="ph">{{e.g. Q3 2026 or TBD}}</span></td></tr>
+    <tr><td class="lbl-cell">Estimated Duration</td><td><span class="ph">{{e.g. 12 weeks / 6 months}}</span></td></tr>
+    <tr><td class="lbl-cell">Team Size</td><td><span class="ph">{{e.g. 1 backend / 1 frontend / 1 mobile / 1 designer}}</span></td></tr>
+    <tr><td class="lbl-cell">Budget Range</td><td><span class="ph">{{Optional — for internal estimation only}}</span></td></tr>
+    <tr><td class="lbl-cell">Soft Launch City/Region</td><td><span class="ph">{{e.g. Tashkent first, then expand}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="13-instructions-for-ai-agent">
+    <h1>13. Instructions for AI Agent</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">When this brief is sent to the AI, it should produce the adjusted Scope of Work following these rules.</p>
+
+<div class="callout">
+  <div class="callout-title">AI Workflow</div>
+  <ol class="workflow">
+    <li>Read this brief in full before starting</li>
+    <li>Read the universal Scope-of-Work-Template.html for structure reference</li>
+    <li>Replace all <span class="ph">{{PLACEHOLDERS}}</span> in the template with values from this brief</li>
+    <li>Keep universal services <code>S1–S6</code> intact (do not delete)</li>
+    <li>Add project-specific services starting at <code>S7</code> based on Section 5 features</li>
+    <li>Generate new modules with naming convention <code>SERVICE-MOD-NN</code></li>
+    <li><strong>Expand each Section 6 process into Phase 5.5 Critical Flows in the SoW</strong> — preserve phase names, then expand each phase into a full role × phase × system behavior matrix with timer values, state transitions, and per-vertical config (where applicable)</li>
+    <li>Add new database tables with indexes for each new service</li>
+    <li>Add new API endpoints to Phase 4</li>
+    <li>Add new events to Phase 5 catalog</li>
+    <li>Adjust Phase 6 tech stack with integrations from Section 7</li>
+    <li>Generate Phase 7 Page Inventory <strong>last</strong> — every phase from Section 6 should map to at least one page</li>
+    <li>Adjust Phase 8 module implementation order based on new dependencies</li>
+    <li>Adjust Phase 10 risks/assumptions/out-of-scope from Sections 8 + 9</li>
+    <li>Output as a new file: <code><span class="ph">{{PROJECT_NAME}}</span>-Scope-of-Work.html</code></li>
+    <li>Do NOT modify the master template — always produce a new file</li>
+  </ol>
+</div>
+
+<h2>Quality Checklist</h2>
+<ul>
+  <li>Every Feature ID maps to at least one API endpoint</li>
+  <li>Every System Behavior aligns with database schema and event catalog</li>
+  <li>Every new module has Rules + User Features + System Behaviors</li>
+  <li>Every Section 6 process has its phases in order with role × system actions; phase names are stable across the brief, the SoW Phase 5.5, and the Page Inventory</li>
+  <li>Every process has its phases in order with role × system actions; alt paths (SKIP / CANCEL) listed if applicable</li>
+  <li>Every database table has indexes defined</li>
+  <li>Naming conventions follow Glossary in template</li>
+  <li>No placeholder pills remain in final SoW (all replaced or marked as TBD)</li>
+</ul>
+  </div>
+</div>
+</div>
+<script>
+  // Accordion
+  document.querySelectorAll('.section-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const body = btn.nextElementSibling;
+      const chevron = btn.querySelector('.chevron');
+      const open = body.classList.toggle('open');
+      chevron.classList.toggle('open', open);
+      btn.classList.toggle('open', open);
+    });
+  });
+  // Open first section by default
+  const first = document.querySelector('.section-toggle');
+  if (first) first.click();
+</script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true, theme: 'base',
+    themeVariables: { primaryColor: '#EFF4FE', primaryTextColor: '#0E3A99', primaryBorderColor: '#1A56DB', lineColor: '#1A56DB', secondaryColor: '#F59E0B22', tertiaryColor: '#F9FAFB', fontFamily: 'Inter, -apple-system, sans-serif', fontSize: '12px', clusterBkg: '#F9FAFB', clusterBorder: '#1A56DB66' },
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', defaultRenderer: 'elk', padding: 16, nodeSpacing: 50, rankSpacing: 60 },
+    layout: 'elk',
+    elk: { 'elk.algorithm': 'layered', 'elk.direction': 'DOWN', 'elk.alignment': 'CENTER', 'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX', 'elk.layered.spacing.nodeNodeBetweenLayers': 50, 'elk.spacing.nodeNode': 36, 'elk.spacing.edgeNode': 20 },
+    er: { useMaxWidth: true, diagramPadding: 20, entityPadding: 12, minEntityWidth: 120, minEntityHeight: 70, fontSize: 12, stroke: '#1A56DB', fill: '#EFF4FE' },
+  });
+</script>
+</body>
+</html>

@@ -27,7 +27,7 @@ prints a one-line note and archives the current on-disk content as-is.
 
 ## Pre-flight
 
-1. Read `state/SESSION-STATE.md`. Extract:
+1. Read `SESSION-STATE/SESSION-STATE.md`. Extract:
    - Current `Slug:`
    - Current `Stage:`
    - The Artifacts list (which `<slug>-*.html` files exist on disk).
@@ -51,8 +51,8 @@ Current state:
   Stage: <STAGE>
 
 Artifacts on disk:
-  ✓ deliverables/brief/<slug>-brief.html (<state>, v<X>)
-  ✓ deliverables/scope-of-work/<slug>-sow.html (<state>, v<X>)
+  ✓ DOCMENTS/<slug>-project-brief.html (<state>, v<X>)
+  ✓ DOCMENTS/<slug>-scope-of-work.html (<state>, v<X>)
   ... (only show files that actually exist)
 
 Choose:
@@ -69,7 +69,7 @@ Reply: 1 / 2 / 3
 
 ## Option 1 — Soft reset
 
-1. Copy `state/SESSION-STATE.md` →
+1. Copy `SESSION-STATE/SESSION-STATE.md` →
    `state/archived/<slug>-<ISO-timestamp>.md`.
 2. Append a footer to the archive file:
    ```
@@ -79,7 +79,7 @@ Reply: 1 / 2 / 3
         <slug>-scope-of-work.html  sha256:<hash>
         ... -->
    ```
-3. Overwrite `state/SESSION-STATE.md` with the empty INIT
+3. Overwrite `SESSION-STATE/SESSION-STATE.md` with the empty INIT
    template (see "Empty INIT template" section below).
 4. Print:
    > "Soft reset complete.
@@ -95,9 +95,9 @@ Steps 1-3 same as soft reset, plus:
 
 4. Create `state/archived/<slug>-files-<ISO-timestamp>/`.
 5. Move every `<slug>-*.html` that exists from:
-   - `deliverables/brief/<slug>-brief.html`
-   - `deliverables/scope-of-work/<slug>-sow.html`
-   - `deliverables/architecture/<slug>-architecture.html`
+   - `DOCMENTS/<slug>-project-brief.html`
+   - `DOCMENTS/<slug>-scope-of-work.html`
+   - `DOCMENTS/<slug>-system-architecture.html`
    - `deliverables/database/<slug>-database.html`
    - `deliverables/infrastructure/<slug>-infrastructure.html`
    into the new archive folder. Use `mv` (move, not copy).

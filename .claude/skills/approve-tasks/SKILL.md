@@ -15,7 +15,7 @@ description: Run the tasks quality gate and lock TASKS.md before building. Verif
 ## Manual-edit detection (RUN FIRST)
 
 Before any operation, follow the **Manual Edit Protocol** in `AGENTS.md`:
-compute SHA-256 of `state/TASKS.md` and the 5 deliverable HTMLs, compare to
+compute SHA-256 of `SESSION-STATE/TASKS.md` and the 5 deliverable HTMLs, compare to
 stored hashes. On drift, ask the user to accept (bump version + audit
 log) or cancel before proceeding.
 
@@ -23,7 +23,7 @@ log) or cancel before proceeding.
 
 ## Stage gate
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. If `Stage` is not `TASKS_GENERATED`, refuse:
    > "Approve is only valid from `TASKS_GENERATED`. Current: `<STAGE>`.
    > Run `/status` for next valid commands. To reach `TASKS_GENERATED`,
@@ -34,7 +34,7 @@ log) or cancel before proceeding.
 
 ## Quality gate (BLOCKING)
 
-Read `state/TASKS.md`. Verify:
+Read `SESSION-STATE/TASKS.md`. Verify:
 
 1. **Every task has acceptance criteria.** Each task block contains at
    least one `[ ]` checkbox under "Acceptance:".
@@ -49,7 +49,7 @@ Read `state/TASKS.md`. Verify:
 6. **All tasks have a builder hint** (`Builder: <hint>`) — orchestrator
    uses this to decide which builder picks it up.
 7. **Architecture style consistency.** Tasks reference folder structure
-   matching `deliverables/architecture/styles/<style>.md` (no monolith
+   matching `CONTEXT/architecture-styles/<style>.md` (no monolith
    tasks if architecture is microservices, etc.).
 
 If any check fails, list every failing item, leave Stage at
@@ -59,12 +59,12 @@ If any check fails, list every failing item, leave Stage at
 
 ## Transition
 
-1. Update `state/SESSION-STATE.md`:
+1. Update `SESSION-STATE/SESSION-STATE.md`:
    - `Stage:` → `TASKS_APPROVED`
    - `Last skill:` → `approve-tasks`
    - `Last update:` → ISO timestamp
    - `Resume hint:` → `Run /start-build to begin parallel build with orchestrator + builders + QA.`
-   - Artifacts list: mark `state/TASKS.md` approved with date.
+   - Artifacts list: mark `SESSION-STATE/TASKS.md` approved with date.
 2. Append audit log:
    ```
    <ISO>  approve-tasks  TASKS_GENERATED → TASKS_APPROVED  <N> tasks locked

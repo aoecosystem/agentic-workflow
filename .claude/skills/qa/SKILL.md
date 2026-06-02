@@ -5,10 +5,10 @@ description: Verify a completed task against its acceptance criteria and verific
 
 ## Stage gate (RUN FIRST)
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. Refuse unless Stage is `BUILDING` or `BUILD_COMPLETE`. Message:
    > "qa is only valid during BUILDING or BUILD_COMPLETE. Current: `<STAGE>`."
-3. Refuse if no task with status `in-review` exists in `state/TASKS.md` when invoked directly via `/qa-only`.
+3. Refuse if no task with status `in-review` exists in `SESSION-STATE/TASKS.md` when invoked directly via `/qa-only`.
 
 # Skill: QA
 
@@ -22,7 +22,7 @@ description: Verify a completed task against its acceptance criteria and verific
 
 ### Step 1 — Read the task
 
-Read the full task block from `state/TASKS.md`:
+Read the full task block from `SESSION-STATE/TASKS.md`:
 - Task ID, title, feature group
 - **`Architecture style:`, `Stack:`, `Folder root:`** — written by `parse-scope`. These are HARD CONTRACTS. Verify that every file the Builder wrote sits at a path conforming to `Folder root:` and the style's profile. Files outside that root are a rejection (cite the violation).
 - Files to create/modify
@@ -170,7 +170,7 @@ Validate:
 
 Run this step for every UI task (any file under `apps/web/`, `apps/admin/`, `apps/<frontend>/`, `packages/ui/`, or files matching `*.tsx`, `*.vue`, `*.svelte`).
 
-These checks mirror the HARD CONTRACT in `deliverables/architecture/styles/<style>.md` → "Component file organization" and `build-task` Step 6. Reject the task if ANY of the following appears:
+These checks mirror the HARD CONTRACT in `CONTEXT/architecture-styles/<style>.md` → "Component file organization" and `build-task` Step 6. Reject the task if ANY of the following appears:
 
 **1. Static data passed as props (REJECT)**
 
@@ -279,7 +279,7 @@ deferral:
 - Phrases in `QA notes:` like "deferred", "we'll fix later",
   "follow-up", "in a future task", "punt for now", "good enough" — any
   of these must be backed by either:
-  (a) a follow-up task that already exists in `state/TASKS.md`
+  (a) a follow-up task that already exists in `SESSION-STATE/TASKS.md`
       (referenced by ID, e.g. `TASK-099`), OR
   (b) a `Depends on:` link from the next task that explicitly absorbs
       the deferred work.
@@ -308,7 +308,7 @@ If all gates pass, design checks pass (when applicable), and all criteria are ch
    ```
    - Status: done
    ```
-3. Update the progress table in `state/TASKS.md`.
+3. Update the progress table in `SESSION-STATE/TASKS.md`.
 4. Update `memory/` files (per `02-memory.mdc`):
    - `memory/ARCHITECTURE.md` — add new modules/files/flows.
    - `memory/PATTERNS.md` — append any new reusable pattern.

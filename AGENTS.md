@@ -18,27 +18,29 @@ session start.
 The pipeline runs through TWO phases sharing one state file:
 
 ```
-═══════ DOCS PHASE (foundations work) ═══════
+═══════ DOCS PHASE — two entry points, same result ═══════
 
 INIT
-  └─ /start-project (smart router) → INTERVIEW → BRIEF_DRAFT ⇄ BRIEF_APPROVED
-                                                  → SOW_DRAFT ⇄ SOW_APPROVED
-                                                  → ARCHITECTURE_DRAFT ⇄ ARCHITECTURE_APPROVED
-                                                  → DATABASE_DRAFT ⇄ DATABASE_APPROVED
-                                                  → INFRASTRUCTURE_DRAFT ⇄ INFRASTRUCTURE_APPROVED
-                                                      ↓
-                                                  DOCS_COMPLETE
+  ├─ /start-interview → INTERVIEW (13 questions, one per turn)
+  │                       └─ all confirmed → 5 docs auto-generated → DOCS_COMPLETE
+  │
+  └─ /import-docs → scan DOCMENTS/ for PDF/Word/HTML/MD
+                      └─ extract + confirm → 5 docs auto-generated → DOCS_COMPLETE
 
-═══════ BUILD PHASE (engine work) ═══════
+  [DOCS_COMPLETE — all 5 HTML docs in DOCMENTS/]
+    ├─ /review-* to edit any section (Stage stays DOCS_DRAFT)
+    └─ /approve-docs → DOCS_COMPLETE confirmed
+
+═══════ BUILD PHASE ═══════
 
 DOCS_COMPLETE
   └─ /parse-scope    → TASKS_GENERATED ⇄ TASKS_APPROVED
-  └─ /start-build    → BUILDING            (parallel orchestrator + builders + QA)
-                       ↓ (all tasks done)
-                      BUILD_COMPLETE ⇄ BUILD_APPROVED
-  └─ /verify-build   → VERIFIED            (lint + types + tests pass)
-                       ↓
-                      READY_TO_DEPLOY      (project complete)
+  └─ /start-build    → BUILDING  (parallel orchestrator + builders + QA)
+                         ↓ (all tasks done)
+                        BUILD_COMPLETE ⇄ BUILD_APPROVED
+  └─ /verify-build   → VERIFIED  (lint + types + tests pass)
+                         ↓
+                        READY_TO_DEPLOY
 ```
 
 Every transition requires an **explicit user command**. The agent NEVER
@@ -54,13 +56,13 @@ tracking + audit log spans the whole journey.
 Brief Section 3.2 captures the project's architecture style:
 `monolith` | `hybrid` | `microservices` | `serverless`. Every
 `build-*` skill (docs phase) AND every code-generation skill (build
-phase) reads `deliverables/architecture/styles/<style>.md` to shape its
-output: folder structure, tech stack defaults, database approach,
-communication style, Mermaid diagram patterns. Default = `monolith`.
+phase) reads `CONTEXT/architecture-styles/<style>.md` to shape its output: folder structure,
+tech stack defaults, database approach, communication style, Mermaid
+diagram patterns. Default = `monolith`.
 
 To change style mid-project: run `/review-brief 3` (in docs phase) or
-update `state/TASKS.md` task fields. Then
-re-build downstream docs/tasks to pick up the change.
+update `SESSION-STATE/TASKS.md` task fields. Then re-build downstream
+docs/tasks to pick up the change.
 
 ---
 
@@ -78,15 +80,16 @@ re-build downstream docs/tasks to pick up the change.
 | `/build-scope-of-work` | BRIEF_APPROVED → SOW_DRAFT |
 | `/review-scope-of-work <N>` | SOW_DRAFT/APPROVED → SOW_DRAFT |
 | `/approve-scope-of-work` | SOW_DRAFT → SOW_APPROVED |
-| `/build-architecture` | SOW_APPROVED → ARCHITECTURE_DRAFT |
-| `/review-architecture` | ARCHITECTURE_DRAFT/APPROVED → ARCHITECTURE_DRAFT |
-| `/approve-architecture` | ARCHITECTURE_DRAFT → ARCHITECTURE_APPROVED |
-| `/build-database` | ARCHITECTURE_APPROVED → DATABASE_DRAFT |
-| `/review-database` | DATABASE_DRAFT/APPROVED → DATABASE_DRAFT |
-| `/approve-database` | DATABASE_DRAFT → DATABASE_APPROVED |
-| `/build-infrastructure` | DATABASE_APPROVED → INFRASTRUCTURE_DRAFT |
-| `/review-infrastructure` | INFRASTRUCTURE_DRAFT/APPROVED → INFRASTRUCTURE_DRAFT |
-| `/approve-infrastructure` | INFRASTRUCTURE_DRAFT → INFRASTRUCTURE_APPROVED → DOCS_COMPLETE |
+| `/start-interview` | INIT → INTERVIEW → *(auto-build 5 docs)* → DOCS_DRAFT |
+| `/import-docs` | INIT → *(read DOCMENTS/ files → auto-build 5 docs)* → DOCS_DRAFT |
+| `/status` | (read-only) |
+| `/reset` | `<ANY>` → INIT |
+| `/review-brief <N>` | DOCS_DRAFT → DOCS_DRAFT |
+| `/review-scope-of-work <N>` | DOCS_DRAFT → DOCS_DRAFT |
+| `/review-architecture <N>` | DOCS_DRAFT → DOCS_DRAFT |
+| `/review-database <N>` | DOCS_DRAFT → DOCS_DRAFT |
+| `/review-infrastructure <N>` | DOCS_DRAFT → DOCS_DRAFT |
+| `/approve-docs` | DOCS_DRAFT → DOCS_COMPLETE |
 
 ### Build phase commands (engine pipeline)
 
@@ -120,12 +123,12 @@ event**, not an error.
 ### Hash tracking
 
 Every artifact the agent writes records a SHA-256 hash in
-`state/SESSION-STATE.md` Artifacts list:
+`SESSION-STATE/SESSION-STATE.md` Artifacts list:
 
 ```
-- [x] deliverables/brief/<slug>-brief.html  v1.1  sha256:a1b2c3...  approved 2026-05-02
-- [x] state/TASKS.md  v1.0  sha256:d4e5f6...  parsed 2026-05-02
-- [x] ../apps/web/src/screens/auth-login.tsx  v1.0  sha256:g7h8i9...  in-review 2026-05-02
+- [x] DOCMENTS/<slug>-project-brief.html  v1.1  sha256:a1b2c3...  approved 2026-05-02
+- [x] SESSION-STATE/TASKS.md  v1.0  sha256:d4e5f6...  parsed 2026-05-02
+- [x] APPS/web/src/screens/auth-login.tsx  v1.0  sha256:g7h8i9...  in-review 2026-05-02
 ```
 
 ### Detection step (FIRST step of every artifact-touching skill)
@@ -150,7 +153,7 @@ Meta-state, not an artifact. Hash protocol does NOT cover it. Skills
 validate on read: `Stage:` must be in valid enum; slug must be
 kebab-case; stored hashes must parse as `sha256:<hex>`. If invalid,
 refuse with a clear error. Recommended manual reset: delete
-`state/SESSION-STATE.md` and run `/start-project` (or use `/reset`).
+`SESSION-STATE/SESSION-STATE.md` and run `/start-project` (or use `/reset`).
 
 ### Placeholder vs TBD convention
 
@@ -170,13 +173,14 @@ concrete values, not TBDs (e.g. infrastructure providers).
 
 1. `AGENTS.md` (this file) — full agent contract.
 2. `README.md` — what's in the repo.
-3. `INSTRUCTIONS.md` — step-by-step user guide.
-4. `state/SESSION-STATE.md` — read first to know current Stage.
-5. `state/TASKS.md` — task list and status (only if past DOCS_COMPLETE).
-7. `memory/ARCHITECTURE.md`, `PATTERNS.md`, `DECISIONS.md`,
+3. `SESSION-STATE/SESSION-STATE.md` — read first to know current Stage.
+4. `SESSION-STATE/TASKS.md` — task list and status (only if past DOCS_COMPLETE).
+5. `MEMEORIES/ARCHITECTURE.md`, `PATTERNS.md`, `DECISIONS.md`,
    `STACK-GUIDANCE.md`, `PAGES.md` — curated cross-session knowledge.
-8. `deliverables/architecture/styles/<style>.md` — chosen architecture style rules.
-9. Any filled `<slug>-*.html` if mid-docs-phase.
+6. `CONTEXT/architecture-styles/<style>.md` — chosen architecture style rules.
+7. Any filled `<slug>-*.html` if mid-docs-phase.
+
+Skip files that don't exist yet.
 
 Skip files that don't exist yet.
 

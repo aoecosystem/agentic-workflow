@@ -1,6 +1,6 @@
 ---
 name: package-release
-description: Final stage. Generate release notes from the verified build, bundle artifacts (optional), and transition Stage from VERIFIED to READY_TO_DEPLOY. Reads the 5 deliverable HTMLs, state/TASKS.md, deliverables/scope-of-work/<slug>-sow.html. Writes a polished release note. Trigger on `/package-release`.
+description: Final stage. Generate release notes from the verified build, bundle artifacts (optional), and transition Stage from VERIFIED to READY_TO_DEPLOY. Reads the 5 deliverable HTMLs, SESSION-STATE/TASKS.md, DOCMENTS/<slug>-scope-of-work.html. Writes a polished release note. Trigger on `/package-release`.
 ---
 
 # Skill: package-release
@@ -21,7 +21,7 @@ halt before proceeding.
 
 ## Stage gate
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. If `Stage` is not `VERIFIED`, refuse:
    > "Package is only valid from `VERIFIED`. Current: `<STAGE>`.
    > Run `/verify-build` first."
@@ -32,8 +32,8 @@ halt before proceeding.
 
 Read:
 - the 5 deliverable HTMLs — feature list
-- `state/TASKS.md` — completed task summary
-- `deliverables/scope-of-work/<slug>-sow.html` — phases + acceptance criteria
+- `SESSION-STATE/TASKS.md` — completed task summary
+- `DOCMENTS/<slug>-scope-of-work.html` — phases + acceptance criteria
 
 Generate `state/RELEASE-NOTES-v<version>.md` with sections:
 
@@ -76,7 +76,7 @@ Show the user the draft release notes inline. Ask: *"Save? (yes / edit / cancel)
 
 On `yes`:
 1. Write `state/RELEASE-NOTES-v<version>.md`
-2. Update `state/SESSION-STATE.md`:
+2. Update `SESSION-STATE/SESSION-STATE.md`:
    - `Stage:` → `READY_TO_DEPLOY`
    - `Last skill:` → `package-release`
    - `Last update:` → ISO timestamp
@@ -96,7 +96,7 @@ Release packaged. Project is READY_TO_DEPLOY.
 Final artifacts:
   ✓ ../apps/<sub-app>/                      (verified code)
   ✓ deliverables/                            (5 HTMLs)
-  ✓ the 5 deliverable HTMLs, state/TASKS.md           (parsed)
+  ✓ the 5 deliverable HTMLs, SESSION-STATE/TASKS.md           (parsed)
   ✓ state/RELEASE-NOTES-v<version>.md        (just generated)
 
 Deploy from ../apps/ using your platform of choice.

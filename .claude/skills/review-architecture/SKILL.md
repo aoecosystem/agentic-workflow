@@ -1,6 +1,6 @@
 ---
 name: review-architecture
-description: Iterative section-by-section editor for the System Architecture HTML. Reads `state/SESSION-STATE.md`, refuses unless Stage is ARCHITECTURE_DRAFT or ARCHITECTURE_APPROVED, lets the user pick one of the 7 sections, applies the change, bumps version, writes audit log. If Stage is ARCHITECTURE_APPROVED, this re-opens it back to ARCHITECTURE_DRAFT. Trigger when the user says "/review-architecture", "review architecture", "edit architecture".
+description: Iterative section-by-section editor for the System Architecture HTML. Reads `SESSION-STATE/SESSION-STATE.md`, refuses unless Stage is ARCHITECTURE_DRAFT or ARCHITECTURE_APPROVED, lets the user pick one of the 7 sections, applies the change, bumps version, writes audit log. If Stage is ARCHITECTURE_APPROVED, this re-opens it back to ARCHITECTURE_DRAFT. Trigger when the user says "/review-architecture", "review architecture", "edit architecture".
 ---
 
 # Skill: review-architecture
@@ -34,7 +34,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 
 ## Stage gate
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
 2. If `Stage` is not `ARCHITECTURE_DRAFT` or `ARCHITECTURE_APPROVED`:
    > "Architecture review is only valid in stages ARCHITECTURE_DRAFT
    > or ARCHITECTURE_APPROVED. Current stage: `<STAGE>`."
@@ -48,7 +48,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 
 ## Pre-flight
 
-1. Read `deliverables/architecture/<slug>-architecture.html`. If it
+1. Read `DOCMENTS/<slug>-system-architecture.html`. If it
    doesn't exist, halt and tell the user to run `/build-architecture`.
 
 ---
@@ -95,7 +95,7 @@ skip the menu.
 On confirmation:
 
 1. Write updated HTML back to
-   `deliverables/architecture/<slug>-architecture.html`.
+   `DOCMENTS/<slug>-system-architecture.html`.
 2. Bump version (`v1.0` → `v1.1`).
 3. Update `SESSION-STATE.md`:
    - `Stage:` → `ARCHITECTURE_DRAFT`

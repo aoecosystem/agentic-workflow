@@ -1,6 +1,6 @@
 ---
 name: build-scope-of-work
-description: Generate a filled Scope of Work HTML from a previously approved Project Brief. Reads `state/SESSION-STATE.md` and refuses unless `Stage: BRIEF_APPROVED`. Reads `deliverables/brief/<slug>-brief.html` and `scope-of-work-template.html`, then writes `deliverables/scope-of-work/<slug>-sow.html` and transitions stage to SOW_DRAFT. Trigger when the user says "/build-scope-of-work", "build scope of work", "generate sow". Do NOT trigger before the brief is approved.
+description: Generate a filled Scope of Work HTML from a previously approved Project Brief. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: BRIEF_APPROVED`. Reads `DOCMENTS/<slug>-project-brief.html` and `scope-of-work-template.html`, then writes `DOCMENTS/<slug>-scope-of-work.html` and transitions stage to SOW_DRAFT. Trigger when the user says "/build-scope-of-work", "build scope of work", "generate sow". Do NOT trigger before the brief is approved.
 ---
 
 # Skill: build-scope-of-work
@@ -9,7 +9,7 @@ description: Generate a filled Scope of Work HTML from a previously approved Pro
 
 **Purpose:** Read the approved Project Brief, expand it into a complete
 Scope of Work HTML matching the canonical Phase 1-10 structure, save
-it under `deliverables/scope-of-work/<slug>-sow.html`, and transition the
+it under `DOCMENTS/<slug>-scope-of-work.html`, and transition the
 pipeline stage to `SOW_DRAFT`.
 
 ---
@@ -35,7 +35,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 
 ## Stage gate (BLOCKING)
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
 2. If `Stage:` is not `BRIEF_APPROVED`, refuse:
    > "Building the SoW requires `Stage: BRIEF_APPROVED`. Current
    > stage: `<STAGE>`. Run `/approve-brief` first (or `/status` to
@@ -54,7 +54,7 @@ The brief Section 3.2 contains an "Architecture style" choice (one of:
 generating output, this skill MUST:
 
 1. Read the brief Section 3.2 to find the chosen style.
-2. Read `deliverables/architecture/styles/<style>.md` end-to-end.
+2. Read `CONTEXT/architecture-styles/<style>.md` end-to-end.
 3. Apply the style's rules to the generated output in the relevant
    phases / sections (see "Style application points" below).
 
@@ -99,7 +99,7 @@ through automatically.
 
 ## Pre-flight
 
-1. Read `deliverables/brief/<slug>-brief.html` end-to-end.
+1. Read `DOCMENTS/<slug>-project-brief.html` end-to-end.
    Extract every section's values into memory.
 2. Read `deliverables/scope-of-work/template.html` for structure
    (Phase 1-10).
@@ -257,7 +257,7 @@ After generating in memory, show:
 Ask:
 
 > "Ready to save? Reply 'save' to write
-> `deliverables/scope-of-work/<slug>-sow.html`, or tell me what to
+> `DOCMENTS/<slug>-scope-of-work.html`, or tell me what to
 > change first."
 
 Iterate until the user replies `save`.
@@ -266,7 +266,7 @@ Iterate until the user replies `save`.
 
 ## Save + stage transition
 
-1. Write the file to `deliverables/scope-of-work/<slug>-sow.html` at
+1. Write the file to `DOCMENTS/<slug>-scope-of-work.html` at
    version `v1.0`.
 2. Update `SESSION-STATE.md`:
    - `Stage:` → `SOW_DRAFT`
@@ -280,9 +280,9 @@ Iterate until the user replies `save`.
    ```
 4. Confirm:
    ```
-   Saved: deliverables/scope-of-work/<slug>-sow.html (v1.0)
+   Saved: DOCMENTS/<slug>-scope-of-work.html (v1.0)
    Open in your browser to review:
-     file:///<absolute-path>/deliverables/scope-of-work/<slug>-sow.html
+     file:///<absolute-path>/DOCMENTS/<slug>-scope-of-work.html
    ```
 
 ---
@@ -308,7 +308,7 @@ Stop. Do NOT auto-trigger.
 ## Rules
 
 - Templates (`scope-of-work-template.html`) are read-only.
-- Only `deliverables/scope-of-work/<slug>-sow.html` is writable here.
+- Only `DOCMENTS/<slug>-scope-of-work.html` is writable here.
 - Universal services S1-S6 must remain intact.
 - Mark unknowns as `TBD`. Never invent.
 - After save, remind the user of the two follow-up options.

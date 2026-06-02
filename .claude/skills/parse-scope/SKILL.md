@@ -1,11 +1,11 @@
 ---
 name: parse-scope
-description: Generate (or regenerate) state/TASKS.md by reading the 5 approved HTML deliverables directly (brief, scope-of-work, architecture, database, infrastructure). Produces one executable task block per unit of work grouped by feature, with dependency edges, agent assignments, traceability refs, attempt budget, acceptance criteria, and optional design fields. Also emits memory/STACK-GUIDANCE.md and memory/PAGES.md as side effects. Trigger when the user says "parse scope", "generate tasks", "break the deliverables into tasks", or runs /parse-scope. This skill is the sole writer of TASKS.md.
+description: Generate (or regenerate) SESSION-STATE/TASKS.md by reading the 5 approved HTML deliverables directly (brief, scope-of-work, architecture, database, infrastructure). Produces one executable task block per unit of work grouped by feature, with dependency edges, agent assignments, traceability refs, attempt budget, acceptance criteria, and optional design fields. Also emits memory/STACK-GUIDANCE.md and memory/PAGES.md as side effects. Trigger when the user says "parse scope", "generate tasks", "break the deliverables into tasks", or runs /parse-scope. This skill is the sole writer of TASKS.md.
 ---
 
 ## Stage gate (RUN FIRST)
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. Refuse unless Stage is `DOCS_COMPLETE` or `TASKS_GENERATED` (re-run). Message:
    > "parse-scope is only valid from `DOCS_COMPLETE` or `TASKS_GENERATED`. Current: `<STAGE>`. Complete the docs phase first (run `/status` to see the next required approval)."
 3. If `Stage` is `TASKS_GENERATED` and the user wants to re-run, that's allowed (regeneration); transition stays at `TASKS_GENERATED`.
@@ -22,7 +22,7 @@ Compute SHA-256 of the 5 deliverable HTMLs and `memory/STACK-GUIDANCE.md` (if pr
 
 **Trigger:** User says `parse scope` (or uses the `/parse-scope` slash command).
 
-**Purpose:** Read the 5 approved HTML deliverables and generate `state/TASKS.md` with one executable task block per unit of work, grouped by feature, with dependencies, agent assignments, MCP URLs, files, and acceptance criteria. **There is no intermediate SCOPE.md** — the 5 HTMLs are the source of truth, TASKS.md is the planning output.
+**Purpose:** Read the 5 approved HTML deliverables and generate `SESSION-STATE/TASKS.md` with one executable task block per unit of work, grouped by feature, with dependencies, agent assignments, MCP URLs, files, and acceptance criteria. **There is no intermediate SCOPE.md** — the 5 HTMLs are the source of truth, TASKS.md is the planning output.
 
 Primary objective: generate implementation-ready tasks that are traceable to the 5 HTMLs feature-by-feature and flow-by-flow, with zero invented scope and zero orphan requirements.
 
@@ -50,12 +50,12 @@ If any gate fails, revise task decomposition before showing user.
 
 ### Step 1 — Read inputs (the 5 HTMLs are the source of truth)
 
-Read these files before generating anything. Resolve `<slug>` from `state/SESSION-STATE.md` → `Slug:`:
+Read these files before generating anything. Resolve `<slug>` from `SESSION-STATE/SESSION-STATE.md` → `Slug:`:
 
 **A. State + architecture profile (HARD CONTRACT):**
 
-- `state/SESSION-STATE.md` — locate `Architecture style:` field (one of `monolith`, `hybrid`, `microservices`, `polyglot-microservices`, `serverless`). Drives every task's folder placement.
-- `deliverables/architecture/styles/<style>.md` — **HARD CONTRACT** Folder structure section. Memorize:
+- `SESSION-STATE/SESSION-STATE.md` — locate `Architecture style:` field (one of `monolith`, `hybrid`, `microservices`, `polyglot-microservices`, `serverless`). Drives every task's folder placement.
+- `CONTEXT/architecture-styles/<style>.md` — **HARD CONTRACT** Folder structure section. Memorize:
   - The FE/BE split (e.g. `apps/api/` + `apps/web/` for monolith — never combined)
   - The ORM folder convention (Prisma → `prisma/`, Drizzle → `drizzle/`, TypeORM/Sequelize/Kysely/MikroORM → `database/`)
   - **`infra/` location is STYLE-DEPENDENT:**
@@ -68,15 +68,15 @@ Read these files before generating anything. Resolve `<slug>` from `state/SESSIO
 
 | # | File | Extract |
 |---|---|---|
-| 1 | `deliverables/brief/<slug>-brief.html` | §1 vision, §2 target users, §3 platforms + architecture style, §4 multi-role flag, §5 features, §6 business processes, §8 integrations, §9 NFRs, §10 success metrics, §11 out of scope, §12 design preferences, **§13 AI Generation Instructions** (execution rules applied to every task) |
-| 2 | `deliverables/scope-of-work/<slug>-sow.html` | Phase 1 service inventory, Phase 2 module breakdown, Phase 3 database schemas, **Phase 4 API endpoints (every row → ≥1 task)**, Phase 5 events, Phase 5.5 business processes (when present), **Phase 6 tech stack** (resolves `Stack:` field in every task), **Phase 7 page inventory (every row → ≥1 UI task)**, Phase 8 quality criteria, **Phase 9 folder structure + design language** |
-| 3 | `deliverables/architecture/<slug>-architecture.html` | §1 overview, §2 service inventory, §3 layered architecture, §4 data flow, §5 module boundaries, §6 cross-cutting concerns, §7 Mermaid diagram (verbatim for ERD-aware tasks) |
+| 1 | `DOCMENTS/<slug>-project-brief.html` | §1 vision, §2 target users, §3 platforms + architecture style, §4 multi-role flag, §5 features, §6 business processes, §8 integrations, §9 NFRs, §10 success metrics, §11 out of scope, §12 design preferences, **§13 AI Generation Instructions** (execution rules applied to every task) |
+| 2 | `DOCMENTS/<slug>-scope-of-work.html` | Phase 1 service inventory, Phase 2 module breakdown, Phase 3 database schemas, **Phase 4 API endpoints (every row → ≥1 task)**, Phase 5 events, Phase 5.5 business processes (when present), **Phase 6 tech stack** (resolves `Stack:` field in every task), **Phase 7 page inventory (every row → ≥1 UI task)**, Phase 8 quality criteria, **Phase 9 folder structure + design language** |
+| 3 | `DOCMENTS/<slug>-system-architecture.html` | §1 overview, §2 service inventory, §3 layered architecture, §4 data flow, §5 module boundaries, §6 cross-cutting concerns, §7 Mermaid diagram (verbatim for ERD-aware tasks) |
 | 4 | `deliverables/database/<slug>-database.html` | §1 schema overview, **§2 entity definitions (every entity → TASK-001 or feature-specific schema task)**, §3 relationships, §4 indexes strategy, §5 migration & versioning, §6 ERD Mermaid (verbatim) |
 | 5 | `deliverables/infrastructure/<slug>-infrastructure.html` | §1 environments, §2 hosting & compute, §3 db/storage/cache, §4 network & domains, §5 external services & integrations, §6 security & secrets (env vars → TASK-000 AC), §7 backup & DR, §8 CI/CD pipeline, §9 topology Mermaid (verbatim) |
 
 **C. Supplemental (read if present, don't fail if missing):**
 
-- `state/TASKS.md` — check if tasks already exist (ask user before overwriting).
+- `SESSION-STATE/TASKS.md` — check if tasks already exist (ask user before overwriting).
 - `memory/ARCHITECTURE.md`, `memory/PATTERNS.md`, `memory/DECISIONS.md` — cross-session knowledge.
 - `memory/STACK-GUIDANCE.md` — this skill REWRITES it (side effect).
 - `memory/PAGES.md` — this skill REWRITES it (side effect).
@@ -84,7 +84,7 @@ Read these files before generating anything. Resolve `<slug>` from `state/SESSIO
 
 **Failure modes:**
 - If SESSION-STATE has no `Architecture style:` field → refuse with "Architecture style missing — re-run `/build-scope-of-work` to lock Phase 9".
-- If `deliverables/architecture/styles/<style>.md` does not exist → halt; never improvise a folder structure.
+- If `CONTEXT/architecture-styles/<style>.md` does not exist → halt; never improvise a folder structure.
 - If any of the 5 HTMLs is missing → halt with the exact path. Stage `DOCS_COMPLETE` should guarantee all 5 exist; missing implies state inconsistency.
 
 ### Step 2 — ReqOps pre-pass (optional)
@@ -177,7 +177,7 @@ Hard rule:
 - No trace ID left unassigned.
 - No task without at least one trace ID.
 
-If any trace item cannot be assigned, mark it as a blocker/gap and surface before writing `state/TASKS.md`.
+If any trace item cannot be assigned, mark it as a blocker/gap and surface before writing `SESSION-STATE/TASKS.md`.
 
 ### Step 5 — Assign agent slots
 
@@ -226,7 +226,7 @@ Every task must have at minimum:
 - `[ ]` Error paths are handled (invalid input, auth failure, not found)
 - `[ ]` Lint and typecheck pass
 - `[ ]` Behavior matches mapped scope items (screens/endpoints/models/flow transitions) for this task
-- `[ ]` All files declared in `Files to create/modify:` sit under folders declared by `deliverables/architecture/styles/<style>.md` (no improvised top-level folders, no slug-prefixed app names, no combined FE+BE folder)
+- `[ ]` All files declared in `Files to create/modify:` sit under folders declared by `CONTEXT/architecture-styles/<style>.md` (no improvised top-level folders, no slug-prefixed app names, no combined FE+BE folder)
 
 **For API tasks (every task that adds or modifies an HTTP endpoint), the AC baseline tightens — vague "happy + one error" is not sufficient. Every endpoint MUST have explicit test cases for:**
 - `[ ]` `200`/`201` success path with a representative valid payload
@@ -280,7 +280,7 @@ If dependency graph does not preserve flow reality, regenerate task ordering.
 
 ### Step 7 — Draft TASKS.md
 
-Write the full `state/TASKS.md` in this format:
+Write the full `SESSION-STATE/TASKS.md` in this format:
 
 ```markdown
 # Tasks
@@ -314,13 +314,13 @@ Write the full `state/TASKS.md` in this format:
   - apps/api/                                  ← role-based, NEVER apps/<slug>-api/
   - apps/web/                                  ← role-based, NEVER apps/<slug>-web/
   - [infra path depends on style — see acceptance criteria]
-  - [other config files declared by deliverables/architecture/styles/<style>.md]
+  - [other config files declared by CONTEXT/architecture-styles/<style>.md]
 - Acceptance criteria:
   - [ ] Project installs and runs with no errors
   - [ ] TypeScript compiles with zero errors
   - [ ] Linting passes (Biome `check` or ESLint, whichever the SoW picked)
   - [ ] Test runner (Vitest by default) is configured and a placeholder test passes
-  - [ ] Folder layout exactly matches `deliverables/architecture/styles/<style>.md` Folder structure section — no improvised top-level folders, no slug-prefixed app names, no combined FE+BE folder
+  - [ ] Folder layout exactly matches `CONTEXT/architecture-styles/<style>.md` Folder structure section — no improvised top-level folders, no slug-prefixed app names, no combined FE+BE folder
   - [ ] `infra/` lives at the STYLE-CORRECT location:
         - monolith / hybrid → `apps/infra/` (inside `apps/`, next to `api/` and `web/`)
         - microservices / polyglot-microservices / serverless → ROOT-LEVEL `infra/`
@@ -444,7 +444,7 @@ Only include IDs that apply to the task.
 
 ### Step 8 — Present, run coverage gate, confirm
 
-Before writing `state/TASKS.md`:
+Before writing `SESSION-STATE/TASKS.md`:
 
 1. **Show summary:** total tasks, tasks per feature group, Builder assignments, estimated parallelism.
 
@@ -458,7 +458,7 @@ Before writing `state/TASKS.md`:
    | **SoW Phase 5 events** (when present) | each event → at least one producer task AND at least one consumer task | **REFUSE TO SAVE**. List orphan events. |
    | **SoW Phase 5.5 business processes** (when present) | each process → ordered task sequence preserving the transition (e.g. booking pending → tutor accepts → payment) | **REFUSE TO SAVE**. List unmapped flows. |
    | **Brief §8 third-party integrations** (Stripe, SendGrid, Twilio, S3, Cloudinary, etc.) | each integration → at least one task with the integration name in `Functional notes:` | **REFUSE TO SAVE**. Integrations silently dropped is "features missed". |
-   | **Architecture style folder structure** | every task's `Files to create/modify:` paths must conform to `deliverables/architecture/styles/<style>.md` Folder structure | **REFUSE TO SAVE**. List offending paths + the rule they break. |
+   | **Architecture style folder structure** | every task's `Files to create/modify:` paths must conform to `CONTEXT/architecture-styles/<style>.md` Folder structure | **REFUSE TO SAVE**. List offending paths + the rule they break. |
    | **Component decomposition** (UI tasks) | no task creates a page file >200 lines or assigns multiple unrelated concerns to one component file | **REFUSE TO SAVE**. List offending tasks; require splitting before save. |
 
    Show coverage like:
@@ -488,32 +488,32 @@ Before writing `state/TASKS.md`:
    - (b) Mark the item explicitly out-of-scope (requires updating the 5 HTMLs), or
    - (c) Re-run `import-docs` if the missing items reveal that the 5 HTMLs itself is incomplete.
 
-6. **If the gate passed, ask:** "Coverage is 100% across all source-of-truth items. Reply 'yes' to write state/TASKS.md, or tell me what to adjust."
+6. **If the gate passed, ask:** "Coverage is 100% across all source-of-truth items. Reply 'yes' to write SESSION-STATE/TASKS.md, or tell me what to adjust."
 
 7. Only write the file after the user confirms AND the coverage gate passes.
 
 ### Step 9 — Update progress table
 
-After writing `state/TASKS.md`, update the Build progress table at the top: set Total = N, Pending = N, all others = 0.
+After writing `SESSION-STATE/TASKS.md`, update the Build progress table at the top: set Total = N, Pending = N, all others = 0.
 
 ---
 
 ## Output
 
-A complete `state/TASKS.md` ready for `start build`, with stronger Builder/QA acceptance criteria informed by ReqOps feature requirements when available.
+A complete `SESSION-STATE/TASKS.md` ready for `start build`, with stronger Builder/QA acceptance criteria informed by ReqOps feature requirements when available.
 
 ---
 
 ## Stage transition (ON SAVE)
 
-After writing `state/TASKS.md`:
+After writing `SESSION-STATE/TASKS.md`:
 
-1. Update `state/SESSION-STATE.md`:
+1. Update `SESSION-STATE/SESSION-STATE.md`:
    - `Stage:` → `TASKS_GENERATED`
    - `Last skill:` → `parse-scope`
    - `Last update:` → ISO timestamp
    - `Resume hint:` → `Run /approve-tasks (recommended audit) then /start-build.`
-   - Artifacts list: mark `state/TASKS.md` with task count + hash.
+   - Artifacts list: mark `SESSION-STATE/TASKS.md` with task count + hash.
 2. Append audit log:
    ```
    <ISO>  parse-scope  DOCS_COMPLETE → TASKS_GENERATED  <N> tasks generated

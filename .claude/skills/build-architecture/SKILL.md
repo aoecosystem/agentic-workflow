@@ -1,6 +1,6 @@
 ---
 name: build-architecture
-description: Generate the System Architecture HTML from the approved Scope of Work. Reads `state/SESSION-STATE.md` and refuses unless `Stage: SOW_APPROVED`. Reads `deliverables/scope-of-work/<slug>-sow.html` (especially Phase 2 Service Inventory and Phase 4 Data Flow) and the empty `deliverables/architecture/template.html` template, then writes `deliverables/architecture/<slug>-architecture.html` and transitions Stage to ARCHITECTURE_DRAFT. Trigger when the user says "/build-architecture", "build architecture", "generate architecture".
+description: Generate the System Architecture HTML from the approved Scope of Work. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: SOW_APPROVED`. Reads `DOCMENTS/<slug>-scope-of-work.html` (especially Phase 2 Service Inventory and Phase 4 Data Flow) and the empty `DOCMENTS/architecture.html` template, then writes `DOCMENTS/<slug>-system-architecture.html` and transitions Stage to ARCHITECTURE_DRAFT. Trigger when the user says "/build-architecture", "build architecture", "generate architecture".
 ---
 
 # Skill: build-architecture
@@ -9,7 +9,7 @@ description: Generate the System Architecture HTML from the approved Scope of Wo
 
 **Purpose:** Read the approved Scope of Work, draft a complete System
 Architecture HTML matching the canonical 7-section structure, save it
-under `deliverables/architecture/<slug>-architecture.html`, and
+under `DOCMENTS/<slug>-system-architecture.html`, and
 transition the pipeline stage to `ARCHITECTURE_DRAFT`.
 
 ---
@@ -35,7 +35,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 
 ## Stage gate (BLOCKING)
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:` and `Slug:`.
 2. If `Stage` is not `SOW_APPROVED`, refuse:
    > "Building architecture requires `Stage: SOW_APPROVED`. Current
    > stage: `<STAGE>`. Run `/approve-scope-of-work` first."
@@ -52,7 +52,7 @@ The brief Section 3.2 contains an "Architecture style" choice (one of:
 generating output, this skill MUST:
 
 1. Read the brief Section 3.2 to find the chosen style.
-2. Read `deliverables/architecture/styles/<style>.md` end-to-end.
+2. Read `CONTEXT/architecture-styles/<style>.md` end-to-end.
 3. Apply the style's rules to the generated output in the relevant
    phases / sections (see "Style application points" below).
 
@@ -84,13 +84,13 @@ through automatically.
 
 ## Pre-flight
 
-1. Read `deliverables/scope-of-work/<slug>-sow.html` end-to-end. Extract:
+1. Read `DOCMENTS/<slug>-scope-of-work.html` end-to-end. Extract:
    - Phase 1.5 Service Architecture (S1-Sn inventory)
    - Phase 2 module structure (services + their modules)
    - Phase 4 API endpoint patterns (data flow shape)
    - Phase 6 Tech Stack (transport choices, framework)
    - Phase 5 Event-Driven Architecture (async edges)
-2. Read `deliverables/architecture/template.html` for structure.
+2. Read `DOCMENTS/architecture.html` for structure.
 3. Read brief `<slug>-project-brief.html` Section 1 for project name
    to populate cover-sub.
 
@@ -160,7 +160,7 @@ After generating in memory:
 Ask:
 
 > "Ready to save? Reply 'save' to write
-> `deliverables/architecture/<slug>-architecture.html`, or tell me
+> `DOCMENTS/<slug>-system-architecture.html`, or tell me
 > what to change first."
 
 Iterate until `save`.
@@ -169,7 +169,7 @@ Iterate until `save`.
 
 ## Save + stage transition
 
-1. Write to `deliverables/architecture/<slug>-architecture.html` v1.0.
+1. Write to `DOCMENTS/<slug>-system-architecture.html` v1.0.
 2. Update `SESSION-STATE.md`:
    - `Stage:` → `ARCHITECTURE_DRAFT`
    - `Last skill:` → `build-architecture`
@@ -186,7 +186,7 @@ Iterate until `save`.
 ## Hand off
 
 ```
-Saved: deliverables/architecture/<slug>-architecture.html (v1.0)
+Saved: DOCMENTS/<slug>-system-architecture.html (v1.0)
 
 What's next?
 

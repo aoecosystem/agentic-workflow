@@ -5,7 +5,7 @@ description: Read TASKS.md, build a dependency graph, fan out independent featur
 
 ## Stage gate (RUN FIRST)
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. Branch:
    - If `Stage` is `TASKS_APPROVED`: this is the start of the build.
      Transition to `BUILDING` immediately, append audit log.
@@ -21,7 +21,7 @@ description: Read TASKS.md, build a dependency graph, fan out independent featur
 
 **Trigger:** User says `start build` or `resume build`
 
-**Purpose:** Read `state/TASKS.md`, build a dependency graph, run unified Figma ingest prep for UI tasks, fan out independent feature groups to parallel Builder agents, and run a continuous scheduler loop (Builder + QA) until all tasks are `done` or blocked on human input.
+**Purpose:** Read `SESSION-STATE/TASKS.md`, build a dependency graph, run unified Figma ingest prep for UI tasks, fan out independent feature groups to parallel Builder agents, and run a continuous scheduler loop (Builder + QA) until all tasks are `done` or blocked on human input.
 
 ---
 
@@ -30,14 +30,14 @@ description: Read TASKS.md, build a dependency graph, fan out independent featur
 ### Step 1 — Read current state
 
 Read:
-- `state/TASKS.md` — full task list with statuses
+- `SESSION-STATE/TASKS.md` — full task list with statuses
 - `memory/ARCHITECTURE.md` — existing module map
 - `memory/DECISIONS.md` — past decisions
 
 ### Step 2 — Validate preconditions
 
 Before starting:
-- Confirm `state/TASKS.md` exists and has at least one task block.
+- Confirm `SESSION-STATE/TASKS.md` exists and has at least one task block.
 - Confirm the scaffold task (TASK-000) exists.
 - If `start build`: scaffold task must be `pending` or `done`.
 - If `resume build`: load current in-flight state (`in-progress`, `in-review`, `needs-fix`) and all dependency-ready `pending` tasks.
@@ -79,7 +79,7 @@ If TASK-000 (scaffold) is `pending`:
 
 The moment TASK-000 (scaffold) finishes QA and moves to `done`,
 orchestrator MUST insert a follow-up task `TASK-000A — App-shell
-routing guard` into `state/TASKS.md` if it does not already exist. No
+routing guard` into `SESSION-STATE/TASKS.md` if it does not already exist. No
 feature task may be assigned until TASK-000A is also `done`.
 
 This guard task closes the most common failure mode in agentic builds:
@@ -87,7 +87,7 @@ the project compiles, tests pass, but the actual app shell crashes on
 boot because the router, layout, or entry component is misconfigured.
 We catch it once, here, before fanning out N parallel feature Builders.
 
-#### TASK-000A template (insert verbatim into state/TASKS.md)
+#### TASK-000A template (insert verbatim into SESSION-STATE/TASKS.md)
 
 ```markdown
 ## TASK-000A — App-shell routing guard
@@ -159,7 +159,7 @@ Task tool call:
   prompt: |
     You are Builder-<N>. Follow the `build-task` skill.
     Process this chain of tasks sequentially: <TASK-XX>, <TASK-YY>, ...
-    Read state/TASKS.md for each task block. Run all verification gates
+    Read SESSION-STATE/TASKS.md for each task block. Run all verification gates
     in Step 7 (lint, typecheck, tests, code-reviewer subagent, security-
     reviewer subagent if applicable). Mark each task `in-review` when done.
     Return a brief report listing tasks processed + their final status.
@@ -172,7 +172,7 @@ Run them concurrently by including all Task calls in the same response. Each Bui
 ### Step 7 — Monitor and route (continuous)
 
 After fanning out, run this loop continuously until exit condition is met:
-1. Re-read `state/TASKS.md` on every loop tick (and after every status change).
+1. Re-read `SESSION-STATE/TASKS.md` on every loop tick (and after every status change).
 2. Route all `in-review` tasks to QA immediately.
    - For UI tasks with design artifacts, `qa` also runs design fidelity checks.
 3. Route each `needs-fix` task back to its owning Builder chain first; if owner is unavailable, assign to an idle/new Builder.
@@ -189,7 +189,7 @@ Loop exit conditions:
 
 ### Step 8 — Update progress table
 
-After every status change, update the Build progress table at the top of `state/TASKS.md`:
+After every status change, update the Build progress table at the top of `SESSION-STATE/TASKS.md`:
 - Recount each status column.
 - Preferred helper: `python3 scripts/update-task-counts.py`
 
@@ -232,7 +232,7 @@ All tasks progressed to `done` through parallel Builder + QA execution.
   ```
 
 - **On all-tasks-done** (BUILDING → BUILD_COMPLETE): when every task in
-  `state/TASKS.md` has Status: `done` (no pending/in-progress/in-review/
+  `SESSION-STATE/TASKS.md` has Status: `done` (no pending/in-progress/in-review/
   needs-fix/blocked remain).
   ```
   <ISO>  orchestrate  BUILDING → BUILD_COMPLETE  all <N> tasks done

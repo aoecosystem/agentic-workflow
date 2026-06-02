@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infrastructure Diagram — Universal Template</title>
+<style>
+@page { size: A4; margin: 15mm 14mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  font-size: 10pt; line-height: 1.6; color: #1F2937; background: #F3F4F6;
+}
+/* ── Top bar ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: #fff; border-bottom: 1px solid #E5E7EB;
+  padding: 10px 24px; display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.topbar-title { font-size: 11pt; font-weight: 700; color: #1A56DB; flex: 1; }
+.topbar button {
+  background: none; border: 1px solid #D1D5DB; color: #374151;
+  padding: 5px 14px; border-radius: 6px; cursor: pointer; font-size: 9pt;
+  font-family: inherit; transition: all 0.15s;
+}
+.topbar button:hover { border-color: #1A56DB; color: #1A56DB; }
+/* ── Page wrapper ── */
+.page { max-width: 820px; margin: 24px auto; padding: 0 20px 60px; }
+/* ── Collapsible section ── */
+.doc-section { background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+.section-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; cursor: pointer; user-select: none;
+  border-bottom: 1px solid transparent; transition: background 0.15s;
+}
+.section-toggle:hover { background: #F9FAFB; }
+.section-toggle.open { border-bottom-color: #E5E7EB; }
+.section-toggle h1 {
+  font-size: 12pt; font-weight: 700; color: #1A56DB;
+  border: none; padding: 0; margin: 0;
+}
+.section-toggle h1:first-of-type { margin: 0; }
+.chevron { font-size: 11pt; color: #9CA3AF; transition: transform 0.2s; flex-shrink: 0; }
+.chevron.open { transform: rotate(180deg); }
+.section-body { padding: 18px 20px; display: none; }
+.section-body.open { display: block; }
+/* ── Typography ── */
+h2 { font-size: 11pt; font-weight: 700; color: #0E3A99; margin: 18px 0 7px; }
+h3 { font-size: 10pt; font-weight: 700; color: #1F2937; margin: 13px 0 5px; }
+p { margin: 5px 0 9px; }
+p.note { font-style: italic; color: #6B7280; font-size: 9pt; margin: 3px 0 9px; }
+p.lbl { font-weight: 700; color: #0E3A99; font-size: 9pt; margin: 11px 0 3px; text-transform: uppercase; letter-spacing: 0.4px; }
+ul, ol { margin: 3px 0 9px 18px; }
+li { margin: 2px 0; }
+code { font-family: 'Courier New', Consolas, monospace; font-size: 9pt; background: #F3F4F6; padding: 1px 5px; border-radius: 3px; color: #0E3A99; }
+/* ── Placeholder chips ── */
+.ph { display: inline-block; padding: 1px 6px; background: #FEF3C722; border: 1px dashed #F59E0B; color: #92400E; font-weight: 600; font-size: 8.5pt; border-radius: 3px; font-family: 'Courier New', monospace; }
+/* ── Table ── */
+table { width: 100%; border-collapse: collapse; margin: 5px 0 11px; font-size: 9pt; }
+thead { display: table-header-group; }
+th { background: #1A56DB; color: #fff; font-weight: 600; padding: 7px 10px; border: 1px solid #1A56DB; text-align: left; }
+td { padding: 6px 10px; border: 1px solid #D1D5DB; vertical-align: top; }
+tbody tr:nth-child(even) td { background: #F9FAFB; }
+/* ── Callout ── */
+.callout { background: #EFF4FE; border-left: 3px solid #1A56DB; padding: 11px 15px; margin: 9px 0 14px; border-radius: 0 4px 4px 0; }
+.callout-title { font-weight: 700; color: #0E3A99; font-size: 10pt; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+/* ── Mermaid ── */
+.mermaid-host { border: 1px solid #1A56DB33; background: #fff; padding: 14px; margin: 9px 0; border-radius: 6px; overflow-x: auto; text-align: center; }
+.mermaid-host svg { max-width: 100%; height: auto; }
+/* ── Entity blocks ── */
+.entity { margin: 11px 0; border: 1px solid #1A56DB; border-radius: 4px; overflow: hidden; }
+.entity-header { background: #1A56DB; color: #fff; padding: 7px 12px; font-weight: 700; font-size: 10pt; font-family: 'Courier New', monospace; }
+.entity-table { margin: 0; border: none; }
+.entity-table th { background: #0E3A99; font-size: 8.5pt; padding: 5px 10px; }
+.entity-table td { font-size: 8.5pt; padding: 4px 10px; }
+.entity-table code { background: transparent; color: #0E3A99; font-weight: 600; padding: 0; }
+/* ── Print ── */
+@media print {
+  body { background: #fff; }
+  .topbar { display: none; }
+  .page { margin: 0; padding: 0; max-width: 100%; }
+  .doc-section { border: none; border-radius: 0; margin: 0; break-inside: avoid; }
+  .section-toggle { display: none; }
+  .section-body { display: block !important; padding: 0; }
+  .section-toggle h1 { font-size: 14pt; color: #1A56DB; border-bottom: 2px solid #1A56DB; padding-bottom: 6px; margin-bottom: 10px; display: block; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="topbar-title">Infrastructure Diagram</span>
+  <button onclick="window.print()">Print / PDF</button>
+</div>
+<div class="page">
+
+
+<div class="doc-section">
+  <div class="section-toggle" id="environments">
+    <h1>1. Environments</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Where the application runs at each lifecycle stage.</p>
+
+<table>
+  <colgroup><col style="width:18%"><col style="width:24%"><col style="width:24%"><col style="width:34%"></colgroup>
+  <thead><tr><th>Environment</th><th>URL</th><th>Database</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>Local</td><td><code>localhost:3000</code></td><td>Local Postgres</td><td>Developer machine</td></tr>
+    <tr><td>Development</td><td><code>dev.<span class="ph">{{DOMAIN}}</span></code></td><td>Dev DB</td><td>Internal dev testing</td></tr>
+    <tr><td>Staging</td><td><code>staging.<span class="ph">{{DOMAIN}}</span></code></td><td>Staging DB</td><td>QA + client preview</td></tr>
+    <tr><td>Production</td><td><code><span class="ph">{{DOMAIN}}</span></code></td><td>Prod DB (HA)</td><td>Live customer-facing</td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="hosting-compute">
+    <h1>2. Hosting &amp; Compute</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Where each service runs.</p>
+
+<table>
+  <colgroup><col style="width:24%"><col style="width:22%"><col style="width:18%"><col style="width:36%"></colgroup>
+  <thead><tr><th>Service</th><th>Provider</th><th>Region</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Web Frontend</td><td><span class="ph">{{Vercel | Netlify | Cloudflare Pages | self-hosted}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{notes}}</span></td></tr>
+    <tr><td>Backend API</td><td><span class="ph">{{Railway | Render | AWS ECS | Fly.io | self-hosted VPS}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{auto-scale rules, instance type}}</span></td></tr>
+    <tr><td>Mobile (build distribution)</td><td><span class="ph">{{App Store | Play Store | Expo EAS}}</span></td><td>—</td><td><span class="ph">{{TestFlight, internal track}}</span></td></tr>
+    <tr><td>Background Workers</td><td><span class="ph">{{provider}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{queue / cron jobs}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="database-storage-cache">
+    <h1>3. Database, Storage &amp; Cache</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<table>
+  <colgroup><col style="width:24%"><col style="width:24%"><col style="width:18%"><col style="width:34%"></colgroup>
+  <thead><tr><th>Layer</th><th>Provider / Engine</th><th>Region</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Primary database</td><td><span class="ph">{{Postgres on Supabase | Neon | RDS | self-hosted}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{HA, read replicas, connection pooling (PgBouncer)}}</span></td></tr>
+    <tr><td>Object storage</td><td><span class="ph">{{S3 | Cloudflare R2 | Supabase Storage}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{user uploads, design assets, signed URLs}}</span></td></tr>
+    <tr><td>Cache / Queue</td><td><span class="ph">{{Redis on Upstash | ElastiCache | self-hosted}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{session cache, BullMQ queue, rate-limit counters}}</span></td></tr>
+    <tr><td>Search index</td><td><span class="ph">{{Postgres FTS (Phase 1) | Elasticsearch | Meilisearch (Phase 2)}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{multilingual indexing, analytics-friendly}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="network-domains">
+    <h1>4. Network &amp; Domains</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>Apex domain</strong></td><td><code><span class="ph">{{DOMAIN}}</span></code></td></tr>
+    <tr><td><strong>Subdomains</strong></td><td><code>app.<span class="ph">{{DOMAIN}}</span></code>, <code>api.<span class="ph">{{DOMAIN}}</span></code>, <code>admin.<span class="ph">{{DOMAIN}}</span></code></td></tr>
+    <tr><td><strong>DNS provider</strong></td><td><span class="ph">{{Cloudflare | Route53 | provider}}</span></td></tr>
+    <tr><td><strong>CDN</strong></td><td><span class="ph">{{Cloudflare | Bunny | provider}}</span></td></tr>
+    <tr><td><strong>SSL certificates</strong></td><td><span class="ph">{{Let's Encrypt auto / managed}}</span></td></tr>
+    <tr><td><strong>VPC / private network</strong></td><td><span class="ph">{{yes (services + DB on private subnet) | no | TBD}}</span></td></tr>
+    <tr><td><strong>Public-facing services</strong></td><td><span class="ph">{{web, api}}</span></td></tr>
+    <tr><td><strong>CORS allow-list</strong></td><td><span class="ph">{{origins explicitly allowlisted in API}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="external-services-integrations">
+    <h1>5. External Services &amp; Integrations</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Every third-party the system depends on.</p>
+
+<table>
+  <colgroup><col style="width:24%"><col style="width:24%"><col style="width:18%"><col style="width:34%"></colgroup>
+  <thead><tr><th>Capability</th><th>Provider</th><th>Env vars</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Payments</td><td><span class="ph">{{Stripe | Payme | Click | Uzum}}</span></td><td><code><span class="ph">{{STRIPE_SECRET_KEY}}</span></code></td><td><span class="ph">{{webhooks, refunds}}</span></td></tr>
+    <tr><td>Email</td><td><span class="ph">{{SendGrid | Postmark | Resend}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{transactional templates}}</span></td></tr>
+    <tr><td>SMS</td><td><span class="ph">{{Twilio | Eskiz.uz | Vonage}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{OTP, alerts}}</span></td></tr>
+    <tr><td>Push notifications</td><td><span class="ph">{{Firebase Cloud Messaging | OneSignal | Expo Notifications}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{iOS + Android}}</span></td></tr>
+    <tr><td>Maps</td><td><span class="ph">{{Yandex Maps | Mapbox | Google Maps}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{geocoding, distance}}</span></td></tr>
+    <tr><td>Error tracking</td><td><span class="ph">{{Sentry | Bugsnag}}</span></td><td><code><span class="ph">{{DSN}}</span></code></td><td><span class="ph">{{frontend + backend}}</span></td></tr>
+    <tr><td>Analytics</td><td><span class="ph">{{PostHog | Mixpanel | Plausible}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{event tracking, funnels}}</span></td></tr>
+    <tr><td>Monitoring / uptime</td><td><span class="ph">{{Better Stack | Datadog | Grafana Cloud}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{logs, metrics, alerts}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="security-secrets">
+    <h1>6. Security &amp; Secrets</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<div class="callout">
+  <div class="callout-title">Secret management policy</div>
+  <p>Never commit secrets to the repo. Use the host's secret store (Vercel env, Railway secrets, AWS Secrets Manager, GitHub Actions secrets) and document the variable names below.</p>
+</div>
+
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>Auth method</strong></td><td><span class="ph">{{JWT in HttpOnly cookie | Auth.js sessions | Clerk | Supabase Auth}}</span></td></tr>
+    <tr><td><strong>Token storage (frontend)</strong></td><td><span class="ph">{{HttpOnly cookie (preferred) | localStorage (warn)}}</span></td></tr>
+    <tr><td><strong>Password hashing</strong></td><td><span class="ph">{{bcrypt cost 12 | argon2id}}</span></td></tr>
+    <tr><td><strong>Rate limiting</strong></td><td><span class="ph">{{e.g. 60 req/min per IP on /auth/*}}</span></td></tr>
+    <tr><td><strong>WAF / DDoS</strong></td><td><span class="ph">{{Cloudflare | provider built-in}}</span></td></tr>
+    <tr><td><strong>Required env vars</strong></td><td><span class="ph">{{DATABASE_URL, JWT_SECRET, STRIPE_SECRET_KEY, ...}}</span></td></tr>
+    <tr><td><strong>Vulnerability scanning</strong></td><td><span class="ph">{{Dependabot, Snyk, npm audit in CI}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="backup-disaster-recovery">
+    <h1>7. Backup &amp; Disaster Recovery</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>Database backup frequency</strong></td><td><span class="ph">{{daily snapshots | continuous WAL | provider default}}</span></td></tr>
+    <tr><td><strong>Backup retention</strong></td><td><span class="ph">{{7d | 30d | 90d}}</span></td></tr>
+    <tr><td><strong>Backup location</strong></td><td><span class="ph">{{cross-region S3 | provider managed}}</span></td></tr>
+    <tr><td><strong>Storage backup</strong></td><td><span class="ph">{{S3 versioning + cross-region replication | TBD}}</span></td></tr>
+    <tr><td><strong>RPO (recovery point objective)</strong></td><td><span class="ph">{{e.g. 1 hour}}</span></td></tr>
+    <tr><td><strong>RTO (recovery time objective)</strong></td><td><span class="ph">{{e.g. 4 hours}}</span></td></tr>
+    <tr><td><strong>Restore drill cadence</strong></td><td><span class="ph">{{quarterly | annual | TBD}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="ci-cd-pipeline">
+    <h1>8. CI / CD Pipeline</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="lbl">Pipeline stages</p>
+<ol>
+  <li><strong>Lint &amp; typecheck</strong> — runs on every push.</li>
+  <li><strong>Unit tests</strong> — runs on every push.</li>
+  <li><strong>Integration / E2E tests</strong> — runs on PR + main.</li>
+  <li><strong>Build artifacts</strong> — frontend bundle, backend container.</li>
+  <li><strong>Deploy to dev</strong> — auto on merge to <code>main</code>.</li>
+  <li><strong>Deploy to staging</strong> — manual approval after dev passes smoke tests.</li>
+  <li><strong>Deploy to production</strong> — manual approval after staging is green for 24h.</li>
+</ol>
+
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>CI provider</strong></td><td><span class="ph">{{GitHub Actions | GitLab CI | Vercel | provider}}</span></td></tr>
+    <tr><td><strong>Required GitHub secrets</strong></td><td><span class="ph">{{DATABASE_URL, DEPLOY_TOKEN, ...}}</span></td></tr>
+    <tr><td><strong>Branch protection</strong></td><td><span class="ph">{{require 1 review + green CI on main}}</span></td></tr>
+    <tr><td><strong>Rollback strategy</strong></td><td><span class="ph">{{revert merge + redeploy | provider one-click rollback}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="topology-visual-diagram">
+    <h1>9. Topology — Visual Diagram</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">
+  Edit the Mermaid <code>flowchart</code> below to match the services listed in <strong>Sections 2-5</strong>.
+  The diagram auto-renders in the browser using <a href="https://mermaid.js.org/" target="_blank" rel="noopener">Mermaid.js</a>.
+</p>
+
+<p class="lbl">Authoring rules</p>
+<ul>
+  <li>Group nodes by environment / boundary with <code>subgraph</code> blocks (Client, CDN, API, Data, External).</li>
+  <li>Use the same provider names from Sections 2-5 (Vercel, Railway, Postgres, Redis, Stripe, etc.).</li>
+  <li>Solid arrows for synchronous calls, dashed (<code>-.-&gt;</code>) for events / async / webhooks.</li>
+  <li>Label every external integration edge with the protocol (REST, webhook, SMTP, SMS).</li>
+</ul>
+
+<div class="mermaid-host">
+  <div class="mermaid">
+flowchart TB
+  subgraph Client["Client"]
+    user["&nbsp;User&nbsp;"]
+    web["&nbsp;Web App&nbsp;"]
+    mobile["&nbsp;Mobile App&nbsp;"]
+  end
+
+  subgraph Edge["Edge / CDN"]
+    cdn["&nbsp;Cloudflare CDN&nbsp;"]
+  end
+
+  subgraph Compute["Compute"]
+    api["&nbsp;API / Railway&nbsp;"]
+    worker["&nbsp;Background Worker&nbsp;"]
+  end
+
+  subgraph Data["Data Layer"]
+    db[("&nbsp;Postgres / Neon&nbsp;")]
+    cache[("&nbsp;Redis / Upstash&nbsp;")]
+    storage[("&nbsp;S3 / R2&nbsp;")]
+  end
+
+  subgraph External["External Services"]
+    stripe["&nbsp;Stripe&nbsp;"]
+    sms["&nbsp;Eskiz SMS&nbsp;"]
+    email["&nbsp;SendGrid&nbsp;"]
+    sentry["&nbsp;Sentry&nbsp;"]
+  end
+
+  user --> cdn
+  cdn --> web
+  web --> api
+  mobile --> api
+  api --> db
+  api --> cache
+  api --> storage
+  api -->|REST| stripe
+  api -->|REST| sms
+  api -->|SMTP| email
+  api -.->|webhook| stripe
+  api --> sentry
+  worker --> db
+  worker --> cache
+
+  classDef client fill:#EFF4FE,stroke:#1A56DB,stroke-width:1.5px,color:#0E3A99;
+  classDef edge fill:#FEF3C7,stroke:#F59E0B,stroke-width:1.5px,color:#92400E;
+  classDef compute fill:#E0E7FF,stroke:#4F46E5,stroke-width:1.5px,color:#312E81;
+  classDef data fill:#DCFCE7,stroke:#16A34A,stroke-width:1.5px,color:#14532D;
+  classDef external fill:#FCE7F3,stroke:#DB2777,stroke-width:1.5px,color:#831843;
+
+  class user,web,mobile client;
+  class cdn edge;
+  class api,worker compute;
+  class db,cache,storage data;
+  class stripe,sms,email,sentry external;
+
+  linkStyle 11 stroke:#F59E0B,stroke-width:2px,stroke-dasharray:6 4;
+  </div>
+</div>
+
+<h2>Mermaid source (editable)</h2>
+<p class="note">The block below is the same source rendered above — kept as a copy-paste reference for editing.</p>
+<pre style="background:#F3F4F6; padding:12px; border-left:3px solid #1A56DB; font-size:9pt; white-space:pre-wrap;"><code>flowchart LR
+  subgraph Client
+    user[User]
+    web[Web App]
+    mobile[Mobile App]
+  end
+
+  subgraph Compute
+    api[API / Railway]
+    worker[Background Worker]
+  end
+
+  subgraph Data
+    db[(Postgres)]
+    cache[(Redis)]
+  end
+
+  user --> web
+  web --> api
+  mobile --> api
+  api --> db
+  api --> cache
+  worker --> db
+</code></pre>
+  </div>
+</div>
+</div>
+<script>
+  // Accordion
+  document.querySelectorAll('.section-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const body = btn.nextElementSibling;
+      const chevron = btn.querySelector('.chevron');
+      const open = body.classList.toggle('open');
+      chevron.classList.toggle('open', open);
+      btn.classList.toggle('open', open);
+    });
+  });
+  // Open first section by default
+  const first = document.querySelector('.section-toggle');
+  if (first) first.click();
+</script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true, theme: 'base',
+    themeVariables: { primaryColor: '#EFF4FE', primaryTextColor: '#0E3A99', primaryBorderColor: '#1A56DB', lineColor: '#1A56DB', secondaryColor: '#F59E0B22', tertiaryColor: '#F9FAFB', fontFamily: 'Inter, -apple-system, sans-serif', fontSize: '12px', clusterBkg: '#F9FAFB', clusterBorder: '#1A56DB66' },
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', defaultRenderer: 'elk', padding: 16, nodeSpacing: 50, rankSpacing: 60 },
+    layout: 'elk',
+    elk: { 'elk.algorithm': 'layered', 'elk.direction': 'DOWN', 'elk.alignment': 'CENTER', 'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX', 'elk.layered.spacing.nodeNodeBetweenLayers': 50, 'elk.spacing.nodeNode': 36, 'elk.spacing.edgeNode': 20 },
+    er: { useMaxWidth: true, diagramPadding: 20, entityPadding: 12, minEntityWidth: 120, minEntityHeight: 70, fontSize: 12, stroke: '#1A56DB', fill: '#EFF4FE' },
+  });
+</script>
+</body>
+</html>

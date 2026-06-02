@@ -22,7 +22,7 @@ Compare to stored hashes. On drift, halt and ask user before proceeding.
 
 ## Stage gate
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. If `Stage` is not `BUILD_APPROVED`, refuse:
    > "Verify is only valid from `BUILD_APPROVED`. Current: `<STAGE>`.
    > Run `/approve-build` first (after build completes)."
@@ -173,7 +173,7 @@ Stage stays at BUILD_APPROVED. Fix and re-run /verify-build.
 
 ## Transition (on success only)
 
-1. Update `state/SESSION-STATE.md`:
+1. Update `SESSION-STATE/SESSION-STATE.md`:
    - `Stage:` → `VERIFIED`
    - `Last skill:` → `verify-build`
    - `Last update:` → ISO timestamp

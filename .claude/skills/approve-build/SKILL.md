@@ -1,6 +1,6 @@
 ---
 name: approve-build
-description: Lock the completed build and transition Stage from BUILD_COMPLETE to BUILD_APPROVED. Verifies all tasks done (no blocked, no needs-fix), QA notes resolved, no orphan files in apps/. Updates state/SESSION-STATE.md, appends audit log. Trigger on `/approve-build`.
+description: Lock the completed build and transition Stage from BUILD_COMPLETE to BUILD_APPROVED. Verifies all tasks done (no blocked, no needs-fix), QA notes resolved, no orphan files in apps/. Updates SESSION-STATE/SESSION-STATE.md, appends audit log. Trigger on `/approve-build`.
 ---
 
 # Skill: approve-build
@@ -14,7 +14,7 @@ Unlocks `/verify-build` (final lint + types + tests gate).
 
 ## Manual-edit detection (RUN FIRST)
 
-Compute SHA-256 of every artifact in `state/SESSION-STATE.md` Artifacts
+Compute SHA-256 of every artifact in `SESSION-STATE/SESSION-STATE.md` Artifacts
 list (HTMLs + state files + apps/ files). Compare to stored hashes. On
 drift, halt and ask user before proceeding (per AGENTS.md Manual Edit
 Protocol).
@@ -23,7 +23,7 @@ Protocol).
 
 ## Stage gate
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. If `Stage` is not `BUILD_COMPLETE`, refuse:
    > "Approve is only valid from `BUILD_COMPLETE`. Current: `<STAGE>`.
    > Run `/status` for next valid commands. To reach `BUILD_COMPLETE`,
@@ -34,14 +34,14 @@ Protocol).
 
 ## Quality gate (BLOCKING)
 
-Read `state/TASKS.md` and verify:
+Read `SESSION-STATE/TASKS.md` and verify:
 
 1. **All tasks `done`.** No `pending`, `in-progress`, `in-review`,
    `needs-fix`, or `blocked` tasks remain.
 2. **No QA red flags.** No tasks have unresolved QA notes.
 3. **All acceptance criteria checked.** Every `[ ]` is now `[x]`.
 4. **Code in `../apps/` matches architecture style.** Folder structure
-   in apps/ follows `deliverables/architecture/styles/<style>.md` pattern.
+   in apps/ follows `CONTEXT/architecture-styles/<style>.md` pattern.
 5. **No orphan files in apps/.** Every file in apps/ traces back to a
    task in TASKS.md (no rogue files).
 6. **No empty modules.** Every service/module folder in apps/ contains
@@ -54,7 +54,7 @@ recommend `/show-status` to see open tasks or rollback.
 
 ## Transition
 
-1. Update `state/SESSION-STATE.md`:
+1. Update `SESSION-STATE/SESSION-STATE.md`:
    - `Stage:` → `BUILD_APPROVED`
    - `Last skill:` → `approve-build`
    - `Last update:` → ISO timestamp

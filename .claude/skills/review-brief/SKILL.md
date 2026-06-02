@@ -1,6 +1,6 @@
 ---
 name: review-brief
-description: Iterative section-by-section editor for a previously filled Project Brief. Reads `state/SESSION-STATE.md`, refuses unless Stage is BRIEF_DRAFT or BRIEF_APPROVED, lets the user pick a section, applies the change, bumps version, writes audit log. If Stage is BRIEF_APPROVED, this re-opens it back to BRIEF_DRAFT (reversibility). Trigger when the user says "/review-brief", "review the brief", "edit my brief", "update brief". Do NOT trigger if no filled brief exists.
+description: Iterative section-by-section editor for a previously filled Project Brief. Reads `SESSION-STATE/SESSION-STATE.md`, refuses unless Stage is BRIEF_DRAFT or BRIEF_APPROVED, lets the user pick a section, applies the change, bumps version, writes audit log. If Stage is BRIEF_APPROVED, this re-opens it back to BRIEF_DRAFT (reversibility). Trigger when the user says "/review-brief", "review the brief", "edit my brief", "update brief". Do NOT trigger if no filled brief exists.
 ---
 
 # Skill: review-brief
@@ -34,7 +34,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 
 ## Stage gate (read SESSION-STATE.md first)
 
-1. Read `state/SESSION-STATE.md`. Locate the `Stage:` value.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate the `Stage:` value.
 2. If `Stage:` is not one of `BRIEF_DRAFT` or `BRIEF_APPROVED`, refuse:
    > "Brief review is only valid in stages BRIEF_DRAFT or BRIEF_APPROVED.
    > Current stage: `<STAGE>`. Run `/status` to see what's valid next."
@@ -50,7 +50,7 @@ Stage does NOT change on a manual-edit accept — it stays where it was.
 ## Pre-flight
 
 1. From `SESSION-STATE.md` Header, get the active `Slug:`.
-2. Open `deliverables/brief/<slug>-brief.html` and read it
+2. Open `DOCMENTS/<slug>-project-brief.html` and read it
    end-to-end so you know what's filled and what's `TBD`.
 3. If the file does not exist, halt and tell the user to run
    `/start-project` first.
@@ -162,7 +162,7 @@ style but downstream documents still reflect the old architecture.
 
 On user confirmation:
 
-1. Write the updated HTML back to `deliverables/brief/<slug>-brief.html`.
+1. Write the updated HTML back to `DOCMENTS/<slug>-project-brief.html`.
 2. Bump the file version (in the cover-meta or version comment): e.g.
    `v1.0` → `v1.1`. Always increment minor by 1 per save.
 3. Update `SESSION-STATE.md`:

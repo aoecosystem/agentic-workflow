@@ -1,7 +1,13 @@
 ---
 name: review-infrastructure
-description: Iterative section-by-section editor for the Infrastructure Diagram. Reads `state/SESSION-STATE.md`, refuses unless Stage is INFRASTRUCTURE_DRAFT, INFRASTRUCTURE_APPROVED, or DOCS_COMPLETE, lets the user pick one of the 9 sections, applies the change, bumps version, writes audit log. If Stage is INFRASTRUCTURE_APPROVED or DOCS_COMPLETE, this re-opens to INFRASTRUCTURE_DRAFT. Trigger on "/review-infrastructure", "review infrastructure", "edit infrastructure".
+description: Iterative section-by-section editor for the Infrastructure Diagram. Reads `SESSION-STATE/SESSION-STATE.md`, refuses unless Stage is INFRASTRUCTURE_DRAFT, INFRASTRUCTURE_APPROVED, or DOCS_COMPLETE, lets the user pick one of the 9 sections, applies the change, bumps version, writes audit log. If Stage is INFRASTRUCTURE_APPROVED or DOCS_COMPLETE, this re-opens to INFRASTRUCTURE_DRAFT. Trigger on "/review-infrastructure", "review infrastructure", "edit infrastructure".
 ---
+
+> **DEPRECATED** — This skill is no longer part of the pipeline.
+> Database schema and infrastructure are now Section 8 and Section 9 of
+> the System Architecture document (`/build-architecture`).
+> This file is kept for reference only and will not execute.
+
 
 # Skill: review-infrastructure
 

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Architecture — Universal Template</title>
+<style>
+@page { size: A4; margin: 15mm 14mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  font-size: 10pt; line-height: 1.6; color: #1F2937; background: #F3F4F6;
+}
+/* ── Top bar ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: #fff; border-bottom: 1px solid #E5E7EB;
+  padding: 10px 24px; display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.topbar-title { font-size: 11pt; font-weight: 700; color: #1A56DB; flex: 1; }
+.topbar button {
+  background: none; border: 1px solid #D1D5DB; color: #374151;
+  padding: 5px 14px; border-radius: 6px; cursor: pointer; font-size: 9pt;
+  font-family: inherit; transition: all 0.15s;
+}
+.topbar button:hover { border-color: #1A56DB; color: #1A56DB; }
+/* ── Page wrapper ── */
+.page { max-width: 820px; margin: 24px auto; padding: 0 20px 60px; }
+/* ── Collapsible section ── */
+.doc-section { background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+.section-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; cursor: pointer; user-select: none;
+  border-bottom: 1px solid transparent; transition: background 0.15s;
+}
+.section-toggle:hover { background: #F9FAFB; }
+.section-toggle.open { border-bottom-color: #E5E7EB; }
+.section-toggle h1 {
+  font-size: 12pt; font-weight: 700; color: #1A56DB;
+  border: none; padding: 0; margin: 0;
+}
+.section-toggle h1:first-of-type { margin: 0; }
+.chevron { font-size: 11pt; color: #9CA3AF; transition: transform 0.2s; flex-shrink: 0; }
+.chevron.open { transform: rotate(180deg); }
+.section-body { padding: 18px 20px; display: none; }
+.section-body.open { display: block; }
+/* ── Typography ── */
+h2 { font-size: 11pt; font-weight: 700; color: #0E3A99; margin: 18px 0 7px; }
+h3 { font-size: 10pt; font-weight: 700; color: #1F2937; margin: 13px 0 5px; }
+p { margin: 5px 0 9px; }
+p.note { font-style: italic; color: #6B7280; font-size: 9pt; margin: 3px 0 9px; }
+p.lbl { font-weight: 700; color: #0E3A99; font-size: 9pt; margin: 11px 0 3px; text-transform: uppercase; letter-spacing: 0.4px; }
+ul, ol { margin: 3px 0 9px 18px; }
+li { margin: 2px 0; }
+code { font-family: 'Courier New', Consolas, monospace; font-size: 9pt; background: #F3F4F6; padding: 1px 5px; border-radius: 3px; color: #0E3A99; }
+/* ── Placeholder chips ── */
+.ph { display: inline-block; padding: 1px 6px; background: #FEF3C722; border: 1px dashed #F59E0B; color: #92400E; font-weight: 600; font-size: 8.5pt; border-radius: 3px; font-family: 'Courier New', monospace; }
+/* ── Table ── */
+table { width: 100%; border-collapse: collapse; margin: 5px 0 11px; font-size: 9pt; }
+thead { display: table-header-group; }
+th { background: #1A56DB; color: #fff; font-weight: 600; padding: 7px 10px; border: 1px solid #1A56DB; text-align: left; }
+td { padding: 6px 10px; border: 1px solid #D1D5DB; vertical-align: top; }
+tbody tr:nth-child(even) td { background: #F9FAFB; }
+/* ── Callout ── */
+.callout { background: #EFF4FE; border-left: 3px solid #1A56DB; padding: 11px 15px; margin: 9px 0 14px; border-radius: 0 4px 4px 0; }
+.callout-title { font-weight: 700; color: #0E3A99; font-size: 10pt; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+/* ── Mermaid ── */
+.mermaid-host { border: 1px solid #1A56DB33; background: #fff; padding: 14px; margin: 9px 0; border-radius: 6px; overflow-x: auto; text-align: center; }
+.mermaid-host svg { max-width: 100%; height: auto; }
+/* ── Entity blocks ── */
+.entity { margin: 11px 0; border: 1px solid #1A56DB; border-radius: 4px; overflow: hidden; }
+.entity-header { background: #1A56DB; color: #fff; padding: 7px 12px; font-weight: 700; font-size: 10pt; font-family: 'Courier New', monospace; }
+.entity-table { margin: 0; border: none; }
+.entity-table th { background: #0E3A99; font-size: 8.5pt; padding: 5px 10px; }
+.entity-table td { font-size: 8.5pt; padding: 4px 10px; }
+.entity-table code { background: transparent; color: #0E3A99; font-weight: 600; padding: 0; }
+/* ── Print ── */
+@media print {
+  body { background: #fff; }
+  .topbar { display: none; }
+  .page { margin: 0; padding: 0; max-width: 100%; }
+  .doc-section { border: none; border-radius: 0; margin: 0; break-inside: avoid; }
+  .section-toggle { display: none; }
+  .section-body { display: block !important; padding: 0; }
+  .section-toggle h1 { font-size: 14pt; color: #1A56DB; border-bottom: 2px solid #1A56DB; padding-bottom: 6px; margin-bottom: 10px; display: block; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="topbar-title">System Architecture</span>
+  <button onclick="window.print()">Print / PDF</button>
+</div>
+<div class="page">
+
+
+<div class="doc-section">
+  <div class="section-toggle" id="architecture-overview">
+    <h1>1. Architecture Overview</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>Architecture style</strong></td><td><span class="ph">{{Modular Monolith | Microservices | Event-Driven | Serverless | Hybrid}}</span></td></tr>
+    <tr><td><strong>Pattern</strong></td><td><span class="ph">{{e.g. NestJS modular monolith with each service as a module — extractable to microservices later}}</span></td></tr>
+    <tr><td><strong>Architecture principles</strong></td><td><span class="ph">{{Clean Architecture + DDD-lite + DRY — domain logic isolated from transport and persistence}}</span></td></tr>
+    <tr><td><strong>Communication style</strong></td><td><span class="ph">{{REST + events | tRPC | GraphQL | gRPC}}</span></td></tr>
+    <tr><td><strong>Number of services</strong></td><td><span class="ph">{{N services — S1-S6 universal + S7+ project-specific}}</span></td></tr>
+    <tr><td><strong>Migration path</strong></td><td><span class="ph">{{e.g. "Modules can be extracted to standalone services when scale demands"}}</span></td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <div class="callout-title">Key architectural decisions</div>
+  <ul>
+    <li><span class="ph">{{Decision 1 — e.g. "Modular monolith for Phase 1 to minimize ops overhead"}}</span></li>
+    <li><span class="ph">{{Decision 2 — e.g. "Event-driven boundaries between services to enable later extraction"}}</span></li>
+    <li><span class="ph">{{Decision 3 — e.g. "Postgres as single primary store, Redis for ephemeral state"}}</span></li>
+    <li><span class="ph">{{Decision 4 — e.g. "REST for external API, internal modules use direct calls"}}</span></li>
+  </ul>
+</div>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="service-inventory">
+    <h1>2. Service Inventory</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Every service the system contains. Mark each as Universal (reusable across AO Ecosystem projects) or Project (specific to this build).</p>
+
+<table>
+  <colgroup><col style="width:6%"><col style="width:24%"><col style="width:14%"><col style="width:56%"></colgroup>
+  <thead><tr><th>#</th><th>Service</th><th>Type</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>S1</td><td>IDENTITY-SERVICE</td><td>Universal</td><td>Auth, sessions, profiles, RBAC, multi-role</td></tr>
+    <tr><td>S2</td><td>NOTIFICATION-SERVICE</td><td>Universal</td><td>In-app notifications, feed, preferences</td></tr>
+    <tr><td>S3</td><td>MESSAGES-SERVICE</td><td>Universal</td><td>Email, SMS, push delivery</td></tr>
+    <tr><td>S4</td><td>AUDIT-SERVICE</td><td>Universal</td><td>Activity logs, security alerts, compliance</td></tr>
+    <tr><td>S5</td><td>ANALYTICS-SERVICE</td><td>Universal</td><td>Event tracking, metrics, reports</td></tr>
+    <tr><td>S6</td><td>PAYMENT-SERVICE</td><td>Universal</td><td>Charges, gateway routing, refunds</td></tr>
+    <tr><td>S7</td><td><span class="ph">{{PROJECT_SERVICE_NAME}}</span></td><td>Project</td><td><span class="ph">{{purpose}}</span></td></tr>
+    <tr><td>S8</td><td><span class="ph">{{PROJECT_SERVICE_NAME}}</span></td><td>Project</td><td><span class="ph">{{purpose}}</span></td></tr>
+    <tr><td>+</td><td><span class="ph">{{Add as many S7+ as needed}}</span></td><td></td><td></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="layered-architecture">
+    <h1>3. Layered Architecture</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">Each layer's responsibility and what it must / must not do.</p>
+
+<table>
+  <colgroup><col style="width:18%"><col style="width:32%"><col style="width:25%"><col style="width:25%"></colgroup>
+  <thead><tr><th>Layer</th><th>Responsibility</th><th>Owns</th><th>Must NOT do</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Presentation</strong></td><td>UI rendering, user input, optimistic state</td><td>Components, screens, hooks</td><td>Direct DB access, business rules</td></tr>
+    <tr><td><strong>Transport / API</strong></td><td>HTTP / RPC handlers, validation, auth check</td><td>Controllers, route handlers, DTOs</td><td>Business logic, persistence calls</td></tr>
+    <tr><td><strong>Service / Domain</strong></td><td>Business logic, orchestration, state transitions</td><td>Services, use-cases, domain models</td><td>HTTP concerns, raw SQL</td></tr>
+    <tr><td><strong>Repository / Data</strong></td><td>Persistence, queries, schema mapping</td><td>Repositories, ORM, migrations</td><td>Business decisions, response shaping</td></tr>
+    <tr><td><strong>Integration</strong></td><td>External services (payment gateways, SMS, push)</td><td>Adapters, webhook handlers</td><td>Domain logic, data persistence</td></tr>
+  </tbody>
+</table>
+
+<p class="lbl">Boundary rules</p>
+<ul>
+  <li>UI never imports from data layer directly. Always goes through transport.</li>
+  <li>Data layer never depends on UI modules.</li>
+  <li>Services do not perform transport concerns (HTTP response shaping).</li>
+  <li>API handlers are thin — delegate domain logic to services.</li>
+</ul>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="data-flow">
+    <h1>4. Data Flow</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">How a request moves through the system from entry to exit.</p>
+
+<p class="lbl">Read flow (example)</p>
+<ol>
+  <li>Client requests <code>GET /api/v1/<span class="ph">{{resource}}</span></code></li>
+  <li>API gateway validates auth token → attaches <code>actor_id</code> to context</li>
+  <li>Route handler parses query params, calls <code>resourceService.list(actor, filters)</code></li>
+  <li>Service applies authorization rules, calls <code>resourceRepository.find(filters)</code></li>
+  <li>Repository runs the query, returns mapped domain objects</li>
+  <li>Service may enrich (join cached data, apply derived fields) and returns DTO</li>
+  <li>Route handler shapes response: <code>{ data, meta }</code> envelope, sets cache headers</li>
+  <li>Client renders</li>
+</ol>
+
+<p class="lbl">Write flow (example)</p>
+<ol>
+  <li>Client submits <code>POST /api/v1/<span class="ph">{{resource}}</span></code> with body</li>
+  <li>API validates body against the canonical schema (Zod / class-validator)</li>
+  <li>Route handler invokes <code>resourceService.create(actor, dto)</code></li>
+  <li>Service runs business rules, persists via repository, emits domain event</li>
+  <li>Event listeners (notification, audit, analytics) react asynchronously</li>
+  <li>Route handler returns <code>201 Created</code> with the new resource and Location header</li>
+</ol>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="module-boundaries-contracts">
+    <h1>5. Module Boundaries &amp; Contracts</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">How services talk to each other. Every cross-service call is a contract.</p>
+
+<table>
+  <colgroup><col style="width:24%"><col style="width:24%"><col style="width:22%"><col style="width:30%"></colgroup>
+  <thead><tr><th>From</th><th>To</th><th>Mechanism</th><th>Contract</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ph">{{SERVICE_A}}</span></td><td><span class="ph">{{SERVICE_B}}</span></td><td><span class="ph">{{REST | event | direct call}}</span></td><td><span class="ph">{{endpoint or event name + payload shape}}</span></td></tr>
+    <tr><td><span class="ph">{{SERVICE_A}}</span></td><td><span class="ph">{{SERVICE_B}}</span></td><td><span class="ph">{{...}}</span></td><td><span class="ph">{{...}}</span></td></tr>
+  </tbody>
+</table>
+
+<p class="lbl">Contract rules</p>
+<ul>
+  <li>Every cross-service event has a versioned payload schema.</li>
+  <li>Producers do not know who consumes their events.</li>
+  <li>Consumers must be idempotent — duplicate events MUST NOT cause duplicate side effects.</li>
+  <li>Breaking contract changes require a new version, not a mutation of the old one.</li>
+</ul>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="cross-cutting-concerns">
+    <h1>6. Cross-Cutting Concerns</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<table>
+  <colgroup><col style="width:22%"><col style="width:78%"></colgroup>
+  <tbody>
+    <tr><td><strong>Logging</strong></td><td><span class="ph">{{Structured JSON, correlation/trace ID propagated end-to-end, sink: provider}}</span></td></tr>
+    <tr><td><strong>Tracing</strong></td><td><span class="ph">{{OpenTelemetry, exported to provider}}</span></td></tr>
+    <tr><td><strong>Metrics</strong></td><td><span class="ph">{{Counter + duration per user-visible flow, exposed via /metrics}}</span></td></tr>
+    <tr><td><strong>Authentication</strong></td><td><span class="ph">{{JWT in HttpOnly cookie | session | provider}}</span></td></tr>
+    <tr><td><strong>Authorization</strong></td><td><span class="ph">{{RBAC (roles + permissions) checked at API boundary; service layer trusts authenticated context}}</span></td></tr>
+    <tr><td><strong>Rate limiting</strong></td><td><span class="ph">{{per-IP and per-actor; auth endpoints stricter}}</span></td></tr>
+    <tr><td><strong>Caching</strong></td><td><span class="ph">{{Redis for session + hot reads; CDN edge for static; HTTP cache headers}}</span></td></tr>
+    <tr><td><strong>Configuration</strong></td><td><span class="ph">{{Env vars per environment; secrets in provider's secret store}}</span></td></tr>
+    <tr><td><strong>Internationalization</strong></td><td><span class="ph">{{Languages, fallback chain, content storage}}</span></td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="architecture-visual-diagram">
+    <h1>7. Architecture — Visual Diagram</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<p class="note">
+  Edit the Mermaid <code>flowchart</code> below to match the services listed in <strong>Section 2 — Service Inventory</strong> and the data flow in <strong>Section 4</strong>.
+  The diagram auto-renders in the browser using <a href="https://mermaid.js.org/" target="_blank" rel="noopener">Mermaid.js</a> — works from <code>file://</code>, no server needed.
+</p>
+
+<p class="lbl">Authoring rules</p>
+<ul>
+  <li>Group nodes by layer with <code>subgraph</code> blocks (Client, API, Domain, Data, External).</li>
+  <li>Use the same service codes from Section 2 (S1-S11).</li>
+  <li><strong>Solid arrows</strong> (<code>--&gt;</code>) for synchronous calls; <strong>dashed arrows</strong> (<code>-. label .-&gt;</code>) for async events.</li>
+  <li>Use <code>[(name)]</code> for databases, <code>([name])</code> for external services.</li>
+  <li>Layer colors are applied via <code>classDef</code> + <code>class</code> assignments at the bottom — keep that pattern when adding nodes.</li>
+</ul>
+
+<div class="mermaid-host">
+  <div class="mermaid">
+flowchart TB
+  subgraph Client["CLIENT"]
+    direction LR
+    web["&nbsp;&nbsp;Web App&nbsp;&nbsp;"]
+    mobile["&nbsp;&nbsp;Mobile App&nbsp;&nbsp;"]
+    admin["&nbsp;&nbsp;Admin Console&nbsp;&nbsp;"]
+  end
+
+  subgraph API["API GATEWAY"]
+    direction LR
+    rest["&nbsp;&nbsp;REST Routes&nbsp;&nbsp;"]
+    authmw{{"&nbsp;&nbsp;Auth Middleware&nbsp;&nbsp;"}}
+  end
+
+  subgraph Domain["DOMAIN · BACKEND"]
+    direction TB
+
+    subgraph Universal["Universal Services · S1–S6"]
+      direction LR
+      S1["&nbsp;&nbsp;<b>S1</b>&nbsp;Identity&nbsp;&nbsp;"]
+      S2["&nbsp;&nbsp;<b>S2</b>&nbsp;Notification&nbsp;&nbsp;"]
+      S3["&nbsp;&nbsp;<b>S3</b>&nbsp;Messages&nbsp;&nbsp;"]
+      S4["&nbsp;&nbsp;<b>S4</b>&nbsp;Audit&nbsp;&nbsp;"]
+      S5["&nbsp;&nbsp;<b>S5</b>&nbsp;Analytics&nbsp;&nbsp;"]
+      S6["&nbsp;&nbsp;<b>S6</b>&nbsp;Payment&nbsp;&nbsp;"]
+    end
+
+    subgraph Project["Project Services · S7+"]
+      direction LR
+      S7["&nbsp;&nbsp;<b>S7</b>&nbsp;ProjectService&nbsp;&nbsp;"]
+    end
+
+    subgraph Data["Data Layer"]
+      direction LR
+      pg[("&nbsp;Postgres&nbsp;")]
+      redis[("&nbsp;Redis&nbsp;")]
+      blob[("&nbsp;S3 / Storage&nbsp;")]
+    end
+
+    subgraph External["External Integrations"]
+      direction LR
+      stripe(["&nbsp;&nbsp;Stripe&nbsp;&nbsp;"])
+      sms(["&nbsp;&nbsp;SMS&nbsp;&nbsp;"])
+      email(["&nbsp;&nbsp;Email&nbsp;&nbsp;"])
+      push(["&nbsp;&nbsp;Push&nbsp;&nbsp;"])
+    end
+  end
+
+  %% ── Sync request flow ──
+  web --> rest
+  mobile --> rest
+  admin --> rest
+  rest --> authmw
+  authmw --> S1
+  authmw --> S7
+
+  %% ── Service to Data ──
+  S1 --> pg
+  S1 --> redis
+  S7 --> pg
+  S7 --> blob
+
+  %% ── Service to External ──
+  S6 --> stripe
+  S3 --> sms
+  S3 --> email
+  S3 --> push
+
+  %% ── Async events ──
+  S7 -. "booking.created" .-> S2
+  S7 -. "booking.created" .-> S4
+  S7 -. "booking.created" .-> S5
+  S6 -. "payment.completed" .-> S4
+  S6 -. "payment.completed" .-> S5
+
+  %% Styles
+  classDef client fill:#DBEAFE,stroke:#1A56DB,color:#0E3A99,font-weight:600,stroke-width:1.5px
+  classDef apiL fill:#FEF3C7,stroke:#F59E0B,color:#92400E,font-weight:600,stroke-width:1.5px
+  classDef universalL fill:#fff,stroke:#1A56DB,color:#0E3A99,font-weight:600,stroke-width:1.5px
+  classDef projectL fill:#EFF4FE,stroke:#1A56DB,color:#0E3A99,font-weight:700,stroke-width:2px
+  classDef dataL fill:#F3F4F6,stroke:#6B7280,color:#1F2937,font-weight:600,stroke-width:1.5px
+  classDef externalL fill:#F3E8FF,stroke:#7E22CE,color:#581C87,font-weight:600,stroke-width:1.5px
+
+  class web,mobile,admin client
+  class rest,authmw apiL
+  class S1,S2,S3,S4,S5,S6 universalL
+  class S7 projectL
+  class pg,redis,blob dataL
+  class stripe,sms,email,push externalL
+
+  %% Event edges (orange dashed) — index 14-18
+  linkStyle 14,15,16,17,18 stroke:#F59E0B,stroke-width:1.5px,stroke-dasharray:6 4
+  </div>
+</div>
+
+<h2>Mermaid source (editable)</h2>
+<p class="note">The block below is the same source rendered above — kept as a copy-paste reference for editing.</p>
+<pre style="background:#F3F4F6; padding:12px; border-left:3px solid #1A56DB; font-size:9pt; white-space:pre-wrap;"><code>flowchart LR
+  subgraph Client["Client"]
+    web[Web App]
+    mobile[Mobile App]
+  end
+
+  subgraph API["API Gateway"]
+    rest[REST Routes]
+  end
+
+  subgraph Domain["Domain Services"]
+    S1[S1 Identity]
+    S7[S7 ProjectService]
+  end
+
+  subgraph Data["Data Layer"]
+    pg[(Postgres)]
+  end
+
+  web --> rest
+  mobile --> rest
+  rest --> S1
+  rest --> S7
+  S7 --> pg
+  S7 -. "booking.created" .-> S4[S4 Audit]
+
+  classDef domainL fill:#fff,stroke:#1A56DB,color:#0E3A99
+  class S1,S7,S4 domainL
+</code></pre>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="database-schema">
+    <h1>8. Database Schema</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<h2>8.1 Schema Overview</h2>
+<p class="note">Every entity in the data model. One row per table.</p>
+
+<table>
+  <colgroup><col style="width:6%"><col style="width:24%"><col style="width:14%"><col style="width:56%"></colgroup>
+  <thead><tr><th>#</th><th>Entity</th><th>Service</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><code><span class="ph">{{ENTITY_NAME}}</span></code></td><td><span class="ph">{{S_CODE}}</span></td><td><span class="ph">{{ONE_LINE_PURPOSE}}</span></td></tr>
+    <tr><td>2</td><td><code><span class="ph">{{ENTITY_NAME}}</span></code></td><td><span class="ph">{{S_CODE}}</span></td><td><span class="ph">{{ONE_LINE_PURPOSE}}</span></td></tr>
+    <tr><td>+</td><td colspan="3"><span class="ph">{{Add as many as needed}}</span></td></tr>
+  </tbody>
+</table>
+
+<h2>8.2 Entity Definitions</h2>
+<p class="note">One block per entity. Group by service.</p>
+
+<div class="entity">
+  <div class="entity-header"><span class="ph">{{entity_name}}</span></div>
+  <table class="entity-table">
+    <colgroup><col style="width:24%"><col style="width:18%"><col style="width:20%"><col style="width:38%"></colgroup>
+    <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td><code>uuid</code></td><td>PK, default <code>gen_random_uuid()</code></td><td>Primary key.</td></tr>
+      <tr><td><code><span class="ph">{{column}}</span></code></td><td><code><span class="ph">{{type}}</span></code></td><td><span class="ph">{{NOT NULL / UNIQUE / FK→table.id}}</span></td><td><span class="ph">{{notes}}</span></td></tr>
+      <tr><td><code>created_at</code></td><td><code>timestamptz</code></td><td>NOT NULL, default <code>now()</code></td><td>Audit timestamp.</td></tr>
+      <tr><td><code>updated_at</code></td><td><code>timestamptz</code></td><td>NOT NULL, default <code>now()</code></td><td>Refreshed on update.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p class="note"><strong>Repeat the entity block above for every table.</strong></p>
+
+<h2>8.3 Relationships</h2>
+
+<table>
+  <colgroup><col style="width:24%"><col style="width:24%"><col style="width:14%"><col style="width:38%"></colgroup>
+  <thead><tr><th>From</th><th>To</th><th>Cardinality</th><th>Rule / Cascade</th></tr></thead>
+  <tbody>
+    <tr><td><code><span class="ph">{{table.column}}</span></code></td><td><code><span class="ph">{{table.column}}</span></code></td><td><span class="ph">{{1:N | N:M | 1:1}}</span></td><td><span class="ph">{{ON DELETE CASCADE | RESTRICT | SET NULL}}</span></td></tr>
+  </tbody>
+</table>
+
+<h2>8.4 Indexes Strategy</h2>
+
+<table>
+  <colgroup><col style="width:28%"><col style="width:22%"><col style="width:18%"><col style="width:32%"></colgroup>
+  <thead><tr><th>Index name</th><th>Table</th><th>Columns</th><th>Query pattern</th></tr></thead>
+  <tbody>
+    <tr><td><code><span class="ph">{{idx_name}}</span></code></td><td><code><span class="ph">{{table}}</span></code></td><td><code><span class="ph">{{col_a, col_b}}</span></code></td><td><span class="ph">{{e.g. "list by owner, ordered by created_at"}}</span></td></tr>
+  </tbody>
+</table>
+
+<p class="lbl">Rules of thumb</p>
+<ul>
+  <li>Index every foreign key.</li>
+  <li>Index every column used in <code>WHERE</code> with high selectivity.</li>
+  <li>Composite index when the query filters on multiple columns in the same order.</li>
+  <li>Avoid over-indexing — every index slows writes.</li>
+</ul>
+
+<h2>8.5 ERD — Visual Diagram</h2>
+<p class="note">Edit the Mermaid <code>erDiagram</code> below to match Section 8.2 entities. Auto-renders in browser.</p>
+
+<div class="mermaid-host">
+  <div class="mermaid">
+erDiagram
+  USER ||--o{ BOOKING : creates
+  PROVIDER ||--o{ BOOKING : fulfills
+  BOOKING }o--|| SERVICE : "books"
+  USER {
+    uuid id PK
+    text email UK
+    text password_hash
+    timestamptz created_at
+  }
+  PROVIDER {
+    uuid id PK
+    uuid user_id FK
+    text business_name
+  }
+  SERVICE {
+    uuid id PK
+    text name
+    numeric price
+  }
+  BOOKING {
+    uuid id PK
+    uuid user_id FK
+    uuid provider_id FK
+    uuid service_id FK
+    timestamptz starts_at
+    text status
+  }
+  </div>
+</div>
+  </div>
+</div>
+<div class="doc-section">
+  <div class="section-toggle" id="infrastructure">
+    <h1>9. Infrastructure</h1>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+<h2>9.1 Environments</h2>
+
+<table>
+  <colgroup><col style="width:18%"><col style="width:26%"><col style="width:56%"></colgroup>
+  <thead><tr><th>Environment</th><th>URL</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>Local</td><td><code>localhost:3000</code></td><td>Developer machine</td></tr>
+    <tr><td>Development</td><td><code>dev.<span class="ph">{{DOMAIN}}</span></code></td><td>Internal dev testing</td></tr>
+    <tr><td>Staging</td><td><code>staging.<span class="ph">{{DOMAIN}}</span></code></td><td>QA + client preview</td></tr>
+    <tr><td>Production</td><td><code><span class="ph">{{DOMAIN}}</span></code></td><td>Live customer-facing</td></tr>
+  </tbody>
+</table>
+
+<h2>9.2 Hosting &amp; Compute</h2>
+
+<table>
+  <colgroup><col style="width:24%"><col style="width:34%"><col style="width:18%"><col style="width:24%"></colgroup>
+  <thead><tr><th>Service</th><th>Provider</th><th>Region</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Web Frontend</td><td><span class="ph">{{Vercel | Netlify | Cloudflare Pages}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{notes}}</span></td></tr>
+    <tr><td>Backend API</td><td><span class="ph">{{Railway | Render | Fly.io | AWS ECS}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{auto-scale rules}}</span></td></tr>
+    <tr><td>Primary Database</td><td><span class="ph">{{Postgres on Neon | Supabase | RDS}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{HA, connection pooling}}</span></td></tr>
+    <tr><td>Object Storage</td><td><span class="ph">{{S3 | Cloudflare R2 | Vercel Blob}}</span></td><td><span class="ph">{{uploads, signed URLs}}</span></td><td><span class="ph">{{notes}}</span></td></tr>
+    <tr><td>Cache / Queue</td><td><span class="ph">{{Redis on Upstash | ElastiCache | TBD}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{session, rate-limit, jobs}}</span></td></tr>
+    <tr><td>Background Workers</td><td><span class="ph">{{Trigger.dev | BullMQ | provider}}</span></td><td><span class="ph">{{region}}</span></td><td><span class="ph">{{durable tasks, cron}}</span></td></tr>
+  </tbody>
+</table>
+
+<h2>9.3 External Services &amp; Integrations</h2>
+
+<table>
+  <colgroup><col style="width:22%"><col style="width:26%"><col style="width:22%"><col style="width:30%"></colgroup>
+  <thead><tr><th>Capability</th><th>Provider</th><th>Env var</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Payments</td><td><span class="ph">{{Stripe | Payme | Click | Uzum}}</span></td><td><code><span class="ph">{{SECRET_KEY}}</span></code></td><td><span class="ph">{{webhooks, refunds}}</span></td></tr>
+    <tr><td>Email</td><td><span class="ph">{{Resend | SendGrid | Postmark}}</span></td><td><code><span class="ph">{{API_KEY}}</span></code></td><td><span class="ph">{{transactional templates}}</span></td></tr>
+    <tr><td>SMS</td><td><span class="ph">{{Twilio | Eskiz.uz | Vonage}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{OTP, alerts}}</span></td></tr>
+    <tr><td>Error tracking</td><td><span class="ph">{{Sentry | Bugsnag}}</span></td><td><code><span class="ph">{{DSN}}</span></code></td><td><span class="ph">{{frontend + backend}}</span></td></tr>
+    <tr><td>Analytics</td><td><span class="ph">{{PostHog | Mixpanel | Plausible}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{events, funnels}}</span></td></tr>
+    <tr><td><span class="ph">{{other}}</span></td><td><span class="ph">{{provider}}</span></td><td><code><span class="ph">{{KEY}}</span></code></td><td><span class="ph">{{notes}}</span></td></tr>
+  </tbody>
+</table>
+
+<h2>9.4 Security &amp; Secrets</h2>
+
+<div class="callout">
+  <div class="callout-title">Secret management policy</div>
+  <p>Never commit secrets to the repo. Use the host's secret store (Vercel env, Railway secrets, AWS Secrets Manager, GitHub Actions secrets). Document variable names only.</p>
+</div>
+
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>Auth method</strong></td><td><span class="ph">{{JWT HttpOnly cookie | Auth.js | Clerk | Supabase Auth}}</span></td></tr>
+    <tr><td><strong>Password hashing</strong></td><td><span class="ph">{{bcrypt cost 12 | argon2id}}</span></td></tr>
+    <tr><td><strong>Rate limiting</strong></td><td><span class="ph">{{e.g. 60 req/min per IP on /auth/*}}</span></td></tr>
+    <tr><td><strong>WAF / DDoS</strong></td><td><span class="ph">{{Cloudflare | provider built-in}}</span></td></tr>
+    <tr><td><strong>Required env vars</strong></td><td><span class="ph">{{DATABASE_URL, JWT_SECRET, STRIPE_SECRET_KEY, ...}}</span></td></tr>
+    <tr><td><strong>Vulnerability scanning</strong></td><td><span class="ph">{{Dependabot, npm audit in CI}}</span></td></tr>
+  </tbody>
+</table>
+
+<h2>9.5 CI / CD Pipeline</h2>
+
+<table>
+  <colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+  <tbody>
+    <tr><td><strong>CI provider</strong></td><td><span class="ph">{{GitHub Actions | GitLab CI | Vercel | provider}}</span></td></tr>
+    <tr><td><strong>Branch protection</strong></td><td><span class="ph">{{require 1 review + green CI on main}}</span></td></tr>
+    <tr><td><strong>Deploy to staging</strong></td><td><span class="ph">{{auto on merge to main | manual approval}}</span></td></tr>
+    <tr><td><strong>Deploy to production</strong></td><td><span class="ph">{{manual approval after staging green}}</span></td></tr>
+    <tr><td><strong>Rollback strategy</strong></td><td><span class="ph">{{revert merge + redeploy | provider one-click rollback}}</span></td></tr>
+  </tbody>
+</table>
+
+<h2>9.6 Topology — Visual Diagram</h2>
+<p class="note">Edit the Mermaid <code>flowchart</code> below to match Sections 9.2–9.3. Auto-renders in browser.</p>
+
+<div class="mermaid-host">
+  <div class="mermaid">
+flowchart TB
+  subgraph Client["Client"]
+    web["&nbsp;Web App&nbsp;"]
+    mobile["&nbsp;Mobile App&nbsp;"]
+  end
+
+  subgraph Compute["Compute"]
+    api["&nbsp;API&nbsp;"]
+    worker["&nbsp;Background Worker&nbsp;"]
+  end
+
+  subgraph Data["Data Layer"]
+    db[("&nbsp;Postgres&nbsp;")]
+    cache[("&nbsp;Redis&nbsp;")]
+    storage[("&nbsp;S3 / Blob&nbsp;")]
+  end
+
+  subgraph External["External Services"]
+    stripe["&nbsp;Stripe&nbsp;"]
+    email["&nbsp;Email&nbsp;"]
+    sentry["&nbsp;Sentry&nbsp;"]
+  end
+
+  web --> api
+  mobile --> api
+  api --> db
+  api --> cache
+  api --> storage
+  api -->|REST| stripe
+  api -->|SMTP| email
+  api --> sentry
+  worker --> db
+  worker --> cache
+
+  classDef client fill:#EFF4FE,stroke:#1A56DB,stroke-width:1.5px,color:#0E3A99;
+  classDef compute fill:#E0E7FF,stroke:#4F46E5,stroke-width:1.5px,color:#312E81;
+  classDef data fill:#DCFCE7,stroke:#16A34A,stroke-width:1.5px,color:#14532D;
+  classDef external fill:#FCE7F3,stroke:#DB2777,stroke-width:1.5px,color:#831843;
+
+  class web,mobile client;
+  class api,worker compute;
+  class db,cache,storage data;
+  class stripe,email,sentry external;
+  </div>
+</div>
+  </div>
+</div>
+</div>
+<script>
+  // Accordion
+  document.querySelectorAll('.section-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const body = btn.nextElementSibling;
+      const chevron = btn.querySelector('.chevron');
+      const open = body.classList.toggle('open');
+      chevron.classList.toggle('open', open);
+      btn.classList.toggle('open', open);
+    });
+  });
+  // Open first section by default
+  const first = document.querySelector('.section-toggle');
+  if (first) first.click();
+</script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true, theme: 'base',
+    themeVariables: { primaryColor: '#EFF4FE', primaryTextColor: '#0E3A99', primaryBorderColor: '#1A56DB', lineColor: '#1A56DB', secondaryColor: '#F59E0B22', tertiaryColor: '#F9FAFB', fontFamily: 'Inter, -apple-system, sans-serif', fontSize: '12px', clusterBkg: '#F9FAFB', clusterBorder: '#1A56DB66' },
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', defaultRenderer: 'elk', padding: 16, nodeSpacing: 50, rankSpacing: 60 },
+    layout: 'elk',
+    elk: { 'elk.algorithm': 'layered', 'elk.direction': 'DOWN', 'elk.alignment': 'CENTER', 'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX', 'elk.layered.spacing.nodeNodeBetweenLayers': 50, 'elk.spacing.nodeNode': 36, 'elk.spacing.edgeNode': 20 },
+    er: { useMaxWidth: true, diagramPadding: 20, entityPadding: 12, minEntityWidth: 120, minEntityHeight: 70, fontSize: 12, stroke: '#1A56DB', fill: '#EFF4FE' },
+  });
+</script>
+</body>
+</html>

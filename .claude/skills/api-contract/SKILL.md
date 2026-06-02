@@ -5,7 +5,7 @@ description: Generate or update a shared API contract artifact (OpenAPI YAML, tR
 
 ## Stage gate (RUN FIRST)
 
-1. Read `state/SESSION-STATE.md`. Locate `Stage:`.
+1. Read `SESSION-STATE/SESSION-STATE.md`. Locate `Stage:`.
 2. Refuse unless Stage is `DOCS_COMPLETE`, `TASKS_GENERATED`, `TASKS_APPROVED`, `BUILDING`, or later. Message:
    > "api-contract requires TASKS.md (and the 5 HTMLs) to read endpoint specs. Current Stage: `<STAGE>`. Run `/parse-scope` first."
 
@@ -29,7 +29,7 @@ drift between parallel chains.
 - the 5 deliverable HTMLs Section 5 (Feature Breakdown) — endpoint list and data
   models per feature.
 - `memory/STACK-GUIDANCE.md` — declared API style (REST, tRPC, GraphQL).
-- `state/TASKS.md` — `Contract refs` field on each task, indicating which task
+- `SESSION-STATE/TASKS.md` — `Contract refs` field on each task, indicating which task
   owns the backend or client surface.
 - Optional: existing `memory/contracts/<feature>.<ext>` (will be merged,
   not overwritten).
@@ -58,7 +58,7 @@ If the stack is ambiguous, default to OpenAPI 3.1.
 
 1. Read the 5 deliverable HTMLs Section 5 entirely.
 2. Read `memory/STACK-GUIDANCE.md` (skip if placeholder).
-3. Read `state/TASKS.md` and collect all task blocks where `Contract refs`
+3. Read `SESSION-STATE/TASKS.md` and collect all task blocks where `Contract refs`
    field has `Backend owner`, `Web owner`, or `Mobile owner`.
 4. Read `memory/PATTERNS.md` for existing API handler shapes.
 
@@ -67,7 +67,7 @@ If the stack is ambiguous, default to OpenAPI 3.1.
 For each feature in the 5 deliverable HTMLs Section 5:
 
 - List its endpoints (REST verb + path, or tRPC procedure name).
-- Map each endpoint to its task ID via `state/TASKS.md`.
+- Map each endpoint to its task ID via `SESSION-STATE/TASKS.md`.
 - Collect the data models the endpoints reference.
 - Note the auth boundary (public vs authenticated) per endpoint.
 
@@ -178,5 +178,5 @@ Stop. Do not auto-trigger build.
 ## Output
 
 One contract artifact per feature in `memory/contracts/`, with task
-blocks in `state/TASKS.md` updated to reference them. Diff summary printed to
+blocks in `SESSION-STATE/TASKS.md` updated to reference them. Diff summary printed to
 the user.

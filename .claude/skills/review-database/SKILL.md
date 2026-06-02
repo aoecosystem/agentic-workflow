@@ -1,7 +1,13 @@
 ---
 name: review-database
-description: Iterative section-by-section editor for the Database Diagram. Reads `state/SESSION-STATE.md`, refuses unless Stage is DATABASE_DRAFT or DATABASE_APPROVED, lets the user pick one of the 6 sections, applies the change, bumps version, writes audit log. If Stage is DATABASE_APPROVED, re-opens to DATABASE_DRAFT. Trigger on "/review-database", "review database", "edit database".
+description: Iterative section-by-section editor for the Database Diagram. Reads `SESSION-STATE/SESSION-STATE.md`, refuses unless Stage is DATABASE_DRAFT or DATABASE_APPROVED, lets the user pick one of the 6 sections, applies the change, bumps version, writes audit log. If Stage is DATABASE_APPROVED, re-opens to DATABASE_DRAFT. Trigger on "/review-database", "review database", "edit database".
 ---
+
+> **DEPRECATED** — This skill is no longer part of the pipeline.
+> Database schema and infrastructure are now Section 8 and Section 9 of
+> the System Architecture document (`/build-architecture`).
+> This file is kept for reference only and will not execute.
+
 
 # Skill: review-database
 

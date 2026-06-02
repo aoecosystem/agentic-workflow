@@ -1,7 +1,13 @@
 ---
 name: build-database
-description: Generate the Database Diagram HTML from the approved Architecture + SoW. Reads `state/SESSION-STATE.md` and refuses unless `Stage: ARCHITECTURE_APPROVED`. Reads `deliverables/scope-of-work/<slug>-sow.html` (especially Phase 3 Database Schemas) plus `deliverables/architecture/<slug>-architecture.html`, then writes `deliverables/database/<slug>-database.html` and transitions Stage to DATABASE_DRAFT. Trigger on "/build-database", "build database", "generate database diagram".
+description: Generate the Database Diagram HTML from the approved Architecture + SoW. Reads `SESSION-STATE/SESSION-STATE.md` and refuses unless `Stage: ARCHITECTURE_APPROVED`. Reads `DOCMENTS/<slug>-scope-of-work.html` (especially Phase 3 Database Schemas) plus `DOCMENTS/<slug>-system-architecture.html`, then writes `deliverables/database/<slug>-database.html` and transitions Stage to DATABASE_DRAFT. Trigger on "/build-database", "build database", "generate database diagram".
 ---
+
+> **DEPRECATED** — This skill is no longer part of the pipeline.
+> Database schema and infrastructure are now Section 8 and Section 9 of
+> the System Architecture document (`/build-architecture`).
+> This file is kept for reference only and will not execute.
+
 
 # Skill: build-database
 
@@ -51,7 +57,7 @@ The brief Section 3.2 contains an "Architecture style" choice (one of:
 generating output, this skill MUST:
 
 1. Read the brief Section 3.2 to find the chosen style.
-2. Read `deliverables/architecture/styles/<style>.md` end-to-end.
+2. Read `CONTEXT/architecture-styles/<style>.md` end-to-end.
 3. Apply the style's rules to the generated output in the relevant
    phases / sections (see "Style application points" below).
 
@@ -79,11 +85,11 @@ through automatically.
 
 ## Pre-flight
 
-1. Read `deliverables/scope-of-work/<slug>-sow.html`. Extract:
+1. Read `DOCMENTS/<slug>-scope-of-work.html`. Extract:
    - Phase 3 Database Schemas (per-service tables with fields,
      types, PK, FK, indexes).
    - Phase 5 events (which entities are referenced).
-2. Read `deliverables/architecture/<slug>-architecture.html` for
+2. Read `DOCMENTS/<slug>-system-architecture.html` for
    service structure.
 3. Read `deliverables/database/template.html` for template structure.
 4. Read brief `<slug>-project-brief.html` Section 1 for project name.
